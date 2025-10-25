@@ -1,14 +1,15 @@
+import { DISCORD_URL } from '@/constants/urls'
 import { DiscordButton } from '../discord-button'
 
 export function HeroSection() {
   const handleDiscordClick = () => {
     if (typeof window !== 'undefined') {
-      window.open('https://discord.com/invite/KaburAjaDulu', '_blank')
+      window.open(DISCORD_URL, '_blank')
     }
   }
 
   return (
-    <section className="py-10 md:py-16 md:py-24">
+    <section className="py-10 md:py-24">
       <div className="container mx-auto text-center px-4 md:px-6">
         <h1 className="text-4xl md:text-5xl font-extrabold mb-4 md:mb-6">
           &quot;Pengen <span className="text-primary">Kabur</span> ke Luar Negeri? Gaskeun!&quot;

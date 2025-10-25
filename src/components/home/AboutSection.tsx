@@ -1,8 +1,9 @@
 import { GithubButton } from "../../components/github-button";
+import {GITHUB_URL} from "../../constants/urls"
 
 export function AboutSection() {
   const handleGithubClick = () => {
-    window.open("https://github.com/KaburAjaDul/kaburajadulu", "_blank");
+    window.open(GITHUB_URL, "_blank");
   };
 
   return (
