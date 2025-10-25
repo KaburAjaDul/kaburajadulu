@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
-import { cn } from '@/lib/utils';
-import { BlogCard } from './BlogCard';
+import React, { useState } from "react";
+import { cn } from "@/lib/utils";
+import { BlogCard } from "./BlogCard";
+import { Frown } from "lucide-react";
 
 export interface BlogPost {
   id: string;
@@ -15,14 +16,28 @@ interface BlogSectionProps {
   posts: BlogPost[];
 }
 
-const categories = ['Semua', 'Lowongan', 'Beasiswa', 'Event', 'Kelas Bahasa', 'Berita'];
+const CATEGORIES = {
+  SEMUA: "Semua",
+  LOWONGAN: "Lowongan",
+  BEASISWA: "Beasiswa",
+  EVENT: "Event",
+  KELAS_BAHASA: "Kelas Bahasa",
+  BERITA: "Berita",
+} as const;
+
+type Category = (typeof CATEGORIES)[keyof typeof CATEGORIES];
+
+const categories: Category[] = Object.values(CATEGORIES);
 
 export const BlogSection: React.FC<BlogSectionProps> = ({ posts }) => {
-  const [selectedCategory, setSelectedCategory] = useState('Semua');
+  const [selectedCategory, setSelectedCategory] = useState<Category>(
+    CATEGORIES.SEMUA,
+  );
 
-  const filteredPosts = selectedCategory === 'Semua' 
-    ? posts 
-    : posts.filter(post => post.category === selectedCategory);
+  const filteredPosts =
+    selectedCategory === CATEGORIES.SEMUA
+      ? posts
+      : posts.filter((post) => post.category === selectedCategory);
 
   const handleCardClick = (link?: string) => {
     if (link) {
@@ -35,8 +50,10 @@ export const BlogSection: React.FC<BlogSectionProps> = ({ posts }) => {
       <div className="w-full max-w-[1040px] mx-auto">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between w-full mb-12">
           <div className="flex flex-col md:flex-row md:items-center gap-4 md:gap-10">
-            <h2 className="text-[24px] md:text-[32px] font-bold text-gray-900 leading-none">Blog</h2>
-            
+            <h2 className="text-[24px] md:text-[32px] font-bold text-gray-900 leading-none">
+              Blog
+            </h2>
+
             <div className="overflow-x-auto -mx-4 px-4 md:mx-0 md:px-0">
               <div className="flex items-center gap-4 w-max md:w-auto pb-2 md:pb-0">
                 {categories.map((category, index) => (
@@ -45,9 +62,9 @@ export const BlogSection: React.FC<BlogSectionProps> = ({ posts }) => {
                       onClick={() => setSelectedCategory(category)}
                       className={cn(
                         "text-[15px] md:text-[17px] text-gray-900 transition-all whitespace-nowrap",
-                        selectedCategory === category 
-                          ? "font-semibold text-blue-600 border-b-2 border-blue-600" 
-                          : "font-normal hover:opacity-70"
+                        selectedCategory === category
+                          ? "font-semibold text-blue-600 border-b-2 border-blue-600 cursor-pointer"
+                          : "font-normal hover:opacity-70 cursor-pointer",
                       )}
                     >
                       {category}
@@ -60,25 +77,34 @@ export const BlogSection: React.FC<BlogSectionProps> = ({ posts }) => {
               </div>
             </div>
           </div>
-          
-          <button className="hidden md:block text-[17px] text-gray-900 hover:opacity-70 transition-opacity whitespace-nowrap">
+
+          <button className="hidden md:block text-[17px] text-gray-900 hover:opacity-70 transition-opacity whitespace-nowrap cursor-pointer">
             Lainnya
           </button>
         </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredPosts.map((post) => (
-            <BlogCard
-              key={post.id}
-              category={post.category}
-              date={post.date}
-              imageUrl={post.imageUrl}
-              title={post.title}
-              onClick={() => handleCardClick(post.link)}
-            />
-          ))}
-        </div>
+        {filteredPosts.length === 0 ? (
+          <div className="text-center text-gray-500 mt-10">
+            <p className="flex items-center justify-center gap-1.5">
+              Oops! Belum ada postingan untuk kategori ini
+              <Frown className="inline-block" />.
+            </p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredPosts.map((post) => (
+              <BlogCard
+                key={post.id}
+                category={post.category}
+                date={post.date}
+                imageUrl={post.imageUrl}
+                title={post.title}
+                onClick={() => handleCardClick(post.link)}
+              />
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );
 };
+
