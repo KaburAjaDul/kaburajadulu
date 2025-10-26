@@ -1,10 +1,8 @@
-import { GithubButton } from "../../components/github-button";
+import { GithubButton } from "@/components/github-button";
+import { GITHUB_URL } from "@/constants/urls";
+import { EMAIL } from "@/constants/contacts";
 
 export function AboutSection() {
-  const handleGithubClick = () => {
-    window.open("https://github.com/KaburAjaDul/kaburajadulu", "_blank");
-  };
-
   return (
     <section className="py-10 md:py-16">
       <div className="container mx-auto px-4 md:px-6">
@@ -28,13 +26,17 @@ export function AboutSection() {
         </div>
 
         <div className="flex flex-col sm:flex-row items-center justify-center mt-10 gap-6 sm:gap-6">
-          <GithubButton
-            className="px-6 py-2 text-base w-full sm:w-auto"
-            ariaLabel="Jadi kontributor GitHub untuk #KaburAjaDulu"
-            onClick={handleGithubClick}
-          />
           <a
-            href="mailto:kaburajadulusocials@gmail.com"
+            href={GITHUB_URL}
+            target="_blank"
+            className="flex items-center justify-center"
+            rel="noopener noreferrer"
+            aria-label="Jadi kontributor GitHub untuk #KaburAjaDulu"
+          >
+            <GithubButton className="px-6 py-2 text-base w-full sm:w-auto" />
+          </a>
+          <a
+            href={`mailto:${EMAIL}`}
             className="text-base underline decoration-1 hover:text-primary transition-colors mt-2 sm:mt-0"
             aria-label="Berikan saran atau masukan di GitHub"
           >

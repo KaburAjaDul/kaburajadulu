@@ -18,13 +18,13 @@ const gscVerification = import.meta.env.GOOGLE_SITE_VERIFICATION;
   title="#KaburAjaDulu | Jelajahi Peluang Internasional"
   gscVerification={gscVerification}
 >
-  <Navbar client:load />
+  <Navbar />
   <main>
-    <HeroSection client:load />
-    <DestinationShowcase client:load />
-    <AboutSection client:load />
-    <BlogSection client:load posts={blogPosts} />
-    <CTASection client:load />
+    <HeroSection />
+    <DestinationShowcase />
+    <AboutSection />
+    <BlogSection client:idle posts={blogPosts} />
+    <CTASection />
   </main>
-  <Footer client:load />
+  <Footer/>
 </Layout>
