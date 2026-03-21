@@ -1,0 +1,89 @@
+{
+  "nav": {
+    "home": "Inicio",
+    "about": "Acerca de",
+    "destinations": "Destinos",
+    "blog": "Blog",
+    "contact": "Contacto",
+    "language": "Idioma"
+  },
+  "hero": {
+    "headline": "Kabur Aja Dulu",
+    "subheadline": "Descubre oportunidades de estudio y trabajo en el extranjero. Ayudamos a los indonesios a estudiar y trabajar en el exterior.",
+    "cta_primary": "Comenzar",
+    "cta_secondary": "Leer nuestro Blog",
+    "badge": "Plataforma de Información Confiable"
+  },
+  "about": {
+    "headline": "Acerca de KaburAjaDulu",
+    "subheadline": "Una comunidad que ayuda a los indonesios a estudiar y trabajar en el extranjero.",
+    "stat1_value": "500+",
+    "stat1_label": "Miembros Activos",
+    "stat2_value": "10+",
+    "stat2_label": "Países de Destino",
+    "stat3_value": "50+",
+    "stat3_label": "Posiciones Disponibles",
+    "feature1_title": "Información Precisa",
+    "feature1_desc": "Nos aseguramos de que toda la información que proporcionamos esté actualizada y verificada.",
+    "feature2_title": "Comunidad de Apoyo",
+    "feature2_desc": "Únete a una comunidad que se apoya mutuamente y comparte experiencias.",
+    "feature3_title": "Gratuito para Todos",
+    "feature3_desc": "Todas las funciones e información que proporcionamos son de acceso gratuito.",
+    "github_contributor": "GitHub Contributor"
+  },
+  "destinations": {
+    "headline": "Destinos Populares",
+    "subheadline": "Explora los países más buscados por los trabajadores indonesios.",
+    "view_all": "Ver Todos los Destinos",
+    "learn_more": "Más Información"
+  },
+  "cta": {
+    "headline": "¿Listo para Comenzar tu Viaje?",
+    "subheadline": "Únete a miles de personas que han encontrado nuevas oportunidades en el extranjero.",
+    "cta_primary": "Únete a Nosotros",
+    "cta_secondary": "Contáctanos"
+  },
+  "blog": {
+    "headline": "Blog y Artículos",
+    "subheadline": "Lee los últimos artículos sobre oportunidades de estudio y trabajo en el extranjero.",
+    "view_all": "Ver Todos los Artículos",
+    "read_more": "Leer Más",
+    "categories": {
+      "Lowongan": "Ofertas de Empleo",
+      "Beasiswa": "Becas",
+      "Event": "Eventos",
+      "Kelas Bahasa": "Clases de Idiomas",
+      "Berita": "Noticias"
+    }
+  },
+  "footer": {
+    "tagline": "Ayudando a los indonesios a encontrar oportunidades en el extranjero.",
+    "quick_links": "Enlaces Rápidos",
+    "destinations": "Destinos",
+    "legal": "Legal",
+    "privacy": "Política de Privacidad",
+    "terms": "Términos y Condiciones",
+    "contact": "Contacto",
+    "email": "Correo Electrónico",
+    "discord": "Discord",
+    "copyright": "© 2026 KaburAjaDulu. Todos los derechos reservados."
+  },
+  "common": {
+    "loading": "Cargando...",
+    "error": "Ha ocurrido un error",
+    "retry": "Reintentar",
+    "search": "Buscar...",
+    "no_results": "Sin resultados",
+    "back_to_home": "Volver al Inicio",
+    "page_not_found": "Página No Encontrada",
+    "404_message": "La página que buscas no existe."
+  },
+  "meta": {
+    "home_title": "KaburAjaDulu - Oportunidades de Estudio y Trabajo en el Extranjero",
+    "home_description": "Descubre oportunidades de estudio y trabajo en el extranjero. Plataforma de información confiable para indonesios.",
+    "blog_title": "Blog - KaburAjaDulu",
+    "blog_description": "Lee los últimos artículos sobre oportunidades de estudio y trabajo en el extranjero.",
+    "about_title": "Acerca de Nosotros - KaburAjaDulu",
+    "about_description": "Conoce más sobre KaburAjaDulu y nuestra misión."
+  }
+}

@@ -5,12 +5,14 @@ interface GithubButtonProps {
   className?: string
   onClick?: () => void
   ariaLabel?: string
+  children?: React.ReactNode
 }
 
 export function GithubButton({
   className,
   onClick,
-  ariaLabel = "Jadi Kontributor Github",
+  ariaLabel = "GitHub Contributor",
+  children,
 }: GithubButtonProps) {
   return (
     <Button
@@ -27,7 +29,7 @@ export function GithubButton({
       aria-label={ariaLabel}
     >
       <GithubIcon className="w-6 h-6" aria-hidden="true" />
-      Jadi Kontributor Github
+      {children || "GitHub Contributor"}
     </Button>
   )
 }

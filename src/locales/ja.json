@@ -1,0 +1,89 @@
+{
+  "nav": {
+    "home": "ホーム",
+    "about": "会社概要",
+    "destinations": "目的地",
+    "blog": "ブログ",
+    "contact": "お問い合わせ",
+    "language": "言語"
+  },
+  "hero": {
+    "headline": "Kabur Aja Dulu",
+    "subheadline": "海外での勉強と仕事の機会を発見しましょう。私たちは印度ネシア人が海外で学ぶ·suku働く機会を得られるようサポートしています。",
+    "cta_primary": "始める",
+    "cta_secondary": "ブログを読む",
+    "badge": "信頼される情報プラットフォーム"
+  },
+  "about": {
+    "headline": "KaburAjaDuluについて",
+    "subheadline": "印度ネシア人が海外で学ぶ·suku働くことを 지원하는コミュニティ입니다。",
+    "stat1_value": "500+",
+    "stat1_label": "アクティブメンバー",
+    "stat2_value": "10+",
+    "stat2_label": "対象国",
+    "stat3_value": "50+",
+    "stat3_label": "募集ポジション",
+    "feature1_title": "正確な情報",
+    "feature1_desc": "私たち提供するすべての情報が最新かつ正確であることを保証します。",
+    "feature2_title": "サポートコミュニティ",
+    "feature2_desc": "互いに支え合い、経験を共有するコミュニティに参加しましょう。",
+    "feature3_title": "無料提供",
+    "feature3_desc": " 제공하는 모든 기능과 정보는 물료로 이용 가능합니다.",
+    "github_contributor": "GitHub 貢献者になる"
+  },
+  "destinations": {
+    "headline": "人気の目的地",
+    "subheadline": "印度ネシア人に最も人気のない外国を見てみましょう。",
+    "view_all": "すべての目的地を見る",
+    "learn_more": "詳細を見る"
+  },
+  "cta": {
+    "headline": "旅を始め 준비되셨나요?",
+    "subheadline": "海外で新しい機会を見つけた何千人もの人々に加わりましょう。",
+    "cta_primary": "参加する",
+    "cta_secondary": "お問い合わせ"
+  },
+  "blog": {
+    "headline": "ブログ·suku記事",
+    "subheadline": "海外での勉強·suku仕事の最新記事をご覧ください。",
+    "view_all": "すべての記事を見る",
+    "read_more": "続きを読む",
+    "categories": {
+      "Lowongan": "求人",
+      "Beasiswa": "奨学金",
+      "Event": "イベント",
+      "Kelas Bahasa": "語学レッスン",
+      "Berita": "ニュース"
+    }
+  },
+  "footer": {
+    "tagline": "印度ネシア人が海外で機会を見つけられるよう支援します。",
+    "quick_links": "クイックリンク",
+    "destinations": "目的地",
+    "legal": "法的情報",
+    "privacy": "プライバシーポリシー",
+    "terms": "利用規約",
+    "contact": "お問い合わせ",
+    "email": "メール",
+    "discord": "Discord",
+    "copyright": "© 2026 KaburAjaDulu. 全著作権所有。"
+  },
+  "common": {
+    "loading": "読み込み中...",
+    "error": "エラーが発生しました",
+    "retry": "再試行",
+    "search": "検索...",
+    "no_results": "結果が見つかりません",
+    "back_to_home": "ホームに戻る",
+    "page_not_found": "ページが見つかりません",
+    "404_message": "お探しのページは存在しません。"
+  },
+  "meta": {
+    "home_title": "KaburAjaDulu - 海外での勉強·suku仕事の情報",
+    "home_description": "海外での勉強·suku仕事の機会を発見しましょう。印度ネシア人向けの信頼できる情報プラットフォームです。",
+    "blog_title": "ブログ - KaburAjaDulu",
+    "blog_description": "海外での勉強·suku仕事の最新記事をご覧ください。",
+    "about_title": "会社概要 - KaburAjaDulu",
+    "about_description": "KaburAjaDulu·suku私たちのミッションについてをご覧ください。"
+  }
+}

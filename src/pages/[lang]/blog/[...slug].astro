@@ -1,76 +1,80 @@
 ---
 import { getCollection, render } from 'astro:content';
-import BlogLayout from '../../layouts/BlogLayout.astro';
-import { Badge } from '../../components/ui/badge';
+import BlogLayout from '../../../layouts/BlogLayout.astro';
+import { Badge } from '../../../components/ui/badge';
+import { LOCALES } from '../../../i18n/constants';
+import type { Locale } from '../../../i18n/constants';
 
 export async function getStaticPaths() {
-  const blogEntries = await getCollection('blog', ({ data }) => !data.draft);
-  return blogEntries.map(entry => ({
-    params: { slug: entry.id },
-    props: { entry },
-  }));
+  const posts = await getCollection('blog', ({ data }) => !data.draft);
+
+  return posts.flatMap((post) =>
+    LOCALES.map((locale) => ({
+      params: { lang: locale, slug: post.id },
+      props: { post, locale },
+    }))
+  );
 }
 
-const { entry } = Astro.props;
-const { Content } = await render(entry);
+const { post, locale } = Astro.props;
+const { Content } = await render(post);
+const currentPath = Astro.url.pathname;
+
+const siteUrl = 'https://kaburajadulu.com';
+const blogPath = locale === 'id' ? `/blog/${post.id}` : `/${locale}/blog/${post.id}`;
+const canonicalURL = `${siteUrl}${blogPath}`;
 ---
 
-<BlogLayout 
-  title={entry.data.title}
-  description={entry.data.description}
-  author={entry.data.author}
-  pubDate={entry.data.pubDate}
-  category={entry.data.category}
-  image={entry.data.image}
-  canonical={new URL(`/blog/${entry.id}`, Astro.site).toString()}
+<BlogLayout
+  title={post.data.title}
+  description={post.data.description}
+  author={post.data.author}
+  pubDate={post.data.pubDate}
+  category={post.data.category}
+  image={post.data.image}
+  canonical={canonicalURL}
+  locale={locale}
+  currentPath={currentPath}
 >
-  <!-- Main Content Container with proper styling -->
   <div class="blog-container">
-    <!-- Featured Image -->
-    {entry.data.image && (
+    {post.data.image && (
       <div class="featured-image">
-        <img 
-          src={entry.data.image} 
-          alt={entry.data.title}
+        <img
+          src={post.data.image}
+          alt={post.data.title}
           loading="eager"
         />
       </div>
     )}
 
-    <!-- Category Badge with proper client directive -->
     <Badge variant="category" client:load>
-      {entry.data.category}
+      {post.data.category}
     </Badge>
 
-    <!-- Blog Content -->
     <div class="blog-content">
-      <!-- Title -->
       <h1 class="blog-title">
-        {entry.data.title}
+        {post.data.title}
       </h1>
-      
-      <!-- Author and Date -->
+
       <div class="blog-meta">
-        <span>{entry.data.author}</span>
+        <span>{post.data.author}</span>
         <span>|</span>
         <time>
-          {entry.data.pubDate.toLocaleDateString('id-ID', { 
+          {post.data.pubDate.toLocaleDateString(locale === 'id' ? 'id-ID' : locale, {
             day: 'numeric',
             month: 'long',
-            year: 'numeric' 
+            year: 'numeric',
           })}
         </time>
       </div>
 
-      <!-- Article Content -->
       <article class="prose-content">
         <Content />
       </article>
     </div>
   </div>
 
-<style>
-  /* Blog Layout - Based on Figma design specifications */
+  <style>
   .blog-container {
     max-width: 1040px;
     width: 100%;
@@ -119,7 +123,6 @@ const { Content } = await render(entry);
     font-weight: 400;
   }
 
-  /* Article content styles */
   .prose-content {
     font-size: 16px;
     line-height: 1.7;
@@ -144,7 +147,7 @@ const { Content } = await render(entry);
     margin-bottom: 16px;
     line-height: 1.3;
   }
-  
+
   .prose-content :global(h2) {
     font-size: 20px;
     font-weight: 700;
@@ -153,7 +156,7 @@ const { Content } = await render(entry);
     margin-bottom: 12px;
     line-height: 1.3;
   }
-  
+
   .prose-content :global(h3) {
     font-size: 18px;
     font-weight: 700;
@@ -162,32 +165,32 @@ const { Content } = await render(entry);
     margin-bottom: 8px;
     line-height: 1.3;
   }
-  
+
   .prose-content :global(ul) {
     margin-bottom: 24px;
     padding-left: 24px;
   }
-  
+
   .prose-content :global(li) {
     margin-bottom: 8px;
     color: #374151;
     line-height: 1.7;
   }
-  
+
   .prose-content :global(strong) {
     font-weight: 600;
     color: #111827;
   }
-  
+
   .prose-content :global(a) {
     color: #3B82F6;
     transition: color 0.15s ease-in-out;
   }
-  
+
   .prose-content :global(a:hover) {
     color: #1D4ED8;
   }
-  
+
   .prose-content :global(blockquote) {
     border-left: 4px solid #E5E7EB;
     padding-left: 16px;
@@ -196,7 +199,6 @@ const { Content } = await render(entry);
     margin: 24px 0;
   }
 
-  /* Responsive design */
   @media (max-width: 1024px) {
     .blog-container {
       padding-left: 32px;
@@ -241,4 +243,4 @@ const { Content } = await render(entry);
       gap: 16px;
     }
   }
-</style>
+  </style>

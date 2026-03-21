@@ -1,0 +1,89 @@
+{
+  "nav": {
+    "home": "홈",
+    "about": "소개",
+    "destinations": "목적지",
+    "blog": "블로그",
+    "contact": "문의",
+    "language": "언어"
+  },
+  "hero": {
+    "headline": "Kabur Aja Dulu",
+    "subheadline": "해외 학업 및 취업 기회를 발견하세요. 인도네시아인이 해외에서 배우고 일할 수 있도록 돕습니다.",
+    "cta_primary": "시작하기",
+    "cta_secondary": "블로그 읽기",
+    "badge": "신뢰할 수 있는 정보 플랫폼"
+  },
+  "about": {
+    "headline": "KaburAjaDulu 소개",
+    "subheadline": "인도네시아인이 해외에서 배우고 일할 수 있도록 돕는 커뮤니티입니다.",
+    "stat1_value": "500+",
+    "stat1_label": "활성 멤버",
+    "stat2_value": "10+",
+    "stat2_label": "대상 국가",
+    "stat3_value": "50+",
+    "stat3_label": "채용 포지션",
+    "feature1_title": "정확한 정보",
+    "feature1_desc": "저희가 제공하는 모든 정보가 최신이며 검증되었음을 보장합니다.",
+    "feature2_title": "서포트 커뮤니티",
+    "feature2_desc": "서로를 지지하고 경험을 공유하는 커뮤니티에 참여하세요.",
+    "feature3_title": "무료 이용",
+    "feature3_desc": "저희가 제공하는 모든 기능과 정보는 무료로 이용 가능합니다.",
+    "github_contributor": "GitHub Contributor"
+  },
+  "destinations": {
+    "headline": "인기 목적지",
+    "subheadline": "인도네시아务工자たちが最も求めている国をご覧ください。",
+    "view_all": "모든 목적지 보기",
+    "learn_more": "자세히 보기"
+  },
+  "cta": {
+    "headline": "여정 준비되셨나요?",
+    "subheadline": "해외에서 새로운 기회를 발견한 수천 명의 사람들에게 합류하세요.",
+    "cta_primary": "함께하기",
+    "cta_secondary": "문의하기"
+  },
+  "blog": {
+    "headline": "블로그 및 기사",
+    "subheadline": "해외 학업 및 취업에 관한 최신 기사를 읽으세요.",
+    "view_all": "모든 기사 보기",
+    "read_more": "더 읽기",
+    "categories": {
+      "Lowongan": "채용 공고",
+      "Beasiswa": "장학금",
+      "Event": "이벤트",
+      "Kelas Bahasa": "어학 수업",
+      "Berita": "뉴스"
+    }
+  },
+  "footer": {
+    "tagline": "인도네시아인이 해외에서 기회를 찾을 수 있도록 돕습니다.",
+    "quick_links": "빠른 링크",
+    "destinations": "목적지",
+    "legal": "법적 정보",
+    "privacy": "개인정보 처리방침",
+    "terms": "이용약관",
+    "contact": "문의",
+    "email": "이메일",
+    "discord": "Discord",
+    "copyright": "© 2026 KaburAjaDulu. 모든 권리 보유."
+  },
+  "common": {
+    "loading": "로딩 중...",
+    "error": "오류가 발생했습니다",
+    "retry": "다시 시도",
+    "search": "검색...",
+    "no_results": "결과 없음",
+    "back_to_home": "홈으로 돌아가기",
+    "page_not_found": "페이지를 찾을 수 없습니다",
+    "404_message": "찾고 있는 페이지가 존재하지 않습니다."
+  },
+  "meta": {
+    "home_title": "KaburAjaDulu - 해외 학업 및 취업 기회",
+    "home_description": "해외 학업 및 취업 기회를 발견하세요. 인도네시아인을 위한 신뢰할 수 있는 정보 플랫폼입니다.",
+    "blog_title": "블로그 - KaburAjaDulu",
+    "blog_description": "해외 학업 및 취업에 관한 최신 기사를 읽으세요.",
+    "about_title": "소개 - KaburAjaDulu",
+    "about_description": "KaburAjaDulu 및 저희 사명 대해 자세히 알아보세요."
+  }
+}

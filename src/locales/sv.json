@@ -1,0 +1,89 @@
+{
+  "nav": {
+    "home": "Hem",
+    "about": "Om oss",
+    "destinations": "Resmål",
+    "blog": "Blogg",
+    "contact": "Kontakt",
+    "language": "Språk"
+  },
+  "hero": {
+    "headline": "Kabur Aja Dulu",
+    "subheadline": "Upptäck möjligheter till studier och arbete utomlands. Vi hjälper indonesier att studera och arbeta utomlands.",
+    "cta_primary": "Kom igång",
+    "cta_secondary": "Läs vår blogg",
+    "badge": "Pålitlig informationsplattform"
+  },
+  "about": {
+    "headline": "Om KaburAjaDulu",
+    "subheadline": "En gemenskap som hjälper indonesier att studera och arbeta utomlands.",
+    "stat1_value": "500+",
+    "stat1_label": "Aktiva medlemmar",
+    "stat2_value": "10+",
+    "stat2_label": "Målländer",
+    "stat3_value": "50+",
+    "stat3_label": "Lediga tjänster",
+    "feature1_title": "Korrekt information",
+    "feature1_desc": "Vi säkerställer att all information vi tillhandahåller är aktuell och verifierad.",
+    "feature2_title": "Stödjande gemenskap",
+    "feature2_desc": "Gå med i en gemenskap som stöttar varandra och delar erfarenheter.",
+    "feature3_title": "Gratis för alla",
+    "feature3_desc": "Alla funktioner och information vi tillhandahåller är gratis att tillgå.",
+    "github_contributor": "GitHub Contributor"
+  },
+  "destinations": {
+    "headline": "Populära resmål",
+    "subheadline": "Utforska de länder som indonesiska arbetare oftast söker sig till.",
+    "view_all": "Visa alla resmål",
+    "learn_more": "Läs mer"
+  },
+  "cta": {
+    "headline": "Redo att påbörja din resa?",
+    "subheadline": "Gå med i tusentals personer som har hittat nya möjligheter utomlands.",
+    "cta_primary": "Gå med oss",
+    "cta_secondary": "Kontakta oss"
+  },
+  "blog": {
+    "headline": "Blogg & Artiklar",
+    "subheadline": "Läs de senaste artiklarna om möjligheter till studier och arbete utomlands.",
+    "view_all": "Visa alla artiklar",
+    "read_more": "Läs mer",
+    "categories": {
+      "Lowongan": "Lediga tjänster",
+      "Beasiswa": "Stipendier",
+      "Event": "Evenemang",
+      "Kelas Bahasa": "Språkkurser",
+      "Berita": "Nyheter"
+    }
+  },
+  "footer": {
+    "tagline": "Vi hjälper indonesier att hitta möjligheter utomlands.",
+    "quick_links": "Snabblänkar",
+    "destinations": "Resmål",
+    "legal": "Juridisk information",
+    "privacy": "Integritetspolicy",
+    "terms": "Villkor",
+    "contact": "Kontakt",
+    "email": "E-post",
+    "discord": "Discord",
+    "copyright": "© 2026 KaburAjaDulu. Alla rättigheter förbehållna."
+  },
+  "common": {
+    "loading": "Laddar...",
+    "error": "Ett fel uppstod",
+    "retry": "Försök igen",
+    "search": "Sök...",
+    "no_results": "Inga resultat",
+    "back_to_home": "Tillbaka till startsidan",
+    "page_not_found": "Sidan hittades inte",
+    "404_message": "Sidan du letar efter finns inte."
+  },
+  "meta": {
+    "home_title": "KaburAjaDulu - Möjligheter till studier och arbete utomlands",
+    "home_description": "Upptäck möjligheter till studier och arbete utomlands. Pålitlig informationsplattform för indonesier.",
+    "blog_title": "Blogg - KaburAjaDulu",
+    "blog_description": "Läs de senaste artiklarna om möjligheter till studier och arbete utomlands.",
+    "about_title": "Om oss - KaburAjaDulu",
+    "about_description": "Läs mer om KaburAjaDulu och vårt uppdrag."
+  }
+}

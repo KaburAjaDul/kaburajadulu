@@ -1,0 +1,89 @@
+{
+  "nav": {
+    "home": "Beranda",
+    "about": "Tentang",
+    "destinations": "Destinasi",
+    "blog": "Blog",
+    "contact": "Kontak",
+    "language": "Bahasa"
+  },
+  "hero": {
+    "headline": "Kabur Aja Dulu",
+    "subheadline": "Temukan kesempatan studi dan kerja di luar negeri. Kami membantu masyarakat Indonesia siapapun yang ingin merasakan pengalaman bekerja dan belajar di luar negeri.",
+    "cta_primary": "Mulai Sekarang",
+    "cta_secondary": "Baca Blog Kami",
+    "badge": "Platform Informasi Terpercaya"
+  },
+  "about": {
+    "headline": "Tentang KaburAjaDulu",
+    "subheadline": "Komunitas yang membantu masyarakat Indonesia siapapun yang ingin merasakan pengalaman bekerja dan belajar di luar negeri.",
+    "stat1_value": "500+",
+    "stat1_label": "Anggota Aktif",
+    "stat2_value": "10+",
+    "stat2_label": "Negara Tujuan",
+    "stat3_value": "50+",
+    "stat3_label": "Lowongan Tersedia",
+    "feature1_title": "Informasi Akurat",
+    "feature1_desc": "Kami memastikan setiap informasi yang kami berikan adalah informasi terkini dan valid.",
+    "feature2_title": "Komunitas Supportif",
+    "feature2_desc": "Bergabung dengan komunitas yang saling mendukung dan berbagi pengalaman.",
+    "feature3_title": "Gratis untuk Semua",
+    "feature3_desc": "Semua fitur dan informasi yang kami berikan adalah gratis untuk diakses.",
+    "github_contributor": "GitHub Contributor"
+  },
+  "destinations": {
+    "headline": "Destinasi Populer",
+    "subheadline": "Jelajahi negara-negara yang paling banyak dicari oleh tenaga kerja Indonesia.",
+    "view_all": "Lihat Semua Destinasi",
+    "learn_more": "Pelajari Lebih Lanjut"
+  },
+  "cta": {
+    "headline": "Siap Memulai Perjalananmu?",
+    "subheadline": "Bergabunglah dengan ribuan orang yang telah menemukan kesempatan baru di luar negeri.",
+    "cta_primary": "Gabung dengan Kami",
+    "cta_secondary": "Hubungi Kami"
+  },
+  "blog": {
+    "headline": "Blog & Artikel",
+    "subheadline": "Baca artikel terbaru tentang kesempatan studi dan kerja di luar negeri.",
+    "view_all": "Lihat Semua Artikel",
+    "read_more": "Baca Selengkapnya",
+    "categories": {
+      "Lowongan": "Lowongan",
+      "Beasiswa": "Beasiswa",
+      "Event": "Event",
+      "Kelas Bahasa": "Kelas Bahasa",
+      "Berita": "Berita"
+    }
+  },
+  "footer": {
+    "tagline": "Membantu masyarakat Indonesia menemukan kesempatan di luar negeri.",
+    "quick_links": "Tautan Cepat",
+    "destinations": "Destinasi",
+    "legal": "Legal",
+    "privacy": "Kebijakan Privasi",
+    "terms": "Syarat & Ketentuan",
+    "contact": "Kontak",
+    "email": "Email",
+    "discord": "Discord",
+    "copyright": "© 2026 KaburAjaDulu. Hak cipta dilindungi."
+  },
+  "common": {
+    "loading": "Memuat...",
+    "error": "Terjadi kesalahan",
+    "retry": "Coba Lagi",
+    "search": "Cari...",
+    "no_results": "Tidak ada hasil",
+    "back_to_home": "Kembali ke Beranda",
+    "page_not_found": "Halaman Tidak Ditemukan",
+    "404_message": "Halaman yang kamu cari tidak ditemukan."
+  },
+  "meta": {
+    "home_title": "KaburAjaDulu - Kesempatan Studi & Kerja di Luar Negeri",
+    "home_description": "Temukan kesempatan studi dan kerja di luar negeri. Platform informasi terpercaya untuk masyarakat Indonesia.",
+    "blog_title": "Blog - KaburAjaDulu",
+    "blog_description": "Baca artikel terbaru tentang kesempatan studi dan kerja di luar negeri.",
+    "about_title": "Tentang Kami - KaburAjaDulu",
+    "about_description": "Pelajari lebih lanjut tentang KaburAjaDulu dan misi kami."
+  }
+}

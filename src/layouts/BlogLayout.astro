@@ -3,6 +3,7 @@ import Layout from './Layout.astro';
 import Navbar from '../components/layout/Navbar';
 import Footer from '../components/layout/Footer';
 import '../styles/global.css';
+import type { Locale } from '../i18n/constants';
 
 export interface Props {
   title: string;
@@ -12,16 +13,20 @@ export interface Props {
   category?: string;
   image?: string;
   canonical?: string;
+  locale?: Locale;
+  currentPath?: string;
 }
 
-const { 
-  title, 
-  description, 
-  author, 
-  pubDate, 
-  category, 
-  image, 
-  canonical 
+const {
+  title,
+  description,
+  author,
+  pubDate,
+  category,
+  image,
+  canonical,
+  locale = 'id' as Locale,
+  currentPath = '/',
 } = Astro.props;
 
 // Generate canonical URL for blog posts
@@ -74,7 +79,7 @@ const enhancedDescription = description || `${category ? `${category}: ` : ''}${
 
   <!-- Fixed Header with Navbar -->
   <header class="fixed top-0 left-0 right-0 bg-white/95 backdrop-blur-sm border-b border-gray-100 z-50">
-    <Navbar client:load />
+    <Navbar client:only="react" locale={locale} currentPath={currentPath} />
   </header>
 
   <!-- Main Content -->
@@ -83,7 +88,7 @@ const enhancedDescription = description || `${category ? `${category}: ` : ''}${
   </main>
 
   <!-- Footer -->
-  <Footer client:load />
+  <Footer client:only="react" locale={locale} />
 </Layout>
 
 <style>

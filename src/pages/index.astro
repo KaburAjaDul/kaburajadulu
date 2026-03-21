@@ -8,25 +8,79 @@ import CTASection from '../components/home/CTASection'
 import { BlogSection } from '../components/blog/BlogSection'
 import Footer from '../components/layout/Footer'
 import { getCollection } from 'astro:content'
-
-const blogPosts = await getCollection('blog', ({ data }) => !data.draft)
+import { getLocaleFromUrl } from '@/i18n/getLocaleFromUrl'
+import type { Locale } from '@/i18n/constants'
 import '../styles/global.css'
 
-// Get GSC verification from environment (you'll add this later)
+const locale = getLocaleFromUrl(Astro.url) as Locale;
+const currentPath = Astro.url.pathname;
+
+const blogPosts = await getCollection('blog', ({ data }) => !data.draft)
 const gscVerification = import.meta.env.GOOGLE_SITE_VERIFICATION;
 ---
 
-<Layout 
+<Layout
   title="#KaburAjaDulu | Jelajahi Peluang Internasional"
+  description="Temukan peluang untuk bekerja, belajar, atau menjelajahi dunia dengan sumber daya komprehensif, daftar pekerjaan, beasiswa, kelas bahasa, dan banyak lagi."
   gscVerification={gscVerification}
+  locale={locale}
+  currentPath={currentPath}
 >
-  <Navbar client:load />
+  <!-- Auto-redirect script: redirects / to appropriate locale based on geo-detection -->
+  <script is:inline>
+    (function() {
+      // Only redirect if user is on root path and hasn't manually selected a language
+      if (window.location.pathname !== '/' && window.location.pathname !== '') return;
+      
+      // Check if user has manually selected a language before (stored in localStorage)
+      const manuallySelectedLang = localStorage.getItem('preferredLocale');
+      if (manuallySelectedLang && manuallySelectedLang !== 'id') {
+        // User previously selected a non-Indonesian language, redirect to it
+        window.location.replace('/' + manuallySelectedLang);
+        return;
+      }
+      
+      // Detect country from CF-IPCountry header (set by Cloudflare) or navigator.language
+      const country = 
+        document.documentElement.getAttribute('data-cf-country') || 
+        (navigator.language ? navigator.language.split('-')[1] : '') ||
+        (navigator.languages && navigator.languages[0] ? navigator.languages[0].split('-')[1] : '');
+      
+      const localeMap = {
+        'ID': 'id', 'PH': 'en', 'SG': 'en', 'MY': 'en', 'TH': 'en', 'VN': 'en', 'BN': 'en',
+        'US': 'en', 'GB': 'en', 'AU': 'en', 'NZ': 'en', 'CA': 'en', 'IE': 'en', 'ZA': 'en',
+        'KE': 'en', 'NG': 'en', 'GH': 'en', 'TZ': 'en',
+        'JP': 'ja',
+        'CN': 'zh-cn', 'MO': 'zh-cn',
+        'TW': 'zh-tw', 'HK': 'zh-tw',
+        'KR': 'ko',
+        'ES': 'es', 'MX': 'es', 'AR': 'es', 'CO': 'es', 'PE': 'es', 'CL': 'es', 'VE': 'es', 'EC': 'es',
+        'SA': 'ar', 'AE': 'ar', 'EG': 'ar', 'MA': 'ar', 'KW': 'ar', 'QA': 'ar', 'BH': 'ar',
+        'OM': 'ar', 'JO': 'ar', 'DZ': 'ar', 'TN': 'ar', 'LY': 'ar', 'SD': 'ar', 'IQ': 'ar',
+        'LB': 'ar', 'SY': 'ar',
+        'NL': 'nl', 'BE': 'nl',
+        'IT': 'it',
+        'DE': 'de', 'AT': 'de', 'CH': 'de', 'LI': 'de', 'LU': 'de',
+        'FR': 'fr', 'MC': 'fr',
+        'SE': 'sv', 'NO': 'sv', 'DK': 'sv', 'FI': 'sv', 'IS': 'sv'
+      };
+      
+      const detectedLocale = localeMap[country];
+      
+      // If detected locale is not Indonesian and not the same as manually selected, redirect
+      if (detectedLocale && detectedLocale !== 'id') {
+        window.location.replace('/' + detectedLocale + '/');
+      }
+    })();
+  </script>
+  
+  <Navbar client:only="react" locale={locale} currentPath={currentPath} />
   <main>
-    <HeroSection client:load />
-    <DestinationShowcase client:load />
-    <AboutSection client:load />
-    {blogPosts.length > 0 && <BlogSection client:load posts={blogPosts} />}
-    <CTASection client:load />
+    <HeroSection client:only="react" locale={locale} />
+    <DestinationShowcase client:only="react" locale={locale} />
+    <AboutSection client:only="react" locale={locale} />
+    {blogPosts.length > 0 && <BlogSection client:only="react" posts={blogPosts} locale={locale} />}
+    <CTASection client:only="react" locale={locale} />
   </main>
-  <Footer client:load />
+  <Footer client:only="react" locale={locale} />
 </Layout>

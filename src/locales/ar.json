@@ -1,0 +1,89 @@
+{
+  "nav": {
+    "home": "الرئيسية",
+    "about": "من نحن",
+    "destinations": "الوجهات",
+    "blog": "المدونة",
+    "contact": "اتصل بنا",
+    "language": "اللغة"
+  },
+  "hero": {
+    "headline": "Kabur Aja Dulu",
+    "subheadline": "اكتشف فرص الدراسة والعمل في الخارج. نحن نساعدIndonesians على الدراسة والعمل في الخارج.",
+    "cta_primary": "ابدأ الآن",
+    "cta_secondary": "اقرأ مدونتنا",
+    "badge": "منصة معلومات موثوقة"
+  },
+  "about": {
+    "headline": "عن KaburAjaDulu",
+    "subheadline": "مجتمع يساعدIndonesians على الدراسة والعمل في الخارج.",
+    "stat1_value": "500+",
+    "stat1_label": "أعضاء نشطون",
+    "stat2_value": "10+",
+    "stat2_label": "دولة الوجهة",
+    "stat3_value": "50+",
+    "stat3_label": "مناصب متاحة",
+    "feature1_title": "معلومات دقيقة",
+    "feature1_desc": "نتأكد من أن كل معلومة نقدمها هي معلومات حديثة وموثقة.",
+    "feature2_title": "مجتمع داعم",
+    "feature2_desc": "انضم إلى مجتمع يدعم بعضه البعض ويشارك الخبرات.",
+    "feature3_title": "مجاني للجميع",
+    "feature3_desc": "جميع الميزات والمعلومات التي نقدمها متاحة مجاناً.",
+    "github_contributor": "GitHub Contributor"
+  },
+  "destinations": {
+    "headline": "الوجهات الشائعة",
+    "subheadline": "استكشف الدول الأكثر طلباً من قبل العمالIndonesians.",
+    "view_all": "عرض جميع الوجهات",
+    "learn_more": "اعرف المزيد"
+  },
+  "cta": {
+    "headline": "هل أنت مستعد لبدء رحلتك؟",
+    "subheadline": "انضم إلى آلاف الأشخاص الذين وجدوا فرصاً جديدة في الخارج.",
+    "cta_primary": "انضم إلينا",
+    "cta_secondary": "اتصل بنا"
+  },
+  "blog": {
+    "headline": "المدونة والمقالات",
+    "subheadline": "اقرأ أحدث المقالات حول فرص الدراسة والعمل في الخارج.",
+    "view_all": "عرض جميع المقالات",
+    "read_more": "اقرأ المزيد",
+    "categories": {
+      "Lowongan": "وظائف شاغرة",
+      "Beasiswa": "المنح الدراسية",
+      "Event": "الفعاليات",
+      "Kelas Bahasa": "دروس اللغات",
+      "Berita": "الأخبار"
+    }
+  },
+  "footer": {
+    "tagline": "نساعدIndonesians على إيجاد فرص في الخارج.",
+    "quick_links": "روابط سريعة",
+    "destinations": "الوجهات",
+    "legal": "قانوني",
+    "privacy": "سياسة الخصوصية",
+    "terms": "الشروط والأحكام",
+    "contact": "اتصل بنا",
+    "email": "البريد الإلكتروني",
+    "discord": "Discord",
+    "copyright": "© 2026 KaburAjaDulu. جميع الحقوق محفوظة."
+  },
+  "common": {
+    "loading": "جارٍ التحميل...",
+    "error": "حدث خطأ",
+    "retry": "حاول مرة أخرى",
+    "search": "بحث...",
+    "no_results": "لا توجد نتائج",
+    "back_to_home": "العودة إلى الرئيسية",
+    "page_not_found": "الصفحة غير موجودة",
+    "404_message": "الصفحة التي تبحث عنها غير موجودة."
+  },
+  "meta": {
+    "home_title": "KaburAjaDulu - فرص الدراسة والعمل في الخارج",
+    "home_description": "اكتشف فرص الدراسة والعمل في الخارج. منصة معلومات موثوقة لـIndonesians.",
+    "blog_title": "المدونة - KaburAjaDulu",
+    "blog_description": "اقرأ أحدث المقالات حول فرص الدراسة والعمل في الخارج.",
+    "about_title": "من نحن - KaburAjaDulu",
+    "about_description": "تعرف على المزيد حول KaburAjaDulu ومهمتنا."
+  }
+}

@@ -1,0 +1,89 @@
+{
+  "nav": {
+    "home": "Home",
+    "about": "Over ons",
+    "destinations": "Bestemmingen",
+    "blog": "Blog",
+    "contact": "Contact",
+    "language": "Taal"
+  },
+  "hero": {
+    "headline": "Kabur Aja Dulu",
+    "subheadline": "Ontdek studie- en werk mogelijkheden in het buitenland. Wij helpenIndonesiërs in het buitenland te studeren en werken.",
+    "cta_primary": "Aan de slag",
+    "cta_secondary": "Lees onze blog",
+    "badge": "Vertrouwd informatieplatform"
+  },
+  "about": {
+    "headline": "Over KaburAjaDulu",
+    "subheadline": "Een gemeenschap dieIndonesiërs helpt in het buitenland te studeren en werken.",
+    "stat1_value": "500+",
+    "stat1_label": "Actieve leden",
+    "stat2_value": "10+",
+    "stat2_label": "Bestemmingslanden",
+    "stat3_value": "50+",
+    "stat3_label": "Beschikbare functies",
+    "feature1_title": "Nauwkeurige informatie",
+    "feature1_desc": "Wij zorgen ervoor dat alle informatie die we geven actueel en geverifieerd is.",
+    "feature2_title": "Ondersteunende gemeenschap",
+    "feature2_desc": "Word lid van een gemeenschap die elkaar ondersteunt en ervaringen deelt.",
+    "feature3_title": "Gratis voor iedereen",
+    "feature3_desc": "Alle functies en informatie die we bieden zijn gratis toegankelijk.",
+    "github_contributor": "GitHub Contributor"
+  },
+  "destinations": {
+    "headline": "Populaire bestemmingen",
+    "subheadline": "Ontdek de landen die het meest gezocht worden doorIndonesische werknemers.",
+    "view_all": "Bekijk alle bestemmingen",
+    "learn_more": "Meer informatie"
+  },
+  "cta": {
+    "headline": "Klaar om je reis te beginnen?",
+    "subheadline": "Sluit je aan bij duizenden mensen die nieuwe kansen in het buitenland hebben gevonden.",
+    "cta_primary": "Doe mee met ons",
+    "cta_secondary": "Neem contact op"
+  },
+  "blog": {
+    "headline": "Blog & Artikelen",
+    "subheadline": "Lees de nieuwste artikelen over studie- en werk mogelijkheden in het buitenland.",
+    "view_all": "Bekijk alle artikelen",
+    "read_more": "Lees meer",
+    "categories": {
+      "Lowongan": "Vacatures",
+      "Beasiswa": "Beurzen",
+      "Event": "Evenementen",
+      "Kelas Bahasa": "Talen lessen",
+      "Berita": "Nieuws"
+    }
+  },
+  "footer": {
+    "tagline": "Wij helpenIndonesiërs kansen te vinden in het buitenland.",
+    "quick_links": "Snelle links",
+    "destinations": "Bestemmingen",
+    "legal": "Juridisch",
+    "privacy": "Privacybeleid",
+    "terms": "Voorwaarden",
+    "contact": "Contact",
+    "email": "E-mail",
+    "discord": "Discord",
+    "copyright": "© 2026 KaburAjaDulu. Alle rechten voorbehouden."
+  },
+  "common": {
+    "loading": "Laden...",
+    "error": "Er is een fout opgetreden",
+    "retry": "Opnieuw proberen",
+    "search": "Zoeken...",
+    "no_results": "Geen resultaten",
+    "back_to_home": "Terug naar home",
+    "page_not_found": "Pagina niet gevonden",
+    "404_message": "De pagina die je zoekt bestaat niet."
+  },
+  "meta": {
+    "home_title": "KaburAjaDulu - Studie- en werk mogelijkheden in het buitenland",
+    "home_description": "Ontdek studie- en werk mogelijkheden in het buitenland. Vertrouwd informatieplatform voorIndonesiërs.",
+    "blog_title": "Blog - KaburAjaDulu",
+    "blog_description": "Lees de nieuwste artikelen over studie- en werk mogelijkheden in het buitenland.",
+    "about_title": "Over ons - KaburAjaDulu",
+    "about_description": "Leer meer over KaburAjaDulu en onze missie."
+  }
+}

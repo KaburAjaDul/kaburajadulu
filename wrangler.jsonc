@@ -1,0 +1,10 @@
+{
+  // Cloudflare Workers — static site deployment for kaburajadulu.com
+  "name": "kaburajadulu",
+  "compatibility_date": "2026-03-18",
+  "assets": {
+    "directory": "./dist",
+    // Serve a custom 404 page (src/pages/404.astro → dist/404.html) when no route matches
+    "not_found_handling": "404-page"
+  }
+}

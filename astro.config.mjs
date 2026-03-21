@@ -11,6 +11,13 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 export default defineConfig({
   site: 'https://kaburajadulu.com',
   integrations: [react()],
+  i18n: {
+    defaultLocale: 'id',
+    locales: ['id', 'en', 'ja', 'zh-cn', 'zh-tw', 'ko', 'es', 'ar', 'nl', 'it', 'de', 'fr', 'sv'],
+    routing: {
+      prefixDefaultLocale: false,
+    },
+  },
   vite: {
     plugins: [tailwind()],
     resolve: {

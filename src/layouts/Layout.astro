@@ -1,26 +1,52 @@
 ---
+import { LOCALES, LOCALE_DIR } from '@/i18n/constants';
+import type { Locale } from '@/i18n/constants';
+
 export interface Props {
   title: string;
   description?: string;
   canonical?: string;
   gscVerification?: string;
+  locale?: Locale;
+  currentPath?: string;
 }
 
-const { title, description = "Temukan peluang untuk bekerja, belajar, atau menjelajahi dunia dengan sumber daya komprehensif, daftar pekerjaan, beasiswa, kelas bahasa, dan banyak lagi.", canonical, gscVerification } = Astro.props;
+const {
+  title,
+  description = "Temukan peluang untuk bekerja, belajar, atau menjelajahi dunia dengan sumber daya komprehensif, daftar pekerjaan, beasiswa, kelas bahasa, dan banyak lagi.",
+  canonical,
+  gscVerification,
+  locale = 'id' as Locale,
+  currentPath = Astro.url.pathname,
+} = Astro.props;
 
-// Generate canonical URL
-const canonicalURL = canonical || `https://kaburajadulu.com${Astro.url.pathname}`;
+const dir = LOCALE_DIR[locale] ?? 'ltr';
+const canonicalURL = canonical || `https://kaburajadulu.com${currentPath}`;
+const siteUrl = 'https://kaburajadulu.com';
+
+const hreflangLinks = LOCALES.map((loc) => {
+  const locPath = loc === 'id' ? '/' : `/${loc}/`;
+  return {
+    locale: loc === 'zh-cn' ? 'zh-CN' : loc === 'zh-tw' ? 'zh-TW' : loc,
+    url: `${siteUrl}${locPath}`,
+  };
+}).concat([{ locale: 'x-default', url: `${siteUrl}/en/` }]);
 ---
 
 <!doctype html>
-<html lang="id">
+<html lang={locale} dir={dir}>
   <head>
     <meta charset="UTF-8" />
     <meta name="description" content={description} />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/svg+xml" href="/favicon.ico" />
     <title>{title}</title>
-    
+
+    <!-- Hreflang tags for i18n SEO -->
+    {hreflangLinks.map(({ locale: loc, url }) => (
+      <link rel="alternate" hreflang={loc} href={url} />
+    ))}
+
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -28,64 +54,85 @@ const canonicalURL = canonical || `https://kaburajadulu.com${Astro.url.pathname}
       href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Caveat:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
-    
+
     <!-- Meta tags -->
     <meta name="keywords" content="peluang internasional, kerja di luar negeri, kuliah di luar negeri, traveling, beasiswa, kelas bahasa, karir global, komunitas expatriat" />
     <meta name="author" content="Tim KaburAjaDulu" />
     <meta name="robots" content="index, follow" />
-    
+
     <!-- Google Search Console Verification -->
     {gscVerification && <meta name="google-site-verification" content={gscVerification} />}
-    
+
     <!-- Canonical URL -->
     <link rel="canonical" href={canonicalURL} />
-    
+
     <!-- Open Graph -->
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
-    <meta property="og:image" content="https://kaburajadulu.com/images/og-image.png" />
+    <meta property="og:image" content={`${siteUrl}/images/og-image.png`} />
     <meta property="og:url" content={canonicalURL} />
     <meta property="og:type" content="website" />
-    
+
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
-    <meta name="twitter:image" content="https://kaburajadulu.com/images/og-image.png" />
-    
+    <meta name="twitter:image" content={`${siteUrl}/images/og-image.png`} />
+
     <!-- JSON-LD Schema -->
-    <script type="application/ld+json">
-      {
-        "@context": "https://schema.org",
-        "@type": "Organization",
-        "name": "KaburAjaDulu",  
-        "description": "Platform untuk menemukan peluang internasional - kerja, kuliah, dan traveling",
-        "url": "https://kaburajadulu.com",
-        "logo": "https://kaburajadulu.com/icon.svg",
-        "foundingDate": "2024",
-        "founder": {
-          "@type": "Organization", 
-          "name": "Tim KaburAjaDulu"
-        },
-        "sameAs": [
-          "https://discord.com/invite/KaburAjaDulu"
-        ],
-        "potentialAction": {
-          "@type": "SearchAction",
-          "target": "https://kaburajadulu.com/?q={search_term_string}",
-          "query-input": "required name=search_term_string"
+    <script type="application/ld+json" set:html={JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "KaburAjaDulu",
+      "description": "Platform untuk menemukan peluang internasional - kerja, kuliah, dan traveling",
+      "url": siteUrl,
+      "logo": `${siteUrl}/icon.svg`,
+      "foundingDate": "2024",
+      "founder": { "@type": "Organization", "name": "Tim KaburAjaDulu" },
+      "sameAs": ["https://discord.com/invite/KaburAjaDulu"],
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": `${siteUrl}/?q={search_term_string}`,
+        "query-input": "required name=search_term_string"
+      }
+    })} />
+
+    <script type="application/ld+json" set:html={JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "KaburAjaDulu",
+      "description": "Temukan peluang untuk bekerja, belajar, atau menjelajahi dunia",
+      "url": siteUrl
+    })} />
+
+    <!-- Geo-detection script: reads CF-IPCountry header client-side -->
+    <script is:inline define:vars={{ locale }}>
+      (function() {
+        var country = window.navigator.language.split('-')[1] || '';
+        // CF-IPCountry is set by Cloudflare as a request header; accessible client-side
+        // in Cloudflare Workers environments. Fallback to navigator.language.
+        var localeMap = {
+          'ID':'id','PH':'en','SG':'en','MY':'en','TH':'en','VN':'en','BN':'en',
+          'US':'en','GB':'en','AU':'en','NZ':'en','CA':'en','IE':'en','ZA':'en',
+          'KE':'en','NG':'en','GH':'en','TZ':'en',
+          'JP':'ja','CN':'zh-cn','MO':'zh-cn',
+          'TW':'zh-tw','HK':'zh-tw',
+          'KR':'ko',
+          'ES':'es','MX':'es','AR':'es','CO':'es','PE':'es','CL':'es','VE':'es','EC':'es',
+          'SA':'ar','AE':'ar','EG':'ar','MA':'ar','KW':'ar','QA':'ar','BH':'ar',
+          'OM':'ar','JO':'ar','DZ':'ar','TN':'ar','LY':'ar','SD':'ar','IQ':'ar',
+          'LB':'ar','SY':'ar',
+          'NL':'nl','BE':'nl',
+          'IT':'it',
+          'DE':'de','AT':'de','CH':'de','LI':'de','LU':'de',
+          'FR':'fr','MC':'fr',
+          'SE':'sv','NO':'sv','DK':'sv','FI':'sv','IS':'sv'
+        };
+        var detected = localeMap[country];
+        if (detected && detected !== locale) {
+          document.documentElement.setAttribute('data-detected-locale', detected);
         }
-      }
-    </script>
-    
-    <script type="application/ld+json">
-      {
-        "@context": "https://schema.org",
-        "@type": "WebSite",
-        "name": "KaburAjaDulu",
-        "description": "Temukan peluang untuk bekerja, belajar, atau menjelajahi dunia",
-        "url": "https://kaburajadulu.com"
-      }
+      })();
     </script>
   </head>
   <body class="font-sans antialiased">
@@ -98,12 +145,40 @@ const canonicalURL = canonical || `https://kaburajadulu.com${Astro.url.pathname}
     --font-sans: 'Plus Jakarta Sans', sans-serif;
     --font-caveat: 'Caveat', cursive;
   }
-  
+
   body {
     font-family: var(--font-sans);
   }
-  
+
   .font-caveat {
     font-family: var(--font-caveat);
+  }
+
+  /* RTL Support */
+  [dir="rtl"] {
+    direction: rtl;
+    text-align: right;
+  }
+
+  [dir="rtl"] .navbar {
+    flex-direction: row-reverse;
+  }
+
+  [dir="rtl"] .nav-links {
+    flex-direction: row-reverse;
+  }
+
+  [dir="rtl"] .flex.items-center {
+    flex-direction: row-reverse;
+  }
+
+  [dir="rtl"] .ml-auto {
+    margin-left: 0;
+    margin-right: auto;
+  }
+
+  [dir="rtl"] .mr-auto {
+    margin-right: 0;
+    margin-left: auto;
   }
 </style>

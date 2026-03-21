@@ -1,0 +1,89 @@
+{
+  "nav": {
+    "home": "首页",
+    "about": "关于我们",
+    "destinations": "目的地",
+    "blog": "博客",
+    "contact": "联系我们",
+    "language": "语言"
+  },
+  "hero": {
+    "headline": "Kabur Aja Dulu",
+    "subheadline": "发现海外留学和工作机会。我们帮助印度尼西亚人在国外学习和工作。",
+    "cta_primary": "立即开始",
+    "cta_secondary": "阅读博客",
+    "badge": "值得信赖的信息平台"
+  },
+  "about": {
+    "headline": "关于 KaburAjaDulu",
+    "subheadline": "一个帮助印度尼西亚人在国外学习和工作的社区。",
+    "stat1_value": "500+",
+    "stat1_label": "活跃成员",
+    "stat2_value": "10+",
+    "stat2_label": "目标国家",
+    "stat3_value": "50+",
+    "stat3_label": "可用职位",
+    "feature1_title": "准确信息",
+    "feature1_desc": "我们确保提供的每一条信息都是最新且经过验证的。",
+    "feature2_title": "支持性社区",
+    "feature2_desc": "加入一个相互支持、分享经验的社区。",
+    "feature3_title": "免费使用",
+    "feature3_desc": "我们提供的所有功能和信息均可免费访问。",
+    "github_contributor": "GitHub Contributor"
+  },
+  "destinations": {
+    "headline": "热门目的地",
+    "subheadline": "探索印度尼西亚工人最常去的国家。",
+    "view_all": "查看所有目的地",
+    "learn_more": "了解更多"
+  },
+  "cta": {
+    "headline": "准备好开始您的旅程了吗？",
+    "subheadline": "加入成千上万已在国外找到新机会的人。",
+    "cta_primary": "加入我们",
+    "cta_secondary": "联系我们"
+  },
+  "blog": {
+    "headline": "博客与文章",
+    "subheadline": "阅读关于海外留学和工作的最新文章。",
+    "view_all": "查看所有文章",
+    "read_more": "阅读更多",
+    "categories": {
+      "Lowongan": "职位空缺",
+      "Beasiswa": "奖学金",
+      "Event": "活动",
+      "Kelas Bahasa": "语言课程",
+      "Berita": "新闻"
+    }
+  },
+  "footer": {
+    "tagline": "帮助印度尼西亚人在国外找到机会。",
+    "quick_links": "快速链接",
+    "destinations": "目的地",
+    "legal": "法律信息",
+    "privacy": "隐私政策",
+    "terms": "条款与条件",
+    "contact": "联系我们",
+    "email": "电子邮件",
+    "discord": "Discord",
+    "copyright": "© 2026 KaburAjaDulu. 版权所有。"
+  },
+  "common": {
+    "loading": "加载中...",
+    "error": "发生错误",
+    "retry": "重试",
+    "search": "搜索...",
+    "no_results": "未找到结果",
+    "back_to_home": "返回首页",
+    "page_not_found": "页面未找到",
+    "404_message": "您查找的页面不存在。"
+  },
+  "meta": {
+    "home_title": "KaburAjaDulu - 海外留学与工作机会",
+    "home_description": "发现海外留学和工作机会。为印度尼西亚人提供可信的信息平台。",
+    "blog_title": "博客 - KaburAjaDulu",
+    "blog_description": "阅读关于海外留学和工作的最新文章。",
+    "about_title": "关于我们 - KaburAjaDulu",
+    "about_description": "了解更多关于 KaburAjaDulu 和我们的使命。"
+  }
+}

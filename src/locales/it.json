@@ -1,0 +1,89 @@
+{
+  "nav": {
+    "home": "Home",
+    "about": "Chi siamo",
+    "destinations": "Destinazioni",
+    "blog": "Blog",
+    "contact": "Contatti",
+    "language": "Lingua"
+  },
+  "hero": {
+    "headline": "Kabur Aja Dulu",
+    "subheadline": "Scopri opportunità di studio e lavoro all'estero. Aiutiamo gli indonesiani a studiare e lavorare all'estero.",
+    "cta_primary": "Inizia ora",
+    "cta_secondary": "Leggi il nostro blog",
+    "badge": "Piattaforma di informazioni affidabile"
+  },
+  "about": {
+    "headline": "Chi è KaburAjaDulu",
+    "subheadline": "Una comunità che aiuta gli indonesiani a studiare e lavorare all'estero.",
+    "stat1_value": "500+",
+    "stat1_label": "Membri attivi",
+    "stat2_value": "10+",
+    "stat2_label": "Paesi destinazione",
+    "stat3_value": "50+",
+    "stat3_label": "Posizioni disponibili",
+    "feature1_title": "Informazioni accurate",
+    "feature1_desc": "Ci assicuriamo che ogni informazione fornita sia aggiornata e verificata.",
+    "feature2_title": "Comunità di supporto",
+    "feature2_desc": "Unisciti a una comunità che si supporta reciprocamente e condivide esperienze.",
+    "feature3_title": "Gratuito per tutti",
+    "feature3_desc": "Tutte le funzionalità e le informazioni che forniamo sono accessibili gratuitamente.",
+    "github_contributor": "GitHub Contributor"
+  },
+  "destinations": {
+    "headline": "Destinazioni popolari",
+    "subheadline": "Esplora i paesi più richiesti dai lavoratori indonesiani.",
+    "view_all": "Vedi tutte le destinazioni",
+    "learn_more": "Scopri di più"
+  },
+  "cta": {
+    "headline": "Pronto a iniziare il tuo viaggio?",
+    "subheadline": "Unisciti a migliaia di persone che hanno trovato nuove opportunità all'estero.",
+    "cta_primary": "Unisciti a noi",
+    "cta_secondary": "Contattaci"
+  },
+  "blog": {
+    "headline": "Blog e articoli",
+    "subheadline": "Leggi gli ultimi articoli su opportunità di studio e lavoro all'estero.",
+    "view_all": "Vedi tutti gli articoli",
+    "read_more": "Leggi di più",
+    "categories": {
+      "Lowongan": "Offerte di lavoro",
+      "Beasiswa": "Borse di studio",
+      "Event": "Eventi",
+      "Kelas Bahasa": "Corsi di lingue",
+      "Berita": "Notizie"
+    }
+  },
+  "footer": {
+    "tagline": "Aiutiamo gli indonesiani a trovare opportunità all'estero.",
+    "quick_links": "Link rapidi",
+    "destinations": "Destinazioni",
+    "legal": "Legale",
+    "privacy": "Informativa sulla privacy",
+    "terms": "Termini e condizioni",
+    "contact": "Contatti",
+    "email": "Email",
+    "discord": "Discord",
+    "copyright": "© 2026 KaburAjaDulu. Tutti i diritti riservati."
+  },
+  "common": {
+    "loading": "Caricamento...",
+    "error": "Si è verificato un errore",
+    "retry": "Riprova",
+    "search": "Cerca...",
+    "no_results": "Nessun risultato",
+    "back_to_home": "Torna alla home",
+    "page_not_found": "Pagina non trovata",
+    "404_message": "La pagina che stai cercando non esiste."
+  },
+  "meta": {
+    "home_title": "KaburAjaDulu - Opportunità di studio e lavoro all'estero",
+    "home_description": "Scopri opportunità di studio e lavoro all'estero. Piattaforma di informazioni affidabile per indonesiani.",
+    "blog_title": "Blog - KaburAjaDulu",
+    "blog_description": "Leggi gli ultimi articoli su opportunità di studio e lavoro all'estero.",
+    "about_title": "Chi siamo - KaburAjaDulu",
+    "about_description": "Scopri di più su KaburAjaDulu e la nostra missione."
+  }
+}

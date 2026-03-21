@@ -1,0 +1,89 @@
+{
+  "nav": {
+    "home": "Accueil",
+    "about": "À propos",
+    "destinations": "Destinations",
+    "blog": "Blog",
+    "contact": "Contact",
+    "language": "Langue"
+  },
+  "hero": {
+    "headline": "Kabur Aja Dulu",
+    "subheadline": "Découvrez des opportunités d'études et de travail à l'étranger. Nous aidons les Indonésiens à étudier et travailler à l'étranger.",
+    "cta_primary": "Commencer",
+    "cta_secondary": "Lire notre blog",
+    "badge": "Plateforme d'information fiable"
+  },
+  "about": {
+    "headline": "À propos de KaburAjaDulu",
+    "subheadline": "Une communauté qui aide les Indonésiens à étudier et travailler à l'étranger.",
+    "stat1_value": "500+",
+    "stat1_label": "Membres actifs",
+    "stat2_value": "10+",
+    "stat2_label": "Pays de destination",
+    "stat3_value": "50+",
+    "stat3_label": "Postes disponibles",
+    "feature1_title": "Informations précises",
+    "feature1_desc": "Nous nous assurons que chaque information que nous fournissons est à jour et vérifiée.",
+    "feature2_title": "Communauté supportive",
+    "feature2_desc": "Rejoignez une communauté qui se soutient mutuellement et partage des expériences.",
+    "feature3_title": "Gratuit pour tous",
+    "feature3_desc": "Toutes les fonctionnalités et informations que nous proposons sont accessibles gratuitement.",
+    "github_contributor": "GitHub Contributor"
+  },
+  "destinations": {
+    "headline": "Destinations populaires",
+    "subheadline": "Explorez les pays les plus recherchés par les travailleurs indonésiens.",
+    "view_all": "Voir toutes les destinations",
+    "learn_more": "En savoir plus"
+  },
+  "cta": {
+    "headline": "Prêt à commencer votre voyage ?",
+    "subheadline": "Rejoignez des milliers de personnes qui ont trouvé de nouvelles opportunités à l'étranger.",
+    "cta_primary": "Rejoignez-nous",
+    "cta_secondary": "Contactez-nous"
+  },
+  "blog": {
+    "headline": "Blog et articles",
+    "subheadline": "Lisez les derniers articles sur les opportunités d'études et de travail à l'étranger.",
+    "view_all": "Voir tous les articles",
+    "read_more": "Lire la suite",
+    "categories": {
+      "Lowongan": "Offres d'emploi",
+      "Beasiswa": "Bourses d'études",
+      "Event": "Événements",
+      "Kelas Bahasa": "Cours de langues",
+      "Berita": "Actualités"
+    }
+  },
+  "footer": {
+    "tagline": "Aider les Indonésiens à trouver des opportunités à l'étranger.",
+    "quick_links": "Liens rapides",
+    "destinations": "Destinations",
+    "legal": "Mentions légales",
+    "privacy": "Politique de confidentialité",
+    "terms": "Conditions générales",
+    "contact": "Contact",
+    "email": "E-mail",
+    "discord": "Discord",
+    "copyright": "© 2026 KaburAjaDulu. Tous droits réservés."
+  },
+  "common": {
+    "loading": "Chargement...",
+    "error": "Une erreur s'est produite",
+    "retry": "Réessayer",
+    "search": "Rechercher...",
+    "no_results": "Aucun résultat",
+    "back_to_home": "Retour à l'accueil",
+    "page_not_found": "Page non trouvée",
+    "404_message": "La page que vous recherchez n'existe pas."
+  },
+  "meta": {
+    "home_title": "KaburAjaDulu - Opportunités d'études et de travail à l'étranger",
+    "home_description": "Découvrez des opportunités d'études et de travail à l'étranger. Plateforme d'information fiable pour les Indonésiens.",
+    "blog_title": "Blog - KaburAjaDulu",
+    "blog_description": "Lisez les derniers articles sur les opportunités d'études et de travail à l'étranger.",
+    "about_title": "À propos - KaburAjaDulu",
+    "about_description": "En savoir plus sur KaburAjaDulu et notre mission."
+  }
+}
