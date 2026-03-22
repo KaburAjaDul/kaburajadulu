@@ -24,7 +24,7 @@ export function Navbar({ locale = 'id', currentPath = '/' }: NavbarProps) {
       {/* Logo */}
       <a href={`/${locale === 'id' ? '' : locale + '/'}`} className="font-bold text-lg flex items-center" aria-label="Kembali ke halaman utama">
         <img
-          src="/favicon.svg"
+          src="/icon.svg"
           alt="KaburAjaDulu Logo"
           width={140}
           height={28}
