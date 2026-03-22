@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
   <rect x="64" y="64" width="896" height="896" rx="224" fill="#4338CA"/>
-  <path d="M168 586L892 194L630 864L486 648L292 722Z" fill="#FFFFFF"/>
-  <path d="M320 692L530 626L514 688L320 692Z" fill="#4338CA"/>
+  <path d="M154 590L890 192L620 870L474 650L278 726Z" fill="#FFFFFF"/>
+  <path d="M300 700L542 620L520 708L300 700Z" fill="#4338CA"/>
 </svg>

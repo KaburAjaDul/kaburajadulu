@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Favicon Preview</title>
+    <style>
+      :root {
+        color-scheme: light dark;
+        font-family: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+      }
+
+      body {
+        margin: 0;
+        padding: 24px;
+        background: #f4f7fb;
+        color: #0f172a;
+      }
+
+      h1 {
+        margin: 0 0 8px;
+        font-size: 24px;
+      }
+
+      p {
+        margin: 0 0 20px;
+        color: #334155;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 16px;
+      }
+
+      .card {
+        background: #fff;
+        border: 1px solid #dbe5f1;
+        border-radius: 16px;
+        padding: 16px;
+        box-shadow: 0 10px 20px rgba(15, 23, 42, 0.08);
+      }
+
+      .title {
+        font-weight: 700;
+        margin-bottom: 12px;
+      }
+
+      .preview {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #111827;
+        border-radius: 12px;
+        min-height: 180px;
+        margin-bottom: 12px;
+      }
+
+      .sizes {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+      }
+
+      .chip {
+        border: 1px solid #dbe5f1;
+        border-radius: 10px;
+        padding: 6px 10px;
+        background: #f8fbff;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Paper Plane Favicon Preview</h1>
+    <p>Compare both variants in dark card (tab-like) and tiny favicon sizes.</p>
+    <div class="grid">
+      <section class="card">
+        <div class="title">Variant A: Flat Plane</div>
+        <div class="preview">
+          <img src="/favicons/paper-plane-flat-preview-512.png" alt="Flat paper plane" width="180" height="180" />
+        </div>
+        <div class="sizes">
+          <span class="chip">16x16 <img src="/favicons/paper-plane-flat-16x16.png" alt="flat 16" width="16" height="16" /></span>
+          <span class="chip">32x32 <img src="/favicons/paper-plane-flat-32x32.png" alt="flat 32" width="32" height="32" /></span>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="title">Variant B: Takeoff Plane</div>
+        <div class="preview">
+          <img src="/favicons/paper-plane-tilt-preview-512.png" alt="Tilted paper plane" width="180" height="180" />
+        </div>
+        <div class="sizes">
+          <span class="chip">16x16 <img src="/favicons/paper-plane-tilt-16x16.png" alt="tilt 16" width="16" height="16" /></span>
+          <span class="chip">32x32 <img src="/favicons/paper-plane-tilt-32x32.png" alt="tilt 32" width="32" height="32" /></span>
+        </div>
+      </section>
+    </div>
+  </body>
+</html>

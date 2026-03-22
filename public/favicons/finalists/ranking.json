@@ -1,0 +1,107 @@
+[
+  {
+    "name": "notch-v2-clean",
+    "m16": {
+      "fgRatio": 0.12890625,
+      "edgeRatio": 0.6666666666666666,
+      "components": 1,
+      "contrast": 7.479868620524292
+    },
+    "m32": {
+      "fgRatio": 0.14453125,
+      "edgeRatio": 0.3716216216216216,
+      "components": 1,
+      "contrast": 8.300353870765951
+    },
+    "total": 0.7263829682006013,
+    "sContrast": 0.5599835775655365,
+    "sArea": 0.8056640625,
+    "sComp": 1,
+    "sEdge": 0.5185185185185186,
+    "sCons": 0.8697916666666666
+  },
+  {
+    "name": "notch-v1-current",
+    "m16": {
+      "fgRatio": 0.1328125,
+      "edgeRatio": 0.7058823529411765,
+      "components": 1,
+      "contrast": 7.625108480922398
+    },
+    "m32": {
+      "fgRatio": 0.1455078125,
+      "edgeRatio": 0.3691275167785235,
+      "components": 2,
+      "contrast": 8.304838367219084
+    },
+    "total": 0.7260617074966997,
+    "sContrast": 0.5781385601152997,
+    "sArea": 0.830078125,
+    "sComp": 1,
+    "sEdge": 0.43137254901960775,
+    "sCons": 0.8942057291666666
+  },
+  {
+    "name": "notch-v3-bold",
+    "m16": {
+      "fgRatio": 0.125,
+      "edgeRatio": 0.75,
+      "components": 1,
+      "contrast": 8.395024787603415
+    },
+    "m32": {
+      "fgRatio": 0.1474609375,
+      "edgeRatio": 0.3708609271523179,
+      "components": 2,
+      "contrast": 9.733323701157785
+    },
+    "total": 0.7222918769208032,
+    "sContrast": 0.6743780984504268,
+    "sArea": 0.78125,
+    "sComp": 1,
+    "sEdge": 0.33333333333333337,
+    "sCons": 0.8128255208333333
+  },
+  {
+    "name": "notch-v4-minimal",
+    "m16": {
+      "fgRatio": 0.12890625,
+      "edgeRatio": 0.6363636363636364,
+      "components": 1,
+      "contrast": 6.445223266135383
+    },
+    "m32": {
+      "fgRatio": 0.142578125,
+      "edgeRatio": 0.3493150684931507,
+      "components": 2,
+      "contrast": 7.127433481377815
+    },
+    "total": 0.6973991689661224,
+    "sContrast": 0.43065290826692293,
+    "sArea": 0.8056640625,
+    "sComp": 1,
+    "sEdge": 0.5858585858585859,
+    "sCons": 0.8860677083333334
+  },
+  {
+    "name": "notch-v5-fold",
+    "m16": {
+      "fgRatio": 0.12890625,
+      "edgeRatio": 0.696969696969697,
+      "components": 1,
+      "contrast": 6.719404426072448
+    },
+    "m32": {
+      "fgRatio": 0.1435546875,
+      "edgeRatio": 0.36054421768707484,
+      "components": 2,
+      "contrast": 7.242466008684968
+    },
+    "total": 0.68600379173145,
+    "sContrast": 0.46492555325905605,
+    "sArea": 0.8056640625,
+    "sComp": 1,
+    "sEdge": 0.4511784511784511,
+    "sCons": 0.8779296875
+  }
+]

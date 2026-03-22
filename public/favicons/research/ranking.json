@@ -1,0 +1,128 @@
+[
+  {
+    "name": "plane-notch-indigo",
+    "m16": {
+      "fgRatio": 0.1328125,
+      "edgeRatio": 0.7058823529411765,
+      "components": 1,
+      "contrast": 7.625108480922398
+    },
+    "m32": {
+      "fgRatio": 0.1455078125,
+      "edgeRatio": 0.3691275167785235,
+      "components": 2,
+      "contrast": 8.304838367219084
+    },
+    "total": 0.6616845960696676,
+    "contrastScore": 0.5781385601152997,
+    "areaScore": 0.6036931818181819,
+    "compScore": 1,
+    "edgeScore": 0.31932773109243684,
+    "consistencyScore": 0.8942057291666666
+  },
+  {
+    "name": "plane-circle-navy",
+    "m16": {
+      "fgRatio": 0.09765625,
+      "edgeRatio": 0.76,
+      "components": 1,
+      "contrast": 8.61037664369025
+    },
+    "m32": {
+      "fgRatio": 0.11328125,
+      "edgeRatio": 0.4051724137931034,
+      "components": 1,
+      "contrast": 9.667397996024615
+    },
+    "total": 0.6369127307401161,
+    "contrastScore": 0.7012970804612813,
+    "areaScore": 0.4438920454545454,
+    "compScore": 1,
+    "edgeScore": 0.19047619047619035,
+    "consistencyScore": 0.8697916666666666
+  },
+  {
+    "name": "plane-takeoff-blue",
+    "m16": {
+      "fgRatio": 0.15234375,
+      "edgeRatio": 0.6666666666666666,
+      "components": 1,
+      "contrast": 5.3198758185515285
+    },
+    "m32": {
+      "fgRatio": 0.1708984375,
+      "edgeRatio": 0.35428571428571426,
+      "components": 1,
+      "contrast": 5.765830655995694
+    },
+    "total": 0.6065557632443836,
+    "contrastScore": 0.28998447731894106,
+    "areaScore": 0.6924715909090908,
+    "compScore": 1,
+    "edgeScore": 0.4126984126984127,
+    "consistencyScore": 0.8453776041666666
+  },
+  {
+    "name": "plane-dart-orange",
+    "m16": {
+      "fgRatio": 0.140625,
+      "edgeRatio": 0.5833333333333334,
+      "components": 1,
+      "contrast": 3.828222690950856
+    },
+    "m32": {
+      "fgRatio": 0.150390625,
+      "edgeRatio": 0.3116883116883117,
+      "components": 1,
+      "contrast": 4.080462447008273
+    },
+    "total": 0.5743881331076267,
+    "contrastScore": 0.10352783636885698,
+    "areaScore": 0.6392045454545454,
+    "compScore": 1,
+    "edgeScore": 0.6111111111111109,
+    "consistencyScore": 0.9186197916666666
+  },
+  {
+    "name": "plane-flat-teal",
+    "m16": {
+      "fgRatio": 0.109375,
+      "edgeRatio": 0.7142857142857143,
+      "components": 1,
+      "contrast": 5.353291943620902
+    },
+    "m32": {
+      "fgRatio": 0.1298828125,
+      "edgeRatio": 0.37593984962406013,
+      "components": 1,
+      "contrast": 5.784818705208096
+    },
+    "total": 0.54034633604673,
+    "contrastScore": 0.29416149295261274,
+    "areaScore": 0.49715909090909094,
+    "compScore": 1,
+    "edgeScore": 0.29931972789115635,
+    "consistencyScore": 0.8291015625
+  },
+  {
+    "name": "plane-bold-green",
+    "m16": {
+      "fgRatio": 0.09765625,
+      "edgeRatio": 0.72,
+      "components": 1,
+      "contrast": 5.413370472830861
+    },
+    "m32": {
+      "fgRatio": 0.1181640625,
+      "edgeRatio": 0.38016528925619836,
+      "components": 2,
+      "contrast": 5.950360338046154
+    },
+    "total": 0.5272417032019365,
+    "contrastScore": 0.30167130910385764,
+    "areaScore": 0.4438920454545454,
+    "compScore": 1,
+    "edgeScore": 0.2857142857142857,
+    "consistencyScore": 0.8291015625
+  }
+]
