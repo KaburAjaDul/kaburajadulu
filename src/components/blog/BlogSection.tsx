@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { cn } from '@/lib/utils';
 import { BlogCard } from './BlogCard';
+import { Frown } from 'lucide-react';
 import { translate } from '@/i18n/dictionaries';
 import type { CollectionEntry } from 'astro:content';
 import type { Locale } from '@/i18n/constants';
@@ -56,7 +57,7 @@ export const BlogSection: React.FC<BlogSectionProps> = ({ posts, locale = 'id' }
                       className={cn(
                         'text-[15px] md:text-[17px] text-gray-900 transition-all whitespace-nowrap',
                         selectedCategory === category
-                          ? 'font-semibold text-blue-600 border-b-2 border-blue-600'
+                          ? 'font-semibold text-blue-600 border-b-2 border-blue-600 cursor-pointer'
                           : 'font-normal hover:opacity-70 cursor-pointer'
                       )}
                     >
@@ -79,22 +80,31 @@ export const BlogSection: React.FC<BlogSectionProps> = ({ posts, locale = 'id' }
           </a>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredPosts.map((post) => (
-            <BlogCard
-              key={post.id}
-              category={post.data.category}
-              date={post.data.pubDate.toLocaleDateString(locale === 'id' ? 'id-ID' : locale, {
-                day: 'numeric',
-                month: 'long',
-                year: 'numeric',
-              })}
-              imageUrl={post.data.image}
-              title={post.data.title}
-              onClick={() => handleCardClick(post.id)}
-            />
-          ))}
-        </div>
+        {filteredPosts.length === 0 ? (
+          <div className="text-center text-gray-500 mt-10">
+            <p className="flex items-center justify-center gap-1.5">
+              Oops! Belum ada postingan untuk kategori ini
+              <Frown className="inline-block" />.
+            </p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredPosts.map((post) => (
+              <BlogCard
+                key={post.id}
+                category={post.data.category}
+                date={post.data.pubDate.toLocaleDateString(locale === 'id' ? 'id-ID' : locale, {
+                  day: 'numeric',
+                  month: 'long',
+                  year: 'numeric',
+                })}
+                imageUrl={post.data.image}
+                title={post.data.title}
+                onClick={() => handleCardClick(post.id)}
+              />
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );
