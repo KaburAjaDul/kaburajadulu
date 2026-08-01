@@ -1,6 +1,6 @@
 # AGENTS.md
 
-Agent instructions for the KaburAjaDulu codebase — an Astro 5 platform helping Indonesians
+Agent instructions for the KaburAjaDulu codebase — an Astro 7 platform helping Indonesians
 explore study and work opportunities abroad. Domain: **kaburajadulu.com**
 
 ---
@@ -9,11 +9,12 @@ explore study and work opportunities abroad. Domain: **kaburajadulu.com**
 
 | Layer | Technology |
 |---|---|
-| Framework | Astro 5 (static output, no SSR adapter) |
+| Framework | Astro 7 (static output, no SSR adapter) |
 | UI | React 19 + ShadCN (New York style) + Radix UI |
 | Styling | Tailwind CSS v4 via `@tailwindcss/vite` (no `tailwind.config.js`) |
 | Language | TypeScript (strict mode via `astro/tsconfigs/strict`) |
-| Package manager | Bun |
+| Runtime | Node.js 22.12.0 or newer |
+| Package manager | Bun 1.3.14 |
 | Deployment | Cloudflare Workers (static assets) |
 
 ---
@@ -28,7 +29,7 @@ bun install
 bun dev
 
 # Type-check the entire project
-bun run astro check
+bun run check
 
 # Build for production (output to ./dist)
 bun run build
@@ -173,7 +174,7 @@ bunx vitest
 
 Type-check (substitute for lint until ESLint is configured):
 ```bash
-bun run astro check
+bun run check
 ```
 
 ---
@@ -294,10 +295,10 @@ export const BlogCard: React.FC<BlogCardProps> = ({ title, category, date, image
 
 ### Content Collections
 
-Use Astro 5's **loader API** (not the legacy `type: 'content'` approach):
+Use Astro 7's **loader API** (not the legacy `type: 'content'` approach):
 
 ```ts
-// src/content/config.ts
+// src/content.config.ts
 import { defineCollection, z } from 'astro:content';
 import { glob } from 'astro/loaders';
 
@@ -327,7 +328,7 @@ All external URLs must be defined in `src/constants/urls.ts`. Never hardcode URL
 
 ```ts
 // src/constants/urls.ts
-export const DISCORD_URL = 'https://discord.com/invite/KaburAjaDulu';
+export const DISCORD_URL = 'https://discord.gg/RUFFbEaeDx';
 export const SITE_URL = 'https://kaburajadulu.com';
 ```
 
@@ -351,7 +352,7 @@ Do not add additional web fonts without updating `Layout.astro` preconnect hints
 | `src/layouts/Layout.astro` | Base layout with SEO, OG, JSON-LD, hreflang, RTL, geo-detect |
 | `src/lib/utils.ts` | `cn()` className merge utility |
 | `src/constants/urls.ts` | Centralized URL constants |
-| `src/content/config.ts` | Content collection Zod schemas |
+| `src/content.config.ts` | Content collection Zod schemas |
 | `src/styles/global.css` | Tailwind v4 theme tokens + global CSS + RTL overrides |
 | `src/i18n/config.ts` | react-i18next configuration, all 13 locales |
 | `src/i18n/constants.ts` | LOCALE_NAMES, LOCALE_FLAGS, LOCALE_DIR, LOCALES |

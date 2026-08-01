@@ -5,6 +5,9 @@ interface GithubButtonProps {
   className?: string
   onClick?: () => void
   ariaLabel?: string
+  href?: string
+  target?: React.HTMLAttributeAnchorTarget
+  rel?: string
   children?: React.ReactNode
 }
 
@@ -12,24 +15,50 @@ export function GithubButton({
   className,
   onClick,
   ariaLabel = "GitHub Contributor",
+  href,
+  target,
+  rel,
   children,
 }: GithubButtonProps) {
+  const buttonClassName = cn(
+    "w-[242px] h-[42px] rounded-[16px] gap-2 px-4 py-2",
+    "bg-[#111111] hover:bg-[#111111]/90 text-white",
+    "shadow-[2px_4px_16px_0px_rgba(0,0,0,0.32)]",
+    "font-medium",
+    "cursor-pointer",
+    className
+  )
+  const content = (
+    <>
+      <GithubIcon className="w-6 h-6" aria-hidden="true" />
+      {children || "GitHub Contributor"}
+    </>
+  )
+
+  if (href) {
+    return (
+      <Button
+        asChild
+        variant="default"
+        className={buttonClassName}
+        onClick={onClick}
+        aria-label={ariaLabel}
+      >
+        <a href={href} target={target} rel={rel}>
+          {content}
+        </a>
+      </Button>
+    )
+  }
+
   return (
     <Button
       variant="default"
-      className={cn(
-        "w-[242px] h-[42px] rounded-[16px] gap-2 px-4 py-2",
-        "bg-[#111111] hover:bg-[#111111]/90 text-white",
-        "shadow-[2px_4px_16px_0px_rgba(0,0,0,0.32)]",
-        "font-medium",
-        "cursor-pointer",
-        className
-      )}
+      className={buttonClassName}
       onClick={onClick}
       aria-label={ariaLabel}
     >
-      <GithubIcon className="w-6 h-6" aria-hidden="true" />
-      {children || "GitHub Contributor"}
+      {content}
     </Button>
   )
 }

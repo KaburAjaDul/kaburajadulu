@@ -83,7 +83,7 @@ export const BlogSection: React.FC<BlogSectionProps> = ({ posts, locale = 'id' }
         {filteredPosts.length === 0 ? (
           <div className="text-center text-gray-500 mt-10">
             <p className="flex items-center justify-center gap-1.5">
-              Oops! Belum ada postingan untuk kategori ini
+              {t('blog.empty_category')}{' '}
               <Frown className="inline-block" />.
             </p>
           </div>

@@ -26,20 +26,15 @@ export function AboutSection({ locale = 'id' }: AboutSectionProps) {
         </div>
 
         <div className="flex flex-col sm:flex-row items-center justify-center mt-10 gap-6 sm:gap-6">
-          <a
+          <GithubButton
             href={GITHUB_URL}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center justify-center"
-            aria-label={t('about.github_contributor')}
+            className="px-6 py-2 text-base w-full sm:w-auto"
+            ariaLabel={t('about.github_contributor')}
           >
-            <GithubButton
-              className="px-6 py-2 text-base w-full sm:w-auto"
-              ariaLabel={t('about.github_contributor')}
-            >
-              {t('about.github_contributor')}
-            </GithubButton>
-          </a>
+            {t('about.github_contributor')}
+          </GithubButton>
           <a
             href={`mailto:${EMAIL}`}
             className="text-base underline decoration-1 hover:text-blue-600 transition-colors mt-2 sm:mt-0"
