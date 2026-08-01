@@ -35,7 +35,16 @@
     "headline": "熱門目的地",
     "subheadline": "探索印度尼西亞工人最常去的國家。",
     "view_all": "查看所有目的地",
-    "learn_more": "了解更多"
+    "learn_more": "了解更多",
+    "show": "顯示",
+    "pause": "暫停輪播",
+    "resume": "繼續輪播",
+    "cities": {
+      "seoul": "首爾，韓國",
+      "tokyo": "東京，日本",
+      "singapore": "新加坡",
+      "berlin": "柏林，德國"
+    }
   },
   "cta": {
     "headline": "準備好開始您的旅程了嗎？",

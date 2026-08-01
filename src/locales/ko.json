@@ -35,7 +35,16 @@
     "headline": "인기 목적지",
     "subheadline": "인도네시아务工자たちが最も求めている国をご覧ください。",
     "view_all": "모든 목적지 보기",
-    "learn_more": "자세히 보기"
+    "learn_more": "자세히 보기",
+    "show": "표시",
+    "pause": "자동 전환 일시정지",
+    "resume": "자동 전환 재개",
+    "cities": {
+      "seoul": "서울, 대한민국",
+      "tokyo": "도쿄, 일본",
+      "singapore": "싱가포르",
+      "berlin": "베를린, 독일"
+    }
   },
   "cta": {
     "headline": "여정 준비되셨나요?",

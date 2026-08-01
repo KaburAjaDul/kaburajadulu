@@ -118,3 +118,43 @@ test('mobile viewport smoke keeps the primary content usable', async ({ page }) 
   await expect(page.locator(`a[href="${DISCORD_URL}"]`)).toHaveCount(3);
   await expect(page.locator('body')).toBeVisible();
 });
+
+test('popular destinations support deterministic manual selection', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto('/id/', { waitUntil: 'domcontentloaded' });
+
+  const featured = page.locator('[data-testid="featured-destination"]:visible');
+  const selectors = page.locator('[data-testid="destination-selector"]:visible');
+  const tokyoSelector = selectors.filter({ hasText: 'Tokyo, Jepang' });
+  const autoplayToggle = page.locator('[data-testid="destination-autoplay-toggle"]:visible');
+
+  await expect(featured).toHaveAttribute('data-destination', 'seoul');
+  await expect(selectors).toHaveCount(4);
+  await expect(autoplayToggle).toBeDisabled();
+  await tokyoSelector.click();
+  await expect(featured).toHaveAttribute('data-destination', 'tokyo');
+  await expect(tokyoSelector).toHaveAttribute('aria-pressed', 'true');
+  await expect(selectors.filter({ hasText: 'Seoul, Korea Selatan' })).toHaveAttribute(
+    'aria-pressed',
+    'false',
+  );
+});
+
+test('destination controls pause on focus and expose an explicit resume action', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await page.goto('/id/', { waitUntil: 'domcontentloaded' });
+
+  const featured = page.locator('[data-testid="featured-destination"]:visible');
+  const selectors = page.locator('[data-testid="destination-selector"]:visible');
+  const tokyoSelector = selectors.filter({ hasText: 'Tokyo, Jepang' });
+  const autoplayToggle = page.locator('[data-testid="destination-autoplay-toggle"]:visible');
+
+  await expect(autoplayToggle).toHaveAttribute('aria-pressed', 'false');
+  await tokyoSelector.focus();
+  await expect(autoplayToggle).toHaveAttribute('aria-pressed', 'true');
+  await tokyoSelector.press('Enter');
+  await expect(featured).toHaveAttribute('data-destination', 'tokyo');
+
+  await autoplayToggle.click();
+  await expect(autoplayToggle).toHaveAttribute('aria-pressed', 'false');
+});

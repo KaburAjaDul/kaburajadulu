@@ -35,7 +35,16 @@
     "headline": "Destinations populaires",
     "subheadline": "Explorez les pays les plus recherchés par les travailleurs indonésiens.",
     "view_all": "Voir toutes les destinations",
-    "learn_more": "En savoir plus"
+    "learn_more": "En savoir plus",
+    "show": "Afficher",
+    "pause": "Mettre la rotation en pause",
+    "resume": "Reprendre la rotation",
+    "cities": {
+      "seoul": "Séoul, Corée du Sud",
+      "tokyo": "Tokyo, Japon",
+      "singapore": "Singapour",
+      "berlin": "Berlin, Allemagne"
+    }
   },
   "cta": {
     "headline": "Prêt à commencer votre voyage ?",

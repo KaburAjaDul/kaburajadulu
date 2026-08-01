@@ -35,7 +35,16 @@
     "headline": "Beliebte Reiseziele",
     "subheadline": "Entdecke die von indonesischen Arbeitnehmern am meisten gesuchten Länder.",
     "view_all": "Alle Reiseziele ansehen",
-    "learn_more": "Mehr erfahren"
+    "learn_more": "Mehr erfahren",
+    "show": "Anzeigen",
+    "pause": "Rotation pausieren",
+    "resume": "Rotation fortsetzen",
+    "cities": {
+      "seoul": "Seoul, Südkorea",
+      "tokyo": "Tokio, Japan",
+      "singapore": "Singapur",
+      "berlin": "Berlin, Deutschland"
+    }
   },
   "cta": {
     "headline": "Bereit, deine Reise zu starten?",

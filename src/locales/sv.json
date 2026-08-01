@@ -35,7 +35,16 @@
     "headline": "Populära resmål",
     "subheadline": "Utforska de länder som indonesiska arbetare oftast söker sig till.",
     "view_all": "Visa alla resmål",
-    "learn_more": "Läs mer"
+    "learn_more": "Läs mer",
+    "show": "Visa",
+    "pause": "Pausa rotationen",
+    "resume": "Återuppta rotationen",
+    "cities": {
+      "seoul": "Seoul, Sydkorea",
+      "tokyo": "Tokyo, Japan",
+      "singapore": "Singapore",
+      "berlin": "Berlin, Tyskland"
+    }
   },
   "cta": {
     "headline": "Redo att påbörja din resa?",

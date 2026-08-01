@@ -35,7 +35,16 @@
     "headline": "Destinazioni popolari",
     "subheadline": "Esplora i paesi più richiesti dai lavoratori indonesiani.",
     "view_all": "Vedi tutte le destinazioni",
-    "learn_more": "Scopri di più"
+    "learn_more": "Scopri di più",
+    "show": "Mostra",
+    "pause": "Metti in pausa la rotazione",
+    "resume": "Riprendi la rotazione",
+    "cities": {
+      "seoul": "Seoul, Corea del Sud",
+      "tokyo": "Tokyo, Giappone",
+      "singapore": "Singapore",
+      "berlin": "Berlino, Germania"
+    }
   },
   "cta": {
     "headline": "Pronto a iniziare il tuo viaggio?",
