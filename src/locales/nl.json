@@ -35,7 +35,16 @@
     "headline": "Populaire bestemmingen",
     "subheadline": "Ontdek de landen die het meest gezocht worden doorIndonesische werknemers.",
     "view_all": "Bekijk alle bestemmingen",
-    "learn_more": "Meer informatie"
+    "learn_more": "Meer informatie",
+    "show": "Toon",
+    "pause": "Rotatie pauzeren",
+    "resume": "Rotatie hervatten",
+    "cities": {
+      "seoul": "Seoel, Zuid-Korea",
+      "tokyo": "Tokio, Japan",
+      "singapore": "Singapore",
+      "berlin": "Berlijn, Duitsland"
+    }
   },
   "cta": {
     "headline": "Klaar om je reis te beginnen?",

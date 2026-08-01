@@ -126,9 +126,11 @@ test('popular destinations support deterministic manual selection', async ({ pag
   const featured = page.locator('[data-testid="featured-destination"]:visible');
   const selectors = page.locator('[data-testid="destination-selector"]:visible');
   const tokyoSelector = selectors.filter({ hasText: 'Tokyo, Jepang' });
+  const autoplayToggle = page.locator('[data-testid="destination-autoplay-toggle"]:visible');
 
   await expect(featured).toHaveAttribute('data-destination', 'seoul');
   await expect(selectors).toHaveCount(4);
+  await expect(autoplayToggle).toBeDisabled();
   await tokyoSelector.click();
   await expect(featured).toHaveAttribute('data-destination', 'tokyo');
   await expect(tokyoSelector).toHaveAttribute('aria-pressed', 'true');
@@ -136,4 +138,23 @@ test('popular destinations support deterministic manual selection', async ({ pag
     'aria-pressed',
     'false',
   );
+});
+
+test('destination controls pause on focus and expose an explicit resume action', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await page.goto('/id/', { waitUntil: 'domcontentloaded' });
+
+  const featured = page.locator('[data-testid="featured-destination"]:visible');
+  const selectors = page.locator('[data-testid="destination-selector"]:visible');
+  const tokyoSelector = selectors.filter({ hasText: 'Tokyo, Jepang' });
+  const autoplayToggle = page.locator('[data-testid="destination-autoplay-toggle"]:visible');
+
+  await expect(autoplayToggle).toHaveAttribute('aria-pressed', 'false');
+  await tokyoSelector.focus();
+  await expect(autoplayToggle).toHaveAttribute('aria-pressed', 'true');
+  await tokyoSelector.press('Enter');
+  await expect(featured).toHaveAttribute('data-destination', 'tokyo');
+
+  await autoplayToggle.click();
+  await expect(autoplayToggle).toHaveAttribute('aria-pressed', 'false');
 });

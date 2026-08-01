@@ -35,7 +35,16 @@
     "headline": "Destinasi Populer",
     "subheadline": "Jelajahi negara-negara yang paling banyak dicari oleh tenaga kerja Indonesia.",
     "view_all": "Lihat Semua Destinasi",
-    "learn_more": "Pelajari Lebih Lanjut"
+    "learn_more": "Pelajari Lebih Lanjut",
+    "show": "Tampilkan",
+    "pause": "Jeda rotasi",
+    "resume": "Lanjutkan rotasi",
+    "cities": {
+      "seoul": "Seoul, Korea Selatan",
+      "tokyo": "Tokyo, Jepang",
+      "singapore": "Singapura",
+      "berlin": "Berlin, Jerman"
+    }
   },
   "cta": {
     "headline": "Siap Memulai Perjalananmu?",

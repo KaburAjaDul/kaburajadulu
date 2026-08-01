@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import DestinationCard from '@/components/destination-card';
 import { translate } from '@/i18n/dictionaries';
 import type { Locale } from '@/i18n/constants';
+import { cn } from '@/lib/utils';
 
 interface DestinationShowcaseProps {
   locale?: Locale;
@@ -12,10 +13,14 @@ interface DestinationShowcaseProps {
 const AUTO_ADVANCE_MS = 7_000;
 
 const destinations = [
-  { id: 'seoul', imageUrl: '/images/seoul.webp', location: 'Seoul, Korea Selatan' },
-  { id: 'tokyo', imageUrl: '/images/tokyo.webp', location: 'Tokyo, Jepang' },
-  { id: 'singapore', imageUrl: '/images/singapore.webp', location: 'Singapura' },
-  { id: 'berlin', imageUrl: '/images/berlin_2.webp', location: 'Berlin, Jerman' },
+  { id: 'seoul', imageUrl: '/images/seoul.webp', locationKey: 'destinations.cities.seoul' },
+  { id: 'tokyo', imageUrl: '/images/tokyo.webp', locationKey: 'destinations.cities.tokyo' },
+  {
+    id: 'singapore',
+    imageUrl: '/images/singapore.webp',
+    locationKey: 'destinations.cities.singapore',
+  },
+  { id: 'berlin', imageUrl: '/images/berlin_2.webp', locationKey: 'destinations.cities.berlin' },
 ] as const;
 
 const collageSlots = [
@@ -40,6 +45,7 @@ export default function DestinationShowcase({ locale = 'id' }: DestinationShowca
   const t = (key: string) => translate(locale, key);
   const [activeIndex, setActiveIndex] = useState(0);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
 
   useEffect(() => {
     const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -52,22 +58,31 @@ export default function DestinationShowcase({ locale = 'id' }: DestinationShowca
   }, []);
 
   useEffect(() => {
-    if (prefersReducedMotion) return;
+    if (prefersReducedMotion || isPaused) return;
 
     const interval = window.setInterval(() => {
       setActiveIndex((currentIndex) => (currentIndex + 1) % destinations.length);
     }, AUTO_ADVANCE_MS);
 
     return () => window.clearInterval(interval);
-  }, [prefersReducedMotion]);
+  }, [isPaused, prefersReducedMotion]);
 
   const activeDestination = destinations[activeIndex];
+  const activeLocation = t(activeDestination.locationKey);
+  const autoplayPaused = prefersReducedMotion || isPaused;
   const previewDestinations = useMemo(
     () => destinations.filter((_, index) => index !== activeIndex),
     [activeIndex],
   );
 
-  const selectDestination = (index: number) => setActiveIndex(index);
+  const selectDestination = (index: number) => {
+    setActiveIndex(index);
+    setIsPaused(true);
+  };
+
+  const toggleAutoplay = () => {
+    if (!prefersReducedMotion) setIsPaused((current) => !current);
+  };
 
   return (
     <section
@@ -96,7 +111,7 @@ export default function DestinationShowcase({ locale = 'id' }: DestinationShowca
             >
               <DestinationCard
                 imageUrl={activeDestination.imageUrl}
-                location={activeDestination.location}
+                location={activeLocation}
                 sizes="(max-width: 640px) 90vw, (max-width: 1024px) 90vw, 90vw"
                 style={{ width: '100%', height: '100%' }}
               />
@@ -107,10 +122,10 @@ export default function DestinationShowcase({ locale = 'id' }: DestinationShowca
             const slot = collageSlots[previewIndex];
 
             return (
-              <div key={destination.id} className={`absolute ${slot.className} h-auto z-10`}>
+              <div key={destination.id} className={cn('absolute h-auto z-10', slot.className)}>
                 <DestinationCard
                   imageUrl={destination.imageUrl}
-                  location={destination.location}
+                  location={t(destination.locationKey)}
                   sizes={slot.sizes}
                   style={{ width: '100%', height: '100%', transform: slot.transform }}
                 />
@@ -125,7 +140,7 @@ export default function DestinationShowcase({ locale = 'id' }: DestinationShowca
         </div>
 
         <div
-          className="hidden sm:flex justify-center gap-2 mt-5"
+          className="hidden sm:flex flex-wrap justify-center items-center gap-2 mt-5"
           role="group"
           aria-label={t('destinations.headline')}
         >
@@ -133,19 +148,37 @@ export default function DestinationShowcase({ locale = 'id' }: DestinationShowca
             <button
               key={destination.id}
               type="button"
-              className={`rounded-full px-4 py-2 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${
+              className={cn(
+                'rounded-full px-4 py-2 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2',
                 activeIndex === index
                   ? 'bg-primary text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200',
+              )}
               data-testid="destination-selector"
-              aria-label={`Show ${destination.location}`}
+              aria-label={`${t('destinations.show')} ${t(destination.locationKey)}`}
               aria-pressed={activeIndex === index}
+              onFocus={() => setIsPaused(true)}
               onClick={() => selectDestination(index)}
             >
-              {destination.location}
+              {t(destination.locationKey)}
             </button>
           ))}
+          <button
+            type="button"
+            className={cn(
+              'rounded-full px-4 py-2 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2',
+              autoplayPaused
+                ? 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                : 'bg-primary text-white',
+            )}
+            data-testid="destination-autoplay-toggle"
+            aria-label={autoplayPaused ? t('destinations.resume') : t('destinations.pause')}
+            aria-pressed={autoplayPaused}
+            disabled={prefersReducedMotion}
+            onClick={toggleAutoplay}
+          >
+            {autoplayPaused ? t('destinations.resume') : t('destinations.pause')}
+          </button>
         </div>
 
         {/* Mobile view */}
@@ -158,7 +191,7 @@ export default function DestinationShowcase({ locale = 'id' }: DestinationShowca
           >
             <DestinationCard
               imageUrl={activeDestination.imageUrl}
-              location={activeDestination.location}
+              location={activeLocation}
               className="aspect-[1.5/1]"
               sizes="(max-width: 640px) 100vw, 0vw"
             />
@@ -172,19 +205,37 @@ export default function DestinationShowcase({ locale = 'id' }: DestinationShowca
               <button
                 key={destination.id}
                 type="button"
-                className={`rounded-lg px-3 py-2 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${
+                className={cn(
+                  'rounded-lg px-3 py-2 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2',
                   activeIndex === index
                     ? 'bg-primary text-white'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200',
+                )}
                 data-testid="destination-selector"
-                aria-label={`Show ${destination.location}`}
+                aria-label={`${t('destinations.show')} ${t(destination.locationKey)}`}
                 aria-pressed={activeIndex === index}
+                onFocus={() => setIsPaused(true)}
                 onClick={() => selectDestination(index)}
               >
-                {destination.location}
+                {t(destination.locationKey)}
               </button>
             ))}
+            <button
+              type="button"
+              className={cn(
+                'col-span-2 rounded-lg px-3 py-2 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2',
+                autoplayPaused
+                  ? 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  : 'bg-primary text-white',
+              )}
+              data-testid="destination-autoplay-toggle"
+              aria-label={autoplayPaused ? t('destinations.resume') : t('destinations.pause')}
+              aria-pressed={autoplayPaused}
+              disabled={prefersReducedMotion}
+              onClick={toggleAutoplay}
+            >
+              {autoplayPaused ? t('destinations.resume') : t('destinations.pause')}
+            </button>
           </div>
           <div className="text-left text-primary text-xl font-caveat mt-4 pl-4">
             {t('destinations.view_all')}

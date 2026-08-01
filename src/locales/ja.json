@@ -35,7 +35,16 @@
     "headline": "人気の目的地",
     "subheadline": "印度ネシア人に最も人気のない外国を見てみましょう。",
     "view_all": "すべての目的地を見る",
-    "learn_more": "詳細を見る"
+    "learn_more": "詳細を見る",
+    "show": "表示",
+    "pause": "自動切り替えを一時停止",
+    "resume": "自動切り替えを再開",
+    "cities": {
+      "seoul": "ソウル、韓国",
+      "tokyo": "東京、日本",
+      "singapore": "シンガポール",
+      "berlin": "ベルリン、ドイツ"
+    }
   },
   "cta": {
     "headline": "旅を始め 준비되셨나요?",

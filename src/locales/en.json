@@ -35,7 +35,16 @@
     "headline": "Popular Destinations",
     "subheadline": "Explore the countries most sought after by Indonesian workers.",
     "view_all": "View All Destinations",
-    "learn_more": "Learn More"
+    "learn_more": "Learn More",
+    "show": "Show",
+    "pause": "Pause rotation",
+    "resume": "Resume rotation",
+    "cities": {
+      "seoul": "Seoul, South Korea",
+      "tokyo": "Tokyo, Japan",
+      "singapore": "Singapore",
+      "berlin": "Berlin, Germany"
+    }
   },
   "cta": {
     "headline": "Ready to Start Your Journey?",
