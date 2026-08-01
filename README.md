@@ -10,7 +10,7 @@
 <!-- project logo -->
 <br />
 <div align="center">
-  <a href="https://discord.com/invite/KaburAjaDulu">
+  <a href="https://discord.gg/RUFFbEaeDx">
     <img src="/public/intoTheLmao.jpg" alt="kaburAjaDulu_logo" width="500">
   </a>
 
@@ -64,8 +64,8 @@ We believe that international experience has the power to transform lives and br
 ## 🛠️ Getting Started
 
 ### Prerequisites
-- Node.js 18.0 or higher
-- npm, pnpm, yarn, or bun
+- Node.js 22.12.0 or higher
+- Bun 1.3.14
 
 ### Installation
 Below is the procedure for installing the project:
@@ -87,8 +87,13 @@ bun install
 # Start the development server
 bun dev
 
-# Build for production (test before contributing)
+# Type-check and build for production (test before contributing)
+bun run check
 bun run build
+
+# Run Chromium end-to-end coverage against a production preview
+bunx playwright install chromium
+bun run test:e2e
 ```
 
 #### For General Use
@@ -100,17 +105,9 @@ git clone https://github.com/KaburAjaDul/kaburajadulu.git
 cd kaburajadulu
 
 # Install dependencies
-npm install
-# or
-pnpm install
-# or
-bun install
+bun install --frozen-lockfile
 
 # Start the development server
-npm run dev
-# or
-pnpm dev
-# or
 bun dev
 ```
 
@@ -168,6 +165,24 @@ We welcome contributions from everyone! Here's how you can help:
 - Update documentation as needed
 - Add or update tests where possible
 - Be respectful and constructive in discussions
+
+### CI and deployment
+
+Pull requests and pushes to `main` run the pinned Node 22.12.0/Bun 1.3.14
+toolchain, a frozen install, dependency audit, `bun run check`, a production
+build, and smoke assertions for the root and all 13 localized output routes.
+Main branch protection must require the `CI / Check and build` status check
+separately.
+
+Playwright end-to-end coverage runs against a production Astro preview and
+checks all 14 landing-page routes. Install Chromium once locally with
+`bunx playwright install chromium`, then run it with `bun run test:e2e`.
+
+Cloudflare deployment runs only after a successful `CI` workflow for a push to
+`main`. To opt in, set the repository variable `CLOUDFLARE_DEPLOY_ENABLED` to
+`true`, and configure the `Production` environment with the
+`CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` secrets. Deployment remains
+skipped until that variable is enabled.
 
 ## 🗺️ Roadmap
 

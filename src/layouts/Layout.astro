@@ -1,5 +1,6 @@
 ---
 import { LOCALES, LOCALE_DIR } from '@/i18n/constants';
+import { DISCORD_URL } from '@/constants/urls';
 import type { Locale } from '@/i18n/constants';
 
 export interface Props {
@@ -93,7 +94,7 @@ const hreflangLinks = LOCALES.map((loc) => {
       "logo": `${siteUrl}/icon.svg`,
       "foundingDate": "2024",
       "founder": { "@type": "Organization", "name": "Tim KaburAjaDulu" },
-      "sameAs": ["https://discord.com/invite/KaburAjaDulu"],
+      "sameAs": [DISCORD_URL],
       "potentialAction": {
         "@type": "SearchAction",
         "target": `${siteUrl}/?q={search_term_string}`,

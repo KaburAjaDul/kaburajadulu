@@ -13,12 +13,6 @@ interface NavbarProps {
 export function Navbar({ locale = 'id', currentPath = '/' }: NavbarProps) {
   const t = (key: string) => translate(locale, key);
 
-  const handleDiscordClick = () => {
-    if (typeof window !== 'undefined') {
-      window.open(DISCORD_URL, '_blank');
-    }
-  };
-
   return (
     <nav className="navbar container mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-4 flex items-center justify-between">
       {/* Logo */}
@@ -41,13 +35,15 @@ export function Navbar({ locale = 'id', currentPath = '/' }: NavbarProps) {
           {t('nav.blog')}
         </a>
         <LanguageSwitcher currentLocale={locale} currentPath={currentPath} />
-        <button
-          onClick={handleDiscordClick}
-          className="text-sm sm:text-base px-3 sm:px-4 py-2 rounded-full border border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white transition-colors cursor-pointer font-medium"
+        <a
+          href={DISCORD_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-sm sm:text-base px-3 sm:px-4 py-2 rounded-full border border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white transition-colors font-medium"
           aria-label={t('footer.discord')}
         >
           {t('nav.contact')}
-        </button>
+        </a>
       </div>
     </nav>
   );

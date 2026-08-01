@@ -15,6 +15,9 @@ bun install
 # Start development server
 bun dev
 
+# Type-check the entire project
+bun run check
+
 # Build for production
 bun run build
 
@@ -28,12 +31,13 @@ bun run astro
 ## Architecture Overview
 
 ### Tech Stack
-- **Framework**: Astro 5.9.4 with React integration
+- **Framework**: Astro 7 with React integration
 - **Styling**: Tailwind CSS v4 with Tailwind Animate
 - **UI Components**: Custom React components with Radix UI primitives (ShadCN)
 - **Type Safety**: TypeScript with strict mode
 - **Build Tool**: Vite (integrated with Astro)
-- **Package Manager**: Bun
+- **Package Manager**: Bun 1.3.14
+- **Runtime**: Node.js 22.12.0 or newer
 
 ### Project Structure
 ```
@@ -69,7 +73,7 @@ src/
 - `src/layouts/Layout.astro`: Base layout with comprehensive SEO setup
 - `src/lib/utils.ts`: Contains cn() utility for className merging
 - `src/constants/urls.ts`: Centralized URL constants
-- `src/content/config.ts`: Content collection schemas for blog posts
+- `src/content.config.ts`: Content collection schemas for blog posts
 - `components.json`: ShadCN configuration (New York style, no RSC)
 
 ## Current Status
@@ -84,7 +88,7 @@ The project is in active development with:
 
 The blog system leverages Astro's content collections for type-safe content management:
 - **Blog Collection**: Located in `src/content/blog/` with markdown files
-- **Schema Validation**: Defined in `src/content/config.ts` with Zod schema
+- **Schema Validation**: Defined in `src/content.config.ts` with Zod schema
 - **Categories**: Supports "Lowongan", "Beasiswa", "Event", "Kelas Bahasa", "Berita"
 - **Dynamic Routing**: Uses `src/pages/blog/[...slug].astro` for individual posts
 - **Blog Layout**: Dedicated `src/layouts/BlogLayout.astro` for blog post formatting
@@ -105,7 +109,7 @@ The blog system uses Astro's content collections for type-safe markdown content:
 - **Components**: 
   - `src/components/blog/BlogCard.tsx`: Individual blog post cards for listing
   - `src/components/blog/BlogSection.tsx`: Blog listing section on homepage
-- **Schema**: Defined in `src/content/config.ts` with categories (Lowongan, Beasiswa, Event, etc.)
+- **Schema**: Defined in `src/content.config.ts` with categories (Lowongan, Beasiswa, Event, etc.)
 - **Badge Component**: Uses ShadCN Badge with "category" variant for blog post categories
 
 ### Blog Post Structure

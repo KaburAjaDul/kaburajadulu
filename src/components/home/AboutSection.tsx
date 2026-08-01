@@ -1,6 +1,8 @@
 'use client';
 
-import { GithubButton } from '../../components/github-button';
+import { GithubButton } from '@/components/github-button';
+import { GITHUB_URL } from '@/constants/urls';
+import { EMAIL } from '@/constants/contacts';
 import { translate } from '@/i18n/dictionaries';
 import type { Locale } from '@/i18n/constants';
 
@@ -10,12 +12,6 @@ interface AboutSectionProps {
 
 export function AboutSection({ locale = 'id' }: AboutSectionProps) {
   const t = (key: string) => translate(locale, key);
-
-  const handleGithubClick = () => {
-    if (typeof window !== 'undefined') {
-      window.open('https://github.com/KaburAjaDul/kaburajadulu', '_blank');
-    }
-  };
 
   return (
     <section className="py-10 md:py-16">
@@ -31,14 +27,16 @@ export function AboutSection({ locale = 'id' }: AboutSectionProps) {
 
         <div className="flex flex-col sm:flex-row items-center justify-center mt-10 gap-6 sm:gap-6">
           <GithubButton
+            href={GITHUB_URL}
+            target="_blank"
+            rel="noopener noreferrer"
             className="px-6 py-2 text-base w-full sm:w-auto"
             ariaLabel={t('about.github_contributor')}
-            onClick={handleGithubClick}
           >
             {t('about.github_contributor')}
           </GithubButton>
           <a
-            href="mailto:kaburajadulusocials@gmail.com"
+            href={`mailto:${EMAIL}`}
             className="text-base underline decoration-1 hover:text-blue-600 transition-colors mt-2 sm:mt-0"
             aria-label={t('about.feature2_title')}
           >

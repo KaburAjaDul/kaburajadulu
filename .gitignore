@@ -3,6 +3,8 @@ dist/
 # generated types
 .astro/
 .vscode/
+playwright-report/
+test-results/
 
 # dependencies
 node_modules/

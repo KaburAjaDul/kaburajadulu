@@ -10,16 +10,9 @@ interface HeroSectionProps {
 }
 
 export function HeroSection({ locale = 'id' }: HeroSectionProps) {
-  // Use useMemo to create translation function
   const t = useMemo(() => {
     return (key: string) => translate(locale, key);
   }, [locale]);
-
-  const handleDiscordClick = () => {
-    if (typeof window !== 'undefined') {
-      window.open(DISCORD_URL, '_blank');
-    }
-  };
 
   return (
     <section className="py-10 md:py-16 lg:py-24">
@@ -31,13 +24,15 @@ export function HeroSection({ locale = 'id' }: HeroSectionProps) {
           {t('hero.subheadline')}
         </p>
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-          <button
-            onClick={handleDiscordClick}
-            className="w-full sm:w-auto px-6 py-3 rounded-full bg-blue-600 text-white font-semibold hover:bg-blue-700 transition-colors cursor-pointer"
+          <a
+            href={DISCORD_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-full sm:w-auto px-6 py-3 rounded-full bg-blue-600 text-white font-semibold hover:bg-blue-700 transition-colors"
             aria-label={t('hero.cta_primary')}
           >
             {t('hero.cta_primary')}
-          </button>
+          </a>
           <a
             href={`/${locale === 'id' ? '' : locale + '/'}#blog`}
             className="text-blue-600 hover:underline font-medium mt-2 sm:mt-0"
