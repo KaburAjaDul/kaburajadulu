@@ -80,3 +80,9 @@ jobs:
             test -s "$page"
             grep -Fq 'https://discord.gg/RUFFbEaeDx' "$page"
           done
+
+      - name: Install Playwright Chromium
+        run: bunx playwright install --with-deps chromium
+
+      - name: Run Playwright E2E
+        run: bun run test:e2e

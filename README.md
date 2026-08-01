@@ -90,6 +90,10 @@ bun dev
 # Type-check and build for production (test before contributing)
 bun run check
 bun run build
+
+# Run Chromium end-to-end coverage against a production preview
+bunx playwright install chromium
+bun run test:e2e
 ```
 
 #### For General Use
@@ -169,6 +173,10 @@ toolchain, a frozen install, dependency audit, `bun run check`, a production
 build, and smoke assertions for the root and all 13 localized output routes.
 Main branch protection must require the `CI / Check and build` status check
 separately.
+
+Playwright end-to-end coverage runs against a production Astro preview and
+checks all 14 landing-page routes. Install Chromium once locally with
+`bunx playwright install chromium`, then run it with `bun run test:e2e`.
 
 Cloudflare deployment runs only after a successful `CI` workflow for a push to
 `main`. To opt in, set the repository variable `CLOUDFLARE_DEPLOY_ENABLED` to
