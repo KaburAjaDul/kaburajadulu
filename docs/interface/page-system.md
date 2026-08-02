@@ -24,6 +24,19 @@ The redesign adds structure, not a replacement personality. It does not reuse
 PR20's global dark-paper shell, global body overrides, or unsourced editorial
 cards.
 
+## Staging review boundary
+
+The staging candidate keeps the complete page family in one build. Three
+`/design-preview/{direction}/` routes compare only the post-destination landing
+rhythm: Field Notes, Community Bulletin, and Community Atlas. They reuse the
+real navigation and source-backed content, are marked `noindex, nofollow`, and
+link into the same Programs, Events, Volunteer, History, Impact, Support, and
+Credits placeholders. Field Notes remains the recommended production candidate.
+
+The production homepage does not expose the comparison selector. It receives
+the Field Notes composition directly, while the review routes remain temporary
+branch infrastructure until a direction is approved.
+
 ## Evidence deconstruction
 
 | Evidence | Status | Observation | Transferable rule | Implementation boundary |
@@ -69,9 +82,12 @@ blueprint. This keeps the family coherent without making every route identical.
 **Job:** explain KAD in ten seconds and move a newcomer toward a real activity.
 
 1. Existing-style hero with Discord primary action and programs secondary action.
+   The hero gains two decorative field-note fragments: a dithered repository-owned
+   city crop and a yellow KAD curiosity stamp. Their motion is non-essential and
+   removed under reduced-motion preferences.
 2. Destination collage retained as the visual signature.
-3. `Mulai dari sini` three-step rail: discover, participate, contribute.
-4. Five source-backed flagship program cards, each with availability text.
+3. Field Notes three-step journal: ask, find a rhythm, leave useful context.
+4. Five approved public program posters form one lead note and a four-poster rail.
 5. Event preview in an honest empty state until the public projection exists.
 6. Community story teaser labelled as editorial work in progress.
 7. Volunteer and support split CTA.

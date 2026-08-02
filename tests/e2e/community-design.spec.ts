@@ -36,6 +36,12 @@ const ROOT_SURFACES = [
   '/community/credits/',
 ] as const;
 
+const DESIGN_PREVIEWS = [
+  ['field-notes', 'Field Notes'],
+  ['community-bulletin', 'Community Bulletin'],
+  ['community-atlas', 'Community Atlas'],
+] as const;
+
 async function expectNoHorizontalOverflow(page: Page) {
   const dimensions = await page.evaluate(() => ({
     body: document.body.scrollWidth,
@@ -76,6 +82,36 @@ test.describe('KAD clean redesign route contract', () => {
       await expect(page.locator('html')).toHaveAttribute('dir', 'ltr');
     });
   }
+});
+
+test.describe('staging landing direction review', () => {
+  for (const [direction, label] of DESIGN_PREVIEWS) {
+    test(`${label} keeps the full site context and stays out of search`, async ({ page }) => {
+      await page.goto(`/design-preview/${direction}/`, { waitUntil: 'networkidle' });
+      await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', 'noindex, nofollow');
+      await expect(page.locator(`[data-design-direction="${direction}"]`)).toBeVisible();
+      await expect(page.locator('.kad-direction-tabs a[aria-current="page"]')).toContainText(label);
+      await expect(page.locator('.kad-nav-links a[href="/programs"]')).toBeVisible();
+      await expect(page.getByRole('link', { name: 'Cek placeholder halaman lain' })).toHaveAttribute('href', '/programs');
+      await expectNoHorizontalOverflow(page);
+    });
+  }
+
+  test('Field Notes is the normal-home candidate and renders all five approved posters', async ({ page }) => {
+    await page.goto('/', { waitUntil: 'networkidle' });
+    await expect(page.locator('[data-design-direction="field-notes"]')).toBeVisible();
+    await expect(page.locator('[data-interface-slice="community-home"] img[src^="/images/programs/"]')).toHaveCount(5);
+    await expect(page.locator('.kad-direction-tabs')).toHaveCount(0);
+  });
+
+  test('mobile staging directions reflow without horizontal page overflow', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    for (const [direction] of DESIGN_PREVIEWS) {
+      await page.goto(`/design-preview/${direction}/`, { waitUntil: 'domcontentloaded' });
+      await expect(page.locator('.kad-menu-button')).toBeVisible();
+      await expectNoHorizontalOverflow(page);
+    }
+  });
 });
 
 test('program catalogue renders five source-backed cards with explicit status', async ({ page }) => {
@@ -294,6 +330,12 @@ test.describe('responsive and motion safeguards', () => {
     const durationInMilliseconds = (value: string) => value === '0s' ? 0 : Number.parseFloat(value) * 1000;
     expect(durationInMilliseconds(motion?.transitionDuration ?? '1s')).toBeLessThanOrEqual(1);
     expect(durationInMilliseconds(motion?.animationDuration ?? '1s')).toBeLessThanOrEqual(1);
+
+    await page.goto('/', { waitUntil: 'domcontentloaded' });
+    const heroAnimationDuration = await page.locator('.kad-home-hero__dither').evaluate(
+      (element) => getComputedStyle(element).animationDuration,
+    );
+    expect(durationInMilliseconds(heroAnimationDuration)).toBeLessThanOrEqual(1);
   });
 });
 
@@ -303,6 +345,9 @@ test.describe('screenshot artifacts', () => {
     ['/programs/', 'programs'],
     ['/programs/english-mandarin-weekly-clubs/', 'weekly-detail'],
     ['/support/', 'support'],
+    ['/design-preview/field-notes/', 'preview-field-notes'],
+    ['/design-preview/community-bulletin/', 'preview-bulletin'],
+    ['/design-preview/community-atlas/', 'preview-atlas'],
   ] as const) {
     test(`${name} desktop and mobile screenshots are emitted`, async ({ page }, testInfo) => {
       await page.setViewportSize({ width: 1440, height: 900 });

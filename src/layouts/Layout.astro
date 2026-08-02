@@ -10,6 +10,8 @@ export interface Props {
   gscVerification?: string;
   locale?: Locale;
   currentPath?: string;
+  robots?: string;
+  isPreview?: boolean;
 }
 
 const {
@@ -19,6 +21,8 @@ const {
   gscVerification,
   locale = 'id' as Locale,
   currentPath = Astro.url.pathname,
+  robots = 'index, follow',
+  isPreview = false,
 } = Astro.props;
 
 const siteUrl = 'https://kaburajadulu.com';
@@ -58,7 +62,7 @@ const hreflangLinks = LOCALES.map((loc) => {
     <title>{title}</title>
 
     <!-- Hreflang tags for i18n SEO -->
-    {hreflangLinks.map(({ locale: loc, url }) => (
+    {!isPreview && hreflangLinks.map(({ locale: loc, url }) => (
       <link rel="alternate" hreflang={loc} href={url} />
     ))}
 
@@ -73,7 +77,7 @@ const hreflangLinks = LOCALES.map((loc) => {
     <!-- Meta tags -->
     <meta name="keywords" content="peluang internasional, kerja di luar negeri, kuliah di luar negeri, traveling, beasiswa, kelas bahasa, karir global, komunitas expatriat" />
     <meta name="author" content="Tim KaburAjaDulu" />
-    <meta name="robots" content="index, follow" />
+    <meta name="robots" content={robots} />
 
     <!-- Google Search Console Verification -->
     {gscVerification && <meta name="google-site-verification" content={gscVerification} />}

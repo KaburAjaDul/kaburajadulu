@@ -15,8 +15,19 @@ export function HeroSection({ locale = 'id' }: HeroSectionProps) {
   }, [locale]);
 
   return (
-    <section className="py-10 md:py-16 lg:py-24">
-      <div className="container mx-auto text-center px-4 md:px-6">
+    <section className="kad-home-hero py-10 md:py-16 lg:py-24">
+      <div className="kad-home-hero__ornaments" aria-hidden="true">
+        <div className="kad-home-hero__dither">
+          <img src="/images/seoul.webp" alt="" width="720" height="480" />
+        </div>
+        <div className="kad-home-hero__route"><span></span></div>
+        <div className="kad-home-hero__note">
+          <strong>KAD</strong>
+          <span>made with<br />curiosity</span>
+        </div>
+      </div>
+      <div className="kad-home-hero__content container mx-auto text-center px-4 md:px-6">
+        <p className="kad-home-hero__kicker">Komunitas belajar lintas kota</p>
         <h1 className="text-4xl md:text-5xl font-extrabold mb-4 md:mb-6">
           {t('hero.headline')}
         </h1>
