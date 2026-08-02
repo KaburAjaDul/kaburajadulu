@@ -65,8 +65,24 @@ export function CommunityGateway({ locale = 'id' }: CommunityGatewayProps) {
           </div>
           <div className="kad-grid kad-grid--three">
             {PROGRAMS.slice(0, 3).map((program, index) => (
-              <article key={program.slug} className="kad-card">
-                <div className="kad-visual-marker" aria-hidden="true">
+              <article key={program.slug} className="kad-card kad-program-preview">
+                {program.media[0] && (
+                  <a
+                    className="kad-program-preview__media"
+                    href={href(`/programs/${program.slug}`)}
+                    aria-label={`Lihat detail ${program.title}`}
+                  >
+                    <img
+                      src={program.media[0].src}
+                      alt={program.media[0].alt}
+                      width={program.media[0].width}
+                      height={program.media[0].height}
+                      loading="eager"
+                      decoding="async"
+                    />
+                  </a>
+                )}
+                <div className="kad-visual-marker kad-program-preview__number" aria-hidden="true">
                   {String(index + 1).padStart(2, '0')}
                 </div>
                 <span className="kad-pill">{program.category}</span>

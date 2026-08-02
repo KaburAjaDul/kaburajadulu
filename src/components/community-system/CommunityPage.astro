@@ -48,17 +48,60 @@ const href = (path: string): string => localizedPath(locale, path);
       {kind === 'programs' && (
         <>
           <section class="kad-page-hero" aria-labelledby="page-title"><p class="kad-eyebrow">Katalog program</p><div class="kad-hero-grid"><h1 id="page-title">Cari aktivitas yang bisa kamu mulai.</h1><div><p class="kad-lede">Lima kartu berikut berangkat dari sumber publik. Ketersediaan bukan asumsi—konfirmasi langkah berikutnya di Discord.</p><a class="kad-button kad-button--primary" href={DISCORD_URL} target="_blank" rel="noopener noreferrer">Tanya di Discord</a></div></div></section>
-          <section class="kad-section" aria-labelledby="programs-title"><div class="kad-filter-row" aria-label="Jalan pintas kategori program"><a class="kad-pill" href="#all">Semua</a><a class="kad-pill" href="#language">Klub bahasa</a><a class="kad-pill" href="#career">Pendidikan &amp; karier</a></div><div id="all" class="kad-grid kad-grid--two">{PROGRAMS.map((item, index) => {
-            const categoryId = item.category === 'Klub bahasa' ? 'language' : 'career';
-            const isFirstInCategory = PROGRAMS.findIndex((candidate) => candidate.category === item.category) === index;
-            return <article class="kad-card kad-program-card" id={isFirstInCategory ? categoryId : undefined}><div class="kad-card-top"><span class="kad-pill kad-pill-soft">{item.category}</span><span class="kad-status">Konfirmasi di Discord</span></div><h2 id={`${item.slug}-title`}><a href={href(`/programs/${item.slug}`)}>{item.title}</a></h2><p>{item.summary}</p><div class="kad-card-actions"><a class="kad-source-link" href={item.sourceUrl} target="_blank" rel="noopener noreferrer">{item.sourceLabel} ↗</a><a class="kad-text-link" href={href(`/programs/${item.slug}`)}>Lihat detail</a></div></article>;
-          })}</div><p id="programs-title" class="kad-note">Status ketersediaan, kapasitas, pendaftaran, dan arsip tetap terlihat sebagai hal yang perlu dikonfirmasi.</p></section>
+          <section class="kad-section" aria-labelledby="programs-title">
+            <div class="kad-filter-row" aria-label="Jalan pintas kategori program"><a class="kad-pill" href="#all">Semua</a><a class="kad-pill" href="#language">Klub bahasa</a><a class="kad-pill" href="#career">Pendidikan &amp; karier</a></div>
+            <div id="all" class="kad-grid kad-grid--two">
+              {PROGRAMS.map((item, index) => {
+                const categoryId = item.category === 'Klub bahasa' ? 'language' : 'career';
+                const isFirstInCategory = PROGRAMS.findIndex((candidate) => candidate.category === item.category) === index;
+                const cover = item.media[0];
+                return (
+                  <article class="kad-card kad-program-card" id={isFirstInCategory ? categoryId : undefined} data-media-count={item.media.length}>
+                    {cover ? (
+                      <a class="kad-program-card__media" href={href(`/programs/${item.slug}`)} aria-label={`Lihat detail ${item.title}`}>
+                        <img data-program-poster src={cover.src} alt={cover.alt} width={cover.width} height={cover.height} loading={index === 0 ? 'eager' : 'lazy'} decoding="async" />
+                        <p class="kad-media-fallback" hidden>Poster {item.title} gagal dimuat. Buka sumber publik atau detail program untuk dokumentasi dan status.</p>
+                      </a>
+                    ) : (
+                      <div class="kad-program-card__fallback" data-media-state="unavailable">
+                        <span class="kad-large-marker" aria-hidden="true">{item.title.slice(0, 1)}</span>
+                        <p>Belum ada media milik KAD yang disetujui untuk program ini.</p>
+                      </div>
+                    )}
+                    <div class="kad-card-top"><span class="kad-pill kad-pill-soft">{item.category}</span><span class="kad-status">Konfirmasi di Discord</span></div>
+                    <h2 id={`${item.slug}-title`}><a href={href(`/programs/${item.slug}`)}>{item.title}</a></h2>
+                    <p>{item.summary}</p>
+                    <div class="kad-card-actions"><a class="kad-source-link" href={item.sourceUrl} target="_blank" rel="noopener noreferrer">{item.sourceLabel} ↗</a><a class="kad-text-link" href={href(`/programs/${item.slug}`)}>Lihat detail</a></div>
+                  </article>
+                );
+              })}
+            </div>
+            <p id="programs-title" class="kad-note">Poster adalah dokumentasi pengumuman publik, bukan bukti bahwa jadwal lama masih aktif. Ketersediaan, kapasitas, pendaftaran, dan arsip tetap perlu dikonfirmasi.</p>
+          </section>
         </>
       )}
 
       {kind === 'program' && program && (
         <>
           <section class="kad-page-hero kad-detail-hero" aria-labelledby="page-title"><p class="kad-eyebrow">Program · {program.category}</p><div class="kad-hero-grid"><div><span class="kad-large-marker">{program.title.slice(0, 1)}</span><h1 id="page-title">{program.title}</h1></div><div><p class="kad-lede">{program.summary}</p><span class="kad-status">Ketersediaan perlu dikonfirmasi di Discord</span></div></div></section>
+          <section class="kad-section kad-documentation" aria-labelledby="documentation-title" data-program-gallery-count={program.media.length}>
+            <div class="kad-section-heading"><div><p class="kad-kicker">Dokumentasi publik</p><h2 id="documentation-title">Poster dari KADSocialHub.</h2></div><p class="kad-note">Dokumentasi ini merekam pengumuman pada tanggal sumber—bukan jadwal aktif otomatis.</p></div>
+            {program.media.length > 0 ? (
+              <div class:list={['kad-program-gallery', program.media.length === 1 && 'kad-program-gallery--single']}>
+                {program.media.map((media, mediaIndex) => (
+                  <figure class="kad-program-figure">
+                    <div class="kad-program-figure__media">
+                      <img data-program-poster src={media.src} alt={media.alt} width={media.width} height={media.height} loading={mediaIndex === 0 ? 'eager' : 'lazy'} decoding="async" />
+                      <p class="kad-media-fallback" hidden>{program.title}: poster gagal dimuat. Gunakan tautan sumber publik berikut untuk melihat dokumentasi asli.</p>
+                    </div>
+                    <figcaption><span>{media.caption}</span><a href={media.sourceUrl} target="_blank" rel="noopener noreferrer">Buka sumber publik ↗</a></figcaption>
+                  </figure>
+                ))}
+              </div>
+            ) : (
+              <div class="kad-empty-state" data-media-state="unavailable"><span class="kad-status">Tanpa media KAD</span><h3>Dokumentasi visual belum tersedia.</h3><p>Media pada sumber GKS berasal dari akun pihak ketiga, jadi tidak disalin ke website.</p></div>
+            )}
+          </section>
           <section class="kad-section" aria-labelledby="known-title"><div class="kad-grid kad-grid--two"><article class="kad-card kad-evidence-panel"><p class="kad-kicker">Yang sudah diketahui</p><h2 id="known-title">Berangkat dari sumber.</h2><ul class="kad-check-list">{program.known.map((fact) => <li>{fact}</li>)}</ul></article><article class="kad-card kad-evidence-panel kad-evidence-pending"><p class="kad-kicker">Konfirmasi di Discord</p><h2>Langkah berikutnya.</h2><ul class="kad-check-list">{program.confirm.map((fact) => <li>{fact}</li>)}</ul><a class="kad-button kad-button--primary" href={DISCORD_URL} target="_blank" rel="noopener noreferrer">Konfirmasi sekarang</a></article></div></section>
           <section class="kad-section kad-detail-actions"><a class="kad-source-link" href={program.sourceUrl} target="_blank" rel="noopener noreferrer">{program.sourceLabel} ↗</a><a class="kad-text-link" href={href('/programs')}>← Kembali ke program</a></section>
           <section class="kad-section" aria-labelledby="related-title"><div class="kad-section-heading"><p class="kad-kicker">Program lain</p><h2 id="related-title">Mungkin kamu juga ingin melihat.</h2></div><div class="kad-grid kad-grid--three">{PROGRAMS.filter((item) => item.slug !== program.slug).slice(0, 3).map((item) => <a class="kad-card kad-related-card" href={href(`/programs/${item.slug}`)}><span class="kad-pill kad-pill-soft">{item.category}</span><strong>{item.title}</strong><span class="kad-status">Konfirmasi di Discord</span></a>)}</div></section>
@@ -103,6 +146,19 @@ const href = (path: string): string => localizedPath(locale, path);
   <Footer client:only="react" locale={locale} />
 </Layout>
 
+<script>
+  const showPosterFallback = (image: HTMLImageElement) => {
+    image.hidden = true;
+    const fallback = image.nextElementSibling;
+    if (fallback instanceof HTMLElement) fallback.hidden = false;
+  };
+
+  document.querySelectorAll<HTMLImageElement>('[data-program-poster]').forEach((image) => {
+    image.addEventListener('error', () => showPosterFallback(image), { once: true });
+    if (image.complete && image.naturalWidth === 0) showPosterFallback(image);
+  });
+</script>
+
 <style>
   .kad-translation-notice { margin: 1rem 0 0; padding: .75rem 1rem; border: 1px solid #dfe4ec; border-radius: 999px; color: #687081; font-size: .85rem; }
   .kad-kicker { margin: 0 0 1rem; color: #0055ff; font-size: .78rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
@@ -123,11 +179,26 @@ const href = (path: string): string => localizedPath(locale, path);
   .kad-filter-row { display: flex; flex-wrap: wrap; gap: .6rem; margin-bottom: 1.5rem; }
   .kad-pill-soft { border: 0; background: #edf4ff; }
   .kad-card-top, .kad-card-actions { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
-  .kad-program-card { display: flex; flex-direction: column; }
+  .kad-program-card { display: flex; flex-direction: column; overflow: hidden; }
+  .kad-program-card__media, .kad-program-card__fallback { display: grid; min-height: 20rem; margin: clamp(-32px, -3vw, -22px) clamp(-32px, -3vw, -22px) 1.5rem; place-items: center; overflow: hidden; border-bottom: 1px solid #dfe4ec; background: #fff5d8; }
+  .kad-program-card__media img { width: 100%; height: 22rem; object-fit: contain; transition: transform 160ms ease-out; }
+  .kad-program-card__media:hover img, .kad-program-card__media:focus-visible img { transform: scale(1.02); }
+  .kad-media-fallback { margin: 0; padding: 2rem; color: #687081; text-align: center; line-height: 1.6; }
+  .kad-program-card__fallback { align-content: center; gap: 1rem; padding: 2rem; text-align: center; background: #edf4ff; }
+  .kad-program-card__fallback .kad-large-marker { margin: 0 auto; }
   .kad-card-actions { flex-wrap: wrap; margin-top: auto; padding-top: 1.4rem; }
   .kad-program-card h2 { margin: 1.25rem 0 .6rem; font-size: 1.55rem; }
   .kad-program-card h2 a { color: inherit; text-decoration: none; }
   .kad-note { margin-top: 1.25rem; color: #687081; font-size: .9rem; }
+  .kad-documentation { padding-top: 0; }
+  .kad-documentation .kad-section-heading > p { max-width: 28rem; margin: 0; }
+  .kad-program-gallery { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.5rem; align-items: start; }
+  .kad-program-gallery--single { grid-template-columns: minmax(0, 46rem); }
+  .kad-program-figure { margin: 0; overflow: hidden; border: 1px solid #dfe4ec; border-radius: 2rem; background: #fff5d8; box-shadow: 0 14px 40px rgb(31 43 74 / 7%); }
+  .kad-program-figure__media { display: grid; min-height: 18rem; place-items: center; }
+  .kad-program-figure img { display: block; width: 100%; max-height: 52rem; object-fit: contain; }
+  .kad-program-figure figcaption { display: flex; align-items: start; justify-content: space-between; gap: 1rem; padding: 1.1rem 1.25rem; border-top: 1px solid #dfe4ec; background: white; color: #687081; font-size: .84rem; line-height: 1.5; }
+  .kad-program-figure figcaption a { flex: 0 0 auto; color: #0055ff; font-weight: 800; text-decoration: none; }
   .kad-evidence-panel { min-height: 18rem; }
   .kad-evidence-pending { background: #edf4ff; }
   .kad-evidence-panel .kad-button { margin-top: auto; align-self: start; }
@@ -145,6 +216,6 @@ const href = (path: string): string => localizedPath(locale, path);
   .kad-cycle .kad-card:nth-child(2) { transform: translateY(2rem); background: #dff7eb; }
   .kad-cycle .kad-card:nth-child(2):hover { transform: translateY(calc(2rem - 2px)); }
   code { padding: .15rem .35rem; border-radius: .4rem; background: #edf4ff; color: #111318; }
-  @media (max-width: 760px) { .kad-hero-grid, .kad-grid--three, .kad-grid--two, .kad-band, .kad-cycle { grid-template-columns: 1fr; } .kad-section-heading { display: block; } .kad-cycle .kad-card:nth-child(2), .kad-cycle .kad-card:nth-child(2):hover { transform: none; } .kad-state-guide { margin-left: 0; } }
-  @media (prefers-reduced-motion: reduce) { .kad-card { transition: none; } .kad-card:hover, .kad-card:focus-within, .kad-cycle .kad-card:nth-child(2), .kad-cycle .kad-card:nth-child(2):hover { transform: none; } }
+  @media (max-width: 760px) { .kad-hero-grid, .kad-grid--three, .kad-grid--two, .kad-band, .kad-cycle, .kad-program-gallery { grid-template-columns: 1fr; } .kad-section-heading { display: block; } .kad-documentation .kad-section-heading > p { margin-top: 1rem; } .kad-program-card__media img { height: 19rem; } .kad-program-figure figcaption { display: grid; } .kad-cycle .kad-card:nth-child(2), .kad-cycle .kad-card:nth-child(2):hover { transform: none; } .kad-state-guide { margin-left: 0; } }
+  @media (prefers-reduced-motion: reduce) { .kad-card, .kad-program-card__media img { transition: none; } .kad-card:hover, .kad-card:focus-within, .kad-cycle .kad-card:nth-child(2), .kad-cycle .kad-card:nth-child(2):hover, .kad-program-card__media:hover img, .kad-program-card__media:focus-visible img { transform: none; } }
 </style>

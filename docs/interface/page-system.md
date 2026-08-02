@@ -30,7 +30,7 @@ cards.
 | --- | --- | --- | --- | --- |
 | Production desktop and mobile screenshots | Observed | Spacious white page, large direct headline, cobalt actions, playful destination collage, rounded cards | Keep the visual DNA and increase information density gradually below the hero | Screenshots are comparison-only and never bundled |
 | `src/styles/global.css`, `Layout.astro`, current home components | Observed | Plus Jakarta Sans, Caveat, `#0055ff`, pill buttons, 32px media radii | Promote these primitives into named tokens and shared components | Preserve existing destination interaction and locale routing |
-| Public KADSocialHub source links | Observed | Five program candidates have canonical public posts; current availability and reuse rights are incomplete | Every real program card links to its source and says when availability must be confirmed | Do not hotlink or redistribute social CDN media |
+| Public KADSocialHub source links and approved KADSocialHub posters | Observed | Five program candidates have canonical public posts; five repository-owned WebP poster copies were approved for publication on 2026-08-02, with four programs represented and two weekly-club posters in one detail gallery | Every real program card links to its canonical source, keeps meaningful per-poster alt text, and says when availability must be confirmed | Local poster paths only; do not hotlink or redistribute social CDN media |
 | Discord events and reports | Unknown for publication | Operational evidence exists privately, but no approved public event feed exists | Design complete empty, stale, error, and future published states | No private IDs, messages, links, counts, or media in the website or public evidence docs |
 | History, growth, volunteer leadership | Unknown for publication | The desired narrative exists, but dated corroboration and editorial approval are incomplete | Give history a useful evidence-review state before any public timeline claims | No names, growth numbers, disputes, or testimony in runtime fixtures |
 | Public support and donation goal | Inferred | Partners need programs, impact, governance, and use-of-funds before a financial ask is credible | Make `/support` an accountability proposal first | No payment or donation collection until finance ownership and policy exist |
@@ -100,6 +100,13 @@ Expressive gesture: a route-map line connecting the three participation stages.
 - Program cards expose category, source, current certainty, and the next action.
 - Initial source-backed set: French trial, Mandarin Transport, Apple Developer
   Academy session, English + Mandarin weekly clubs, and GKS preparation.
+- Five approved local posters are required: French trial, Mandarin Transport,
+  Apple Developer Academy, English weekly club, and Mandarin weekly club. The
+  local copies preserve canonical public X origin URLs, publication timestamps,
+  dimensions, hashes, approval date, meaningful alt text, and a text fallback.
+- Four programs render local poster media. GKS preparation is intentionally
+  text-only: no third-party GKS artwork, screenshots, or social media media may
+  be copied, hotlinked, or redistributed.
 - Unknown capacity, recurrence, registration, and archive status are never
   silently converted into `active`.
 
@@ -114,6 +121,8 @@ Expressive gesture: colour-coded index tabs with a source/status rail.
 - Routine/session format only when a source proves it.
 - Canonical source link and Discord action.
 - Related programs.
+- The English + Mandarin weekly-clubs detail page renders exactly two local
+  posters as a gallery; each image has meaningful alt text and a text caption.
 
 Expressive gesture: a large typographic program marker, created in CSS rather
 than copied social artwork.
@@ -246,7 +255,16 @@ index becomes a later content slice after real entries exist.
 ## Runtime and content boundary
 
 - Astro remains static. Shared page data is a checked TypeScript fixture.
-- Public source links are implementation-safe; social CDN media is not.
+- Public source links are implementation-safe. The five approved local poster
+  paths under `/images/programs/` are implementation-safe; social CDN/private
+  media and third-party GKS media are forbidden. Every poster keeps its
+  canonical public X origin URL as provenance rather than as a runtime image
+  source.
+- If a local poster fails to load, the program title, source link, availability
+  status, and descriptive fallback remain visible. The GKS card always remains
+  text-only.
+- Dated program posters are documentation only and never become Open Graph or
+  Twitter preview images; social previews keep the neutral site artwork.
 - Event data stays at an empty state until the D1/R2 projection PR.
 - Private Discord evidence never enters the public repo, bundle, rendered HTML,
   metadata, screenshots, or test fixtures.
@@ -260,10 +278,17 @@ The executable contract must prove:
 
 - 10 page families are represented in navigation/design data;
 - 5 public program cards render with canonical source links;
+- exactly 5 approved local poster paths render across 4 programs, with
+  meaningful alt text, controlled local `src`, eager/lazy loading metadata, and
+  intrinsic dimensions;
+- every built poster hash matches the approved content fixture, and an aborted
+  poster request exposes a descriptive fallback without hiding source/status;
+- the English + Mandarin detail gallery contains exactly 2 posters;
+- GKS preparation remains a text-only fallback with no program image;
 - 0 public events render in the initial state;
 - event, history, impact, support, and credits show explicit readiness states;
 - all internal routes preserve the locale prefix;
-- no private manifest IDs, private Discord labels, or social CDN URLs appear in
-  `dist`;
+- no private manifest IDs, private Discord labels, social CDN/private media
+  URLs, or third-party GKS media appear in `dist`;
 - mobile menu, Escape focus restoration, keyboard traversal, RTL, reduced
   motion, overflow, SEO, build, and screenshots pass.

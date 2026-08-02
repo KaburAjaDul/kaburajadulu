@@ -476,6 +476,40 @@ button {
   box-shadow: 0 14px 40px rgb(31 43 74 / 7%);
 }
 
+.kad-program-preview {
+  position: relative;
+  overflow: hidden;
+}
+
+.kad-program-preview__media {
+  display: grid;
+  min-height: 13rem;
+  margin: clamp(-32px, -3vw, -22px) clamp(-32px, -3vw, -22px) 1.4rem;
+  place-items: center;
+  overflow: hidden;
+  background: #fff5d8;
+  border-bottom: 1px solid var(--kad-line);
+}
+
+.kad-program-preview__media img {
+  width: 100%;
+  height: 15rem;
+  object-fit: contain;
+  transition: transform var(--kad-motion-fast) ease;
+}
+
+.kad-program-preview__media:hover img,
+.kad-program-preview__media:focus-visible img {
+  transform: scale(1.025);
+}
+
+.kad-program-preview__number {
+  position: absolute;
+  inset-block-start: 1rem;
+  inset-inline-start: 1rem;
+  box-shadow: 0 .4rem 1rem rgb(17 19 24 / 18%);
+}
+
 a.kad-card {
   display: block;
   text-decoration: none;
@@ -879,7 +913,9 @@ a.kad-card:focus-visible {
 
   .kad-button--primary:hover,
   a.kad-card:hover,
-  a.kad-card:focus-visible {
+  a.kad-card:focus-visible,
+  .kad-program-preview__media:hover img,
+  .kad-program-preview__media:focus-visible img {
     transform: none;
   }
 }

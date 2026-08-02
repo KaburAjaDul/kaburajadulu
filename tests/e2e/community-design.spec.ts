@@ -8,6 +8,21 @@ const PROGRAM_SOURCES = [
   'https://x.com/KADSocialHub/status/2080283341807604175',
 ];
 
+const PROGRAM_POSTER_PATHS = [
+  '/images/programs/french-club-trial-2026-08-02.webp',
+  '/images/programs/mandarin-transport-2026-08-01.webp',
+  '/images/programs/apple-developer-academy-2027-info-session.webp',
+  '/images/programs/english-study-club-weekly-2026-07.webp',
+  '/images/programs/mandarin-study-club-weekly-2026-07.webp',
+] as const;
+
+const PROGRAM_CATALOGUE_COVER_PATHS = [
+  PROGRAM_POSTER_PATHS[0],
+  PROGRAM_POSTER_PATHS[1],
+  PROGRAM_POSTER_PATHS[2],
+  PROGRAM_POSTER_PATHS[3],
+] as const;
+
 const ROOT_SURFACES = [
   '/',
   '/community/',
@@ -32,6 +47,22 @@ async function expectNoHorizontalOverflow(page: Page) {
 }
 
 async function capture(page: Page, testInfo: TestInfo, name: string) {
+  await page.locator('main img').evaluateAll(async (images) => {
+    for (const image of images) {
+      const element = image as HTMLImageElement;
+      element.scrollIntoView({ block: 'center' });
+      if (!element.complete) {
+        await new Promise<void>((resolve) => {
+          element.addEventListener('load', () => resolve(), { once: true });
+          element.addEventListener('error', () => resolve(), { once: true });
+        });
+      }
+      await element.decode().catch(() => undefined);
+    }
+
+    window.scrollTo({ top: 0 });
+    await new Promise<void>((resolve) => requestAnimationFrame(() => requestAnimationFrame(() => resolve())));
+  });
   await page.screenshot({ path: testInfo.outputPath('screenshots', name), fullPage: true });
 }
 
@@ -69,6 +100,82 @@ test('program catalogue renders five source-backed cards with explicit status', 
   );
   expect(await links.evaluateAll((anchors) => anchors.every((anchor) => anchor.getAttribute('target') === '_blank'))).toBe(true);
   expect(await links.evaluateAll((anchors) => anchors.every((anchor) => anchor.getAttribute('rel') === 'noopener noreferrer'))).toBe(true);
+});
+
+test('program posters use meaningful local media with loading metadata and dimensions', async ({ page }) => {
+  await page.goto('/programs/', { waitUntil: 'networkidle' });
+
+  const cards = page.locator('.kad-program-card');
+  const posterImages = cards.locator('img');
+  await expect(posterImages).toHaveCount(4);
+
+  const posterMetadata = await posterImages.evaluateAll((images) => images.map((image) => {
+    const element = image as HTMLImageElement;
+    const url = new URL(element.currentSrc || element.src, window.location.href);
+    return {
+      path: url.pathname,
+      origin: url.origin,
+      alt: element.alt.trim(),
+      loading: element.getAttribute('loading'),
+      width: Number(element.getAttribute('width')),
+      height: Number(element.getAttribute('height')),
+      complete: element.complete,
+      naturalWidth: element.naturalWidth,
+      naturalHeight: element.naturalHeight,
+    };
+  }));
+
+  expect(posterMetadata.map(({ path }) => path).sort()).toEqual(PROGRAM_CATALOGUE_COVER_PATHS.slice().sort());
+  expect(posterMetadata.every(({ origin }) => origin === new URL(page.url()).origin)).toBe(true);
+  expect(posterMetadata.every(({ path }) => path.startsWith('/images/programs/'))).toBe(true);
+  expect(posterMetadata.every(({ alt }) => alt.length >= 20 && !/^image|^poster$/i.test(alt))).toBe(true);
+  expect(posterMetadata.every(({ loading }) => loading === 'lazy' || loading === 'eager')).toBe(true);
+  expect(posterMetadata.every(({ width, height }) => width > 0 && height > 0)).toBe(true);
+  expect(posterMetadata.every(({ complete, naturalWidth, naturalHeight }) => complete && naturalWidth > 0 && naturalHeight > 0)).toBe(true);
+
+  const weeklyEnglish = posterMetadata.find(({ path }) => path === PROGRAM_POSTER_PATHS[3]);
+  expect(weeklyEnglish?.alt).toContain('English Study Club');
+});
+
+test('GKS remains a text-only fallback and English + Mandarin detail has two posters', async ({ page }) => {
+  await page.goto('/programs/', { waitUntil: 'domcontentloaded' });
+  const gksCard = page.locator('.kad-program-card').filter({ hasText: 'GKS preparation' });
+  await expect(gksCard).toHaveCount(1);
+  await expect(gksCard.locator('img')).toHaveCount(0);
+  await expect(gksCard.locator('.kad-source-link')).toHaveCount(1);
+  await expect(gksCard.locator('.kad-status')).toContainText('Konfirmasi di Discord');
+
+  await page.goto('/programs/english-mandarin-weekly-clubs/', { waitUntil: 'networkidle' });
+  const gallery = page.locator('.kad-program-gallery');
+  await expect(gallery).toHaveCount(1);
+  const galleryImages = gallery.locator('img');
+  await expect(galleryImages).toHaveCount(2);
+  expect(await galleryImages.evaluateAll((images) => images.map((image) => new URL((image as HTMLImageElement).currentSrc || (image as HTMLImageElement).src, window.location.href).pathname).sort())).toEqual(
+    [PROGRAM_POSTER_PATHS[3], PROGRAM_POSTER_PATHS[4]].sort(),
+  );
+  expect(await galleryImages.evaluateAll((images) => images.every((image) => {
+    const element = image as HTMLImageElement;
+    const url = new URL(element.currentSrc || element.src, window.location.href);
+    return url.origin === window.location.origin && url.pathname.startsWith('/images/programs/') && element.alt.trim().length >= 20;
+  }))).toBe(true);
+
+  const galleryMetadata = await galleryImages.evaluateAll((images) => images.map((image) => ({
+    path: new URL((image as HTMLImageElement).currentSrc || (image as HTMLImageElement).src, window.location.href).pathname,
+    alt: (image as HTMLImageElement).alt,
+  })));
+  expect(galleryMetadata.find(({ path }) => path === PROGRAM_POSTER_PATHS[3])?.alt).toContain('English Study Club');
+  expect(galleryMetadata.find(({ path }) => path === PROGRAM_POSTER_PATHS[4])?.alt).toContain('Mandarin Study Club');
+});
+
+test('program documentation keeps a descriptive fallback when local posters fail', async ({ page }) => {
+  await page.route('**/images/programs/*.webp', (route) => route.abort());
+  await page.goto('/programs/', { waitUntil: 'networkidle' });
+
+  const cards = page.locator('.kad-program-card');
+  await expect(cards).toHaveCount(5);
+  await expect(cards.locator('.kad-media-fallback:visible')).toHaveCount(4);
+  await expect(cards.locator('.kad-source-link')).toHaveCount(5);
+  await expect(cards.locator('.kad-status')).toHaveCount(5);
 });
 
 test('events begin with an honest zero-count empty state', async ({ page }) => {
@@ -194,6 +301,7 @@ test.describe('screenshot artifacts', () => {
   for (const [route, name] of [
     ['/', 'home'],
     ['/programs/', 'programs'],
+    ['/programs/english-mandarin-weekly-clubs/', 'weekly-detail'],
     ['/support/', 'support'],
   ] as const) {
     test(`${name} desktop and mobile screenshots are emitted`, async ({ page }, testInfo) => {
