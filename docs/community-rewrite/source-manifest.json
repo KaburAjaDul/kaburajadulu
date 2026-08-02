@@ -1,0 +1,393 @@
+{
+  "manifest_version": "phase-0",
+  "project": "kaburajadulu-community-rewrite",
+  "observed_on": "2026-08-02",
+  "timezone": "Asia/Jakarta",
+  "scope": "KAD community rewrite evidence inventory",
+  "policies": {
+    "canonical_post_urls": "Use stable public post URLs as source-of-truth links.",
+    "media_origin_urls": "CDN origins are mutable references only; they are not production asset URLs.",
+    "privacy": "No personal data. Do not expose private Discord handles, channel IDs, message IDs, internal links, or volunteer names.",
+    "discord_counts": "Server UI role counts are not unique public member analytics.",
+    "consent": "Public visibility does not equal permission to republish media, quotations, or individual attribution. Editorial approval is required where noted."
+  },
+  "sources": [
+    {
+      "id": "astro-current-no-content-posts",
+      "kind": "site-baseline",
+      "source": "kaburajadulu-community-rewrite",
+      "observed": {
+        "blog_route": "src/pages/blog/[...slug].astro",
+        "content_post_files": 0
+      },
+      "evidence_status": "observed",
+      "intended_website_use": "Prototype empty state and source-backed community pages.",
+      "permission_consent": "not_applicable",
+      "freshness": "checked 2026-08-02",
+      "data_gaps": ["No authored post corpus", "No approved authors, dates, excerpts, or images"]
+    },
+    {
+      "id": "x-kadsocialhub-profile",
+      "kind": "social-profile",
+      "platform": "x",
+      "canonical_url": "https://x.com/KADSocialHub",
+      "canonicality": "canonical public social",
+      "observed": {
+        "followers": 6754,
+        "posts": 685,
+        "bio_claim": "24k+ Discord"
+      },
+      "verification_status": "not established; do not call account verified",
+      "evidence_status": "observed-public",
+      "intended_website_use": "Canonical community social CTA and snapshot distribution signal.",
+      "permission_consent": "public-source; editorial review for final copy",
+      "freshness": "2026-08-02",
+      "data_gaps": ["Counts and bio may change", "No reach, growth, or unique-member analytics"]
+    },
+    {
+      "id": "instagram-kadsocialhub-profile",
+      "kind": "social-profile",
+      "platform": "instagram",
+      "canonical_url": "https://www.instagram.com/kadsocialhub/",
+      "canonicality": "canonical Instagram",
+      "observed": {
+        "posts": 51,
+        "followers": 169,
+        "bio_claim": "22K+"
+      },
+      "evidence_status": "observed-public",
+      "intended_website_use": "Secondary social CTA and source index.",
+      "permission_consent": "public-source; editorial review for final copy",
+      "freshness": "2026-08-02",
+      "data_gaps": ["Meaning of 22K+ is not established", "Counts may change", "No reach or audience breakdown"]
+    },
+    {
+      "id": "discord-server-ui-role-counts",
+      "kind": "discord-private-ui",
+      "observed": {
+        "roles": {
+          "All Members": 25989,
+          "Mau Kabur": 23559,
+          "Udah Kabur": 1229
+        },
+        "scope_label": "server UI role counts, not unique public member analytics"
+      },
+      "evidence_status": "observed-private",
+      "intended_website_use": "Approval-gated, anonymized community-scale context only.",
+      "permission_consent": "private evidence; editorial approval required",
+      "freshness": "2026-08-02",
+      "data_gaps": ["Role overlap and inactive accounts unknown", "No unique-member or public analytics export"]
+    },
+    {
+      "id": "x-french-trial",
+      "kind": "program-post",
+      "platform": "x",
+      "canonical_url": "https://x.com/KADSocialHub/status/2083791105590784033",
+      "media_origin_urls": ["https://pbs.twimg.com/media/HOsc9vJa0AAmugE.jpg?name=orig"],
+      "media_origin_sha256": ["97f0e9b17cb4e4bfdba3c53ca0d6aee2b0e261bccb204fefe516fb72f18ecdff"],
+      "media_status": "mutable CDN origin; not a production asset URL",
+      "topic": "French Club trial",
+      "observed": {
+        "event_date": "2026-08-02",
+        "time": "16:00 WIB",
+        "format": "trial",
+        "curriculum": ["alphabet", "pronunciation", "introductions", "basic grammar"]
+      },
+      "evidence_status": "observed-public",
+      "intended_website_use": "Link-backed program card.",
+      "permission_consent": "public source; editorial and rights review for copied text/media",
+      "freshness": "2026-08-02",
+      "data_gaps": ["Registration path", "Capacity", "Program owner", "Post-trial status"]
+    },
+    {
+      "id": "x-mandarin-aug-1",
+      "kind": "program-post",
+      "platform": "x",
+      "canonical_url": "https://x.com/KADSocialHub/status/2083159775362302137",
+      "media_origin_urls": ["https://pbs.twimg.com/media/HOjexbCaAAACiJc.jpg?name=orig"],
+      "media_origin_sha256": ["549d9a9c0f3fc28927452c05dac781486e6308ff63e5d92869ed6ad3e602252b"],
+      "media_status": "mutable CDN origin; not a production asset URL",
+      "topic": "Mandarin Study Club — Transport",
+      "observed": {
+        "event_date": "2026-08-01",
+        "time": "18:30 WIB",
+        "venue": "KAD Discord",
+        "price": "free",
+        "audience": "beginner-friendly"
+      },
+      "evidence_status": "observed-public",
+      "intended_website_use": "Link-backed latest-program card.",
+      "permission_consent": "public source; editorial and rights review for copied text/media",
+      "freshness": "2026-08-02",
+      "data_gaps": ["Capacity", "Durable registration path", "Documentation", "Archive status"]
+    },
+    {
+      "id": "x-apple-academy",
+      "kind": "program-post",
+      "platform": "x",
+      "canonical_url": "https://x.com/KADSocialHub/status/2082436751105388905",
+      "media_origin_urls": ["https://pbs.twimg.com/media/HOZNL3tacAAX7gp.jpg?name=orig"],
+      "media_origin_sha256": ["89208ec663d9006591d76e59845f99e2736e6f0cfc58e3b2cdaeff7a1dad0b4b"],
+      "media_status": "mutable CDN origin; not a production asset URL",
+      "topic": "Apple Developer Academy Batch 2027",
+      "observed": {
+        "event_date": "2026-07-31",
+        "time": "19:00-20:30 WIB",
+        "venue": "KAD Discord",
+        "format": "online info session and learner sharing"
+      },
+      "evidence_status": "observed-public",
+      "intended_website_use": "Link-backed program card.",
+      "permission_consent": "public source; editorial and rights review for copied text/media",
+      "freshness": "2026-08-02",
+      "data_gaps": ["Eligibility", "Official application window and link", "Recording", "Archive status"]
+    },
+    {
+      "id": "x-english-mandarin-weekly",
+      "kind": "program-post",
+      "platform": "x",
+      "canonical_url": "https://x.com/KADSocialHub/status/2080532059408490846",
+      "media_origin_urls": [
+        "https://pbs.twimg.com/media/HN-I3mnbEAApotA.jpg?name=orig",
+        "https://pbs.twimg.com/media/HN-I4FvbgAAZtmL.jpg?name=orig"
+      ],
+      "media_origin_sha256": [
+        "c6f7b5a279f8049e3c2963dcb454c91ca6eb12a7f47b5c73181de514b160931a",
+        "46950c60cdaccecda630266a50f70764d4c03d535c64e8f8281749b6bfd01d8f"
+      ],
+      "media_status": "mutable CDN origins; not production asset URLs",
+      "topic": "English + Mandarin weekly",
+      "observed": {
+        "format": "recurring study clubs",
+        "positioning": "beginner-safe peer learning"
+      },
+      "evidence_status": "observed-public",
+      "intended_website_use": "Link-backed weekly language-program card.",
+      "permission_consent": "public source; editorial and rights review for copied text/media",
+      "freshness": "2026-08-02",
+      "data_gaps": ["Current recurrence", "Capacity", "Durable sign-up path", "Pause or archive status"]
+    },
+    {
+      "id": "x-gks",
+      "kind": "program-post",
+      "platform": "x",
+      "canonical_url": "https://x.com/KADSocialHub/status/2080283341807604175",
+      "media_origin_urls": [],
+      "topic": "GKS preparation",
+      "observed": {
+        "coverage": "GKS 101 through practical survival after arriving in Korea"
+      },
+      "evidence_status": "observed-public",
+      "intended_website_use": "Scholarship/program source link.",
+      "permission_consent": "public source; editorial review required",
+      "freshness": "2026-08-02",
+      "data_gaps": ["Exact session date and time", "Eligibility", "Official scholarship URL", "Recording", "Archive status"]
+    },
+    {
+      "id": "instagram-mandarin-aug-1",
+      "kind": "program-post",
+      "platform": "instagram",
+      "canonical_url": "https://www.instagram.com/kadsocialhub/p/DbdNHjQvFRQ/",
+      "topic": "Mandarin Study Club — Transport",
+      "observed": {
+        "event_date": "2026-08-01",
+        "time": "18:30 WIB",
+        "topic": "transport"
+      },
+      "evidence_status": "observed-public",
+      "intended_website_use": "Cross-check and source link for Mandarin card.",
+      "permission_consent": "public source; editorial and rights review for copied text/media",
+      "freshness": "2026-08-02",
+      "data_gaps": ["Capacity", "Durable sign-up path", "Documentation", "Archive status"]
+    },
+    {
+      "id": "instagram-apple-academy",
+      "kind": "program-post",
+      "platform": "instagram",
+      "canonical_url": "https://www.instagram.com/kadsocialhub/p/DbYRCN5vNjo/",
+      "topic": "Apple Developer Academy Batch 2027",
+      "observed": {
+        "event_date": "2026-07-31",
+        "time": "19:00-20:30 WIB",
+        "format": "online info session and learner journey"
+      },
+      "evidence_status": "observed-public",
+      "intended_website_use": "Cross-check and source link for Apple Academy card.",
+      "permission_consent": "public source; editorial and rights review for copied text/media",
+      "freshness": "2026-08-02",
+      "data_gaps": ["Eligibility", "Official application link", "Recording", "Archive status"]
+    },
+    {
+      "id": "instagram-mandarin-weekly",
+      "kind": "program-post",
+      "platform": "instagram",
+      "canonical_url": "https://www.instagram.com/kadsocialhub/p/DbKgbCajw7o/",
+      "topic": "Mandarin Study Club — Batch 3",
+      "observed": {
+        "recurrence": "Friday",
+        "time": "20:30 WIB",
+        "format": "dialogue and monologue"
+      },
+      "evidence_status": "observed-public",
+      "intended_website_use": "Weekly language-program source link.",
+      "permission_consent": "public source; editorial and rights review for copied text/media",
+      "freshness": "2026-08-02",
+      "data_gaps": ["Current recurrence", "Capacity", "Durable registration path", "Archive status"]
+    },
+    {
+      "id": "instagram-japanese-weekly",
+      "kind": "program-post",
+      "platform": "instagram",
+      "canonical_url": "https://www.instagram.com/kadsocialhub/p/DbABU8nvbYP/",
+      "topic": "Japanese Study Club — weekly tracks",
+      "observed": {
+        "recurrence": "Sunday-Thursday",
+        "time": "19:00 WIB",
+        "tracks": ["immersive gaming and study stream", "N5", "N4", "N3", "N2+"]
+      },
+      "evidence_status": "observed-public",
+      "intended_website_use": "Approval-gated language-program card.",
+      "permission_consent": "public source; editorial and rights review for copied text/media",
+      "freshness": "2026-08-02",
+      "data_gaps": ["Current recurrence", "Curriculum ownership", "Capacity", "Sign-up path", "Archive status"]
+    },
+    {
+      "id": "instagram-japanese-game",
+      "kind": "community-activity-post",
+      "platform": "instagram",
+      "canonical_url": "https://www.instagram.com/kadsocialhub/p/Da-IjubvhPq/",
+      "topic": "Japanese immersive game session",
+      "observed": {
+        "recurrence": "Sunday",
+        "time": "19:00-21:00",
+        "format": "interactive Japanese learning through gameplay"
+      },
+      "evidence_status": "observed-public",
+      "intended_website_use": "Approval-gated community activity card.",
+      "permission_consent": "public source; editorial and rights review for copied text/media",
+      "freshness": "2026-08-02",
+      "data_gaps": ["Current recurrence", "Capacity", "Participation path", "Documentation", "Archive status"]
+    },
+    {
+      "id": "instagram-french",
+      "kind": "program-post",
+      "platform": "instagram",
+      "canonical_url": "https://www.instagram.com/kadsocialhub/p/Da6wJ1WP1Dq/",
+      "topic": "French Study Club — free talk",
+      "observed": {
+        "recurrence": "Saturday",
+        "time": "19:00 WIB",
+        "format": "free talk"
+      },
+      "evidence_status": "observed-public",
+      "intended_website_use": "Cross-check and source link for French program card.",
+      "permission_consent": "public source; editorial and rights review for copied text/media",
+      "freshness": "2026-08-02",
+      "data_gaps": ["Current recurrence", "Capacity", "Sign-up path", "Archive status"]
+    },
+    {
+      "id": "instagram-cerita-aja-dulu-ep19",
+      "kind": "story-post",
+      "platform": "instagram",
+      "canonical_url": "https://www.instagram.com/kadsocialhub/p/DZKQziKv8le/",
+      "topic": "Cerita Aja Dulu episode 19",
+      "observed": {
+        "event_date": "2026-06-06",
+        "time": "20:00 WIB",
+        "topic": "practical legal self-protection in Korea",
+        "coverage": ["complaint and harassment steps", "important institutions", "legal visa and work-program context"]
+      },
+      "evidence_status": "observed-public",
+      "intended_website_use": "Community-story/source-index card.",
+      "permission_consent": "public source; editorial and rights review; individual attribution requires confirmation",
+      "freshness": "2026-08-02",
+      "data_gaps": ["Transcript", "Recording", "Approved speaker attribution", "Follow-up resources", "Archive status"]
+    },
+    {
+      "id": "discord-study-club-log-format",
+      "kind": "discord-private-evidence",
+      "observed": {
+        "report_fields": [
+          "event name",
+          "moderator handle",
+          "date/time/duration",
+          "category label",
+          "announcement/reminder links",
+          "poll",
+          "participant count",
+          "before/after screenshots"
+        ]
+      },
+      "evidence_status": "observed-private",
+      "intended_website_use": "Inform an anonymized internal event-report schema only.",
+      "permission_consent": "private evidence; editorial approval required",
+      "freshness": "reviewed 2026-08-02",
+      "data_gaps": ["Retention, screenshot consent, source access, and public reporting threshold"]
+    },
+    {
+      "id": "discord-korean-club-cycle-2-example",
+      "kind": "discord-private-event-report",
+      "observed": {
+        "event_name": "알아보자 #8 Beasiswa GKS vs Beasiswa KAIST",
+        "date": "2026-04-04",
+        "time": "12:00-13:31 WIB",
+        "duration_minutes": 91,
+        "participant_count": 16
+      },
+      "scope_label": "private report example; participant count is not a public audience metric",
+      "evidence_status": "observed-private",
+      "intended_website_use": "Approval-gated anonymized example of structured event reporting.",
+      "permission_consent": "private evidence; editorial approval required",
+      "freshness": "event 2026-04-04; reviewed 2026-08-02",
+      "data_gaps": ["Public event page, participant consent, recording/transcript, and archive link"]
+    },
+    {
+      "id": "discord-korean-club-evaluation-handover",
+      "kind": "discord-private-evidence",
+      "observed": {
+        "artifacts": ["Korean Club evaluation/feedback form", "cycle handover evidence"]
+      },
+      "evidence_status": "observed-private",
+      "intended_website_use": "Inform feedback and handover workflow; no public copy by default.",
+      "permission_consent": "private evidence; editorial approval required",
+      "freshness": "reviewed 2026-08-02",
+      "data_gaps": ["Response consent, retention, and publishable aggregate findings"]
+    },
+    {
+      "id": "public-cycle-1-volunteer-testimonial",
+      "kind": "public-announcement",
+      "observed": {
+        "announcement_date": "2026-03-02",
+        "asset": "Cycle 1 volunteer testimonial image"
+      },
+      "evidence_status": "observed-public-attribution-unresolved",
+      "intended_website_use": "Candidate story asset only after explicit opt-in and rights review.",
+      "permission_consent": "individual attribution and image/quote reuse blocked pending opt-in",
+      "freshness": "announcement 2026-03-02; reviewed 2026-08-02",
+      "data_gaps": ["Subject identity, opt-in record, image rights, alt text, and approved quotation"]
+    },
+    {
+      "id": "private-founding-testimony-redacted",
+      "kind": "private-first-person-testimony",
+      "observed": {
+        "origin_summary": "2024 Telegram-to-Discord origin",
+        "early_focus": ["IT and Japan-work community", "CV reviews", "recruiter Q&As"],
+        "early_scale": "fewer than 1000 members",
+        "later_state": "ownership transition"
+      },
+      "redaction": "Sensitive dispute material, names, allegations, quotations, and other participant details intentionally excluded.",
+      "evidence_status": "observed-private-redacted",
+      "intended_website_use": "Editorial fact-checking of the 2024 origin and early activities only; history publication is blocked pending review.",
+      "permission_consent": "private source; contributor approval and editorial/consent review required",
+      "freshness": "reviewed 2026-08-02",
+      "data_gaps": ["Exact dates", "Corroborating public sources", "Approved attribution", "Publication scope"]
+    }
+  ],
+  "content_freeze_shortlist": [
+    "Community overview with canonical social links and clearly scoped snapshot signals",
+    "Programs index for French trial, Mandarin 1 Aug, Apple Academy, English + Mandarin weekly, and GKS",
+    "Language/community activities index for Mandarin weekly, Japanese weekly, Japanese game, and approval-gated Korean Club",
+    "Stories/source index for Cerita Aja Dulu episode 19 and the opt-in-blocked Cycle 1 testimonial",
+    "Internal-ready anonymized Study Club Log schema, not public by default"
+  ]
+}
