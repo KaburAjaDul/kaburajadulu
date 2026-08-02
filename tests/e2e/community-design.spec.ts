@@ -42,6 +42,19 @@ const DESIGN_PREVIEWS = [
   ['community-atlas', 'Community Atlas'],
 ] as const;
 
+const TASK_HEADERS = [
+  ['/programs/', 'catalogue', 'Program publik', '5'],
+  ['/events/', 'operational', 'Acara publik', '0'],
+  ['/volunteer/', 'operational', 'Satu siklus', '3 bulan'],
+  ['/stories/', 'evidence', 'Cerita terbit', '0'],
+  ['/about/history/', 'evidence', 'Status', 'Evidence review'],
+  ['/community/impact/', 'evidence', 'Keluarga metrik', '4'],
+  ['/support/', 'proposal', 'Pembayaran aktif', '0'],
+  ['/community/credits/', 'evidence', 'Kredit disetujui', '0'],
+  ['/programs/french-club-trial/', 'record', 'Poster publik', '1'],
+  ['/events/not-published/', 'record', 'Status', 'Not published'],
+] as const;
+
 async function expectNoHorizontalOverflow(page: Page) {
   const dimensions = await page.evaluate(() => ({
     body: document.body.scrollWidth,
@@ -82,6 +95,42 @@ test.describe('KAD clean redesign route contract', () => {
       await expect(page.locator('html')).toHaveAttribute('dir', 'ltr');
     });
   }
+});
+
+test.describe('route-specific first viewport', () => {
+  test('Community keeps the sole orientation hero', async ({ page }) => {
+    await page.goto('/community/', { waitUntil: 'domcontentloaded' });
+    await expect(page.locator('[data-page-header="orientation"]')).toHaveCount(1);
+    await expect(page.locator('[data-page-header="task"]')).toHaveCount(0);
+  });
+
+  for (const [route, variant, label, value] of TASK_HEADERS) {
+    test(`${route} exposes ${label} in a compact ${variant} header`, async ({ page }) => {
+      await page.setViewportSize({ width: 1280, height: 720 });
+      await page.goto(route, { waitUntil: 'domcontentloaded' });
+
+      const header = page.locator(`[data-page-header="task"][data-header-variant="${variant}"]`);
+      await expect(header).toHaveCount(1);
+      await expect(page.locator('[data-page-header="orientation"]')).toHaveCount(0);
+      await expect(header.locator('.kad-task-header__stats > div')).toHaveCount(3);
+
+      const stat = header.locator('.kad-task-header__stats > div').filter({ hasText: label });
+      await expect(stat).toContainText(value);
+      const statBox = await header.locator('.kad-task-header__stats').boundingBox();
+      expect(statBox, 'status summary must be laid out in the first viewport').not.toBeNull();
+      expect((statBox?.y ?? 721) + (statBox?.height ?? 0)).toBeLessThanOrEqual(720);
+      await expectNoHorizontalOverflow(page);
+    });
+  }
+
+  test('Programs exposes real category controls in the compact header', async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 720 });
+    await page.goto('/programs/', { waitUntil: 'domcontentloaded' });
+    const filters = page.locator('.kad-task-header .kad-filter-row');
+    await expect(filters.getByRole('link')).toHaveCount(3);
+    const box = await filters.boundingBox();
+    expect((box?.y ?? 721) + (box?.height ?? 0)).toBeLessThanOrEqual(720);
+  });
 });
 
 test.describe('staging landing direction review', () => {
@@ -345,6 +394,9 @@ test.describe('screenshot artifacts', () => {
     ['/programs/', 'programs'],
     ['/programs/english-mandarin-weekly-clubs/', 'weekly-detail'],
     ['/support/', 'support'],
+    ['/events/', 'events'],
+    ['/volunteer/', 'volunteer'],
+    ['/about/history/', 'history'],
     ['/design-preview/field-notes/', 'preview-field-notes'],
     ['/design-preview/community-bulletin/', 'preview-bulletin'],
     ['/design-preview/community-atlas/', 'preview-atlas'],

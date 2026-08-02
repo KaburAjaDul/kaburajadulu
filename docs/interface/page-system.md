@@ -75,6 +75,23 @@ cross-link band, and an expanded footer. Each page gets one expressive gesture:
 a collage, step rail, calendar spine, timeline, contribution ledger, or support
 blueprint. This keeps the family coherent without making every route identical.
 
+### Above-the-fold hierarchy
+
+Visual consistency does not justify repeating a landing-style introduction on
+every route. The first viewport must expose the page's actual job:
+
+- `/community` keeps the orientation hero because the visitor still needs the
+  community model explained.
+- Catalogue pages expose inventory count, categories, certainty, and filters.
+- Operational pages expose cycle or schedule state before explanation.
+- Evidence pages expose readiness, approval, and metric-contract state.
+- Proposal pages expose collection/governance readiness and proposed scope.
+- Detail pages use record headers with category, source/media state, identifier,
+  and next action.
+
+All non-Community page headers are compact task headers. Their role is
+information scent and control access, not visual spectacle.
+
 ## Page family designs
 
 ### 1. Home `/`
