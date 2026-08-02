@@ -4,6 +4,10 @@
     "about": "会社概要",
     "destinations": "目的地",
     "blog": "ブログ",
+    "community": "コミュニティ",
+    "programs": "プログラム",
+    "events": "イベント",
+    "join_discord": "Discordに参加",
     "contact": "お問い合わせ",
     "language": "言語"
   },
@@ -76,7 +80,19 @@
     "contact": "お問い合わせ",
     "email": "メール",
     "discord": "Discord",
+    "community": "コミュニティ",
+    "programs": "プログラム",
+    "events": "イベント",
     "copyright": "© 2026 KaburAjaDulu. 全著作権所有。"
+  },
+  "a11y": {
+    "skip_to_content": "メインコンテンツへ移動",
+    "primary_navigation": "メインナビゲーション",
+    "footer_navigation": "フッターナビゲーション",
+    "home_link": "ホームに戻る",
+    "open_menu": "メニューを開く",
+    "close_menu": "メニューを閉じる",
+    "translation_notice": "翻訳の確認が完了するまで、このページの本文は英語で表示されます。"
   },
   "common": {
     "loading": "読み込み中...",

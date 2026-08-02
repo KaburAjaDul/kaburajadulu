@@ -1,0 +1,104 @@
+name: Staging Preview
+
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+  workflow_dispatch:
+    inputs:
+      preview_alias:
+        description: Optional preview alias suffix (letters, numbers, and hyphens)
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: staging-preview-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  preview:
+    name: Upload staging Worker preview
+    if: >-
+      vars.CLOUDFLARE_STAGING_DEPLOY_ENABLED == 'true' &&
+      (github.event_name == 'workflow_dispatch' ||
+      github.event.pull_request.head.repo.full_name == github.repository)
+    runs-on: ubuntu-latest
+    environment: Staging
+    steps:
+      - name: Check out source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 22.12.0
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version: 1.3.14
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Validate staging configuration
+        run: bun run validate:staging
+
+      - name: Astro check
+        run: bun run check
+
+      - name: Build static assets
+        run: bun run build:staging
+
+      - name: Verify staging metadata boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -RFq '<meta name="robots" content="noindex, nofollow">' dist --include='*.html'
+          grep -Fxq 'Disallow: /' dist/robots.txt
+          test ! -e dist/sitemap.xml
+          if grep -REq 'kaburajadulu\.com|rel="canonical"|hreflang=' dist --include='*.html'; then
+            echo 'Staging HTML contains production indexing metadata.' >&2
+            exit 1
+          fi
+          if grep -Fq 'kaburajadulu.com' dist/robots.txt; then
+            echo 'Staging robots.txt advertises the production site.' >&2
+            exit 1
+          fi
+
+      - name: Wrangler staging dry-run
+        run: bunx wrangler deploy --env staging --dry-run
+
+      - name: Upload versioned staging preview
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          PREVIEW_ALIAS_INPUT: ${{ inputs.preview_alias || '' }}
+          PULL_REQUEST_NUMBER: ${{ github.event.pull_request.number || '' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ -z "${CLOUDFLARE_API_TOKEN}" || -z "${CLOUDFLARE_ACCOUNT_ID}" ]]; then
+            echo 'Staging environment secrets CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID are required.' >&2
+            exit 1
+          fi
+          requested_alias="${PREVIEW_ALIAS_INPUT:-}"
+          if [[ -z "$requested_alias" ]]; then
+            requested_alias="pr-${PULL_REQUEST_NUMBER:-manual}-${GITHUB_SHA:0:7}"
+          fi
+          preview_alias="$(printf '%s' "$requested_alias" | tr '[:upper:]' '[:lower:]' | tr -cd '[:alnum:]-' | cut -c1-41)"
+          if [[ ! "$preview_alias" =~ ^[a-z][a-z0-9-]*$ ]]; then
+            echo 'Preview alias must start with a lowercase letter and contain only lowercase letters, numbers, or hyphens.' >&2
+            exit 1
+          fi
+          staging_worker_name='kaburajadulu-staging'
+          if (( ${#preview_alias} + 1 + ${#staging_worker_name} > 63 )); then
+            echo 'Preview alias plus the staging Worker name exceeds the 63-character DNS limit.' >&2
+            exit 1
+          fi
+          bunx wrangler versions upload --env staging --preview-alias "$preview_alias"

@@ -1,0 +1,29 @@
+---
+import Layout from '@/layouts/Layout.astro';
+import Navbar from '@/components/layout/Navbar';
+import Footer from '@/components/layout/Footer';
+import CommunityShell from '@/components/community/CommunityShell.astro';
+import { COMMUNITY_SECTIONS, localizedShellCopy, type CommunitySection } from '@/content/community-shell';
+import { LOCALES, type Locale } from '@/i18n/constants';
+import '@/styles/global.css';
+
+export function getStaticPaths() {
+  return LOCALES.flatMap((lang) => COMMUNITY_SECTIONS.map((section) => ({
+    params: { lang, section },
+    props: { locale: lang, section },
+  })));
+}
+
+const locale = Astro.props.locale as Locale;
+const section = Astro.props.section as CommunitySection;
+const currentPath = Astro.url.pathname;
+const shellCopy = localizedShellCopy(locale, section);
+const title = shellCopy.title;
+const description = shellCopy.description;
+---
+
+<Layout title={`${title} | KaburAjaDulu`} description={description} locale={locale} currentPath={currentPath} section={section}>
+  <Navbar client:load locale={locale} currentPath={currentPath} />
+  <main id="main-content"><CommunityShell section={section} locale={locale} /></main>
+  <Footer client:load locale={locale} />
+</Layout>

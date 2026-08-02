@@ -40,6 +40,8 @@ const enhancedDescription = description || `${category ? `${category}: ` : ''}${
   title={`${title} | KaburAjaDulu`}
   description={enhancedDescription}
   canonical={canonicalURL}
+  locale={locale}
+  currentPath={currentPath}
 >
   <!-- Blog-specific JSON-LD Schema -->
   <script type="application/ld+json" slot="head" is:inline>
@@ -77,13 +79,10 @@ const enhancedDescription = description || `${category ? `${category}: ` : ''}${
   {category && <meta slot="head" property="article:section" content={category} />}
   {image && <meta slot="head" property="og:image" content={`https://kaburajadulu.com${image}`} />}
 
-  <!-- Fixed Header with Navbar -->
-  <header class="fixed top-0 left-0 right-0 bg-white/95 backdrop-blur-sm border-b border-gray-100 z-50">
-    <Navbar client:only="react" locale={locale} currentPath={currentPath} />
-  </header>
+  <Navbar client:only="react" locale={locale} currentPath={currentPath} />
 
   <!-- Main Content -->
-  <main class="min-h-screen bg-white pt-20">
+  <main id="main-content" class="min-h-screen bg-white pt-20">
     <slot />
   </main>
 

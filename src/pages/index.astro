@@ -74,8 +74,8 @@ const gscVerification = import.meta.env.GOOGLE_SITE_VERIFICATION;
     })();
   </script>
   
-  <Navbar client:only="react" locale={locale} currentPath={currentPath} />
-  <main>
+  <Navbar client:load locale={locale} currentPath={currentPath} />
+  <main id="main-content">
     <HeroSection client:only="react" locale={locale} />
     <DestinationShowcase client:only="react" locale={locale} />
     <AboutSection client:only="react" locale={locale} />

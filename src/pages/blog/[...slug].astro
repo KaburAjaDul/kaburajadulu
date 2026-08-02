@@ -23,6 +23,8 @@ const { Content } = await render(entry);
   category={entry.data.category}
   image={entry.data.image}
   canonical={new URL(`/blog/${entry.id}`, Astro.site).toString()}
+  locale="id"
+  currentPath={Astro.url.pathname}
 >
   <!-- Main Content Container with proper styling -->
   <div class="blog-container">

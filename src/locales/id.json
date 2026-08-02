@@ -4,6 +4,10 @@
     "about": "Tentang",
     "destinations": "Destinasi",
     "blog": "Blog",
+    "community": "Komunitas",
+    "programs": "Program",
+    "events": "Acara",
+    "join_discord": "Gabung Discord",
     "contact": "Kontak",
     "language": "Bahasa"
   },
@@ -76,7 +80,19 @@
     "contact": "Kontak",
     "email": "Email",
     "discord": "Discord",
+    "community": "Komunitas",
+    "programs": "Program",
+    "events": "Acara",
     "copyright": "© 2026 KaburAjaDulu. Hak cipta dilindungi."
+  },
+  "a11y": {
+    "skip_to_content": "Lewati ke konten utama",
+    "primary_navigation": "Navigasi utama",
+    "footer_navigation": "Navigasi footer",
+    "home_link": "Kembali ke beranda",
+    "open_menu": "Buka menu",
+    "close_menu": "Tutup menu",
+    "translation_notice": "Konten halaman ini tersedia dalam bahasa Indonesia."
   },
   "common": {
     "loading": "Memuat...",
