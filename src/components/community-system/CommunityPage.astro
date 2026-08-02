@@ -1,0 +1,150 @@
+---
+import Layout from '@/layouts/Layout.astro';
+import type { Locale } from '@/i18n/constants';
+import { DISCORD_URL, INSTAGRAM_URL, PROGRAMS, X_URL, localizedPath, pageTitle, programBySlug } from '@/content/community-site';
+import type { CommunityPageKind } from '@/content/community-site';
+import Navbar from '@/components/layout/Navbar';
+import Footer from '@/components/layout/Footer';
+import '@/styles/global.css';
+
+interface Props {
+  kind: CommunityPageKind;
+  locale: Locale;
+  currentPath: string;
+  slug?: string;
+  id?: string;
+}
+
+const { kind, locale, currentPath, slug, id } = Astro.props;
+const program = slug ? programBySlug(slug) : undefined;
+const title = pageTitle(kind, program);
+const description = 'KaburAjaDulu adalah komunitas publik untuk menemukan ritme belajar, program, dan cara berkontribusi dengan status yang jelas.';
+const fallbackText = locale === 'id' ? null : 'Konten komunitas ini menggunakan sumber bahasa Indonesia. Struktur, status, dan jalur navigasi tetap tersedia dalam locale pilihanmu.';
+const href = (path: string): string => localizedPath(locale, path);
+---
+
+<Layout title={title} description={description} canonical={`https://kaburajadulu.com${currentPath}`} locale={locale} currentPath={currentPath}>
+  <Navbar client:only="react" locale={locale} currentPath={currentPath} />
+  <main id="main-content" class="kad-page">
+    <div class="kad-container">
+      {fallbackText && <p class="kad-translation-notice" lang="id">{fallbackText}</p>}
+
+      {kind === 'community' && (
+        <>
+          <section class="kad-page-hero" aria-labelledby="page-title">
+            <p class="kad-eyebrow">Menemukan komunitas</p>
+            <div class="kad-hero-grid"><h1 id="page-title">Komunitas bukan cuma server.</h1><div><p class="kad-lede">Temukan pertanyaan yang ingin kamu jawab, ritme belajar yang cocok, lalu percakapan yang terasa berguna.</p><a class="kad-button kad-button--primary" href={DISCORD_URL} target="_blank" rel="noopener noreferrer">Gabung ke Discord</a></div></div>
+          </section>
+          <section class="kad-section" aria-labelledby="journey-title"><div class="kad-section-heading"><p class="kad-kicker">01 · Jalur partisipasi</p><h2 id="journey-title">Pilih pintu masukmu.</h2></div><div class="kad-grid kad-grid--three">
+            <article class="kad-card kad-journey-card"><span class="kad-marker">01</span><h3>Temukan ruang</h3><p>Mulai dari kebutuhan studi, kerja, bahasa, atau hidup sehari-hari di luar negeri.</p></article>
+            <article class="kad-card kad-journey-card"><span class="kad-marker">02</span><h3>Ikuti rutinitas</h3><p>Telusuri klub dan sesi yang punya sumber publik serta status yang bisa dibaca.</p></article>
+            <article class="kad-card kad-journey-card"><span class="kad-marker">03</span><h3>Berkontribusi kembali</h3><p>Saat siap, bantu membuat ruang belajar dan dokumentasi lebih mudah diakses.</p></article>
+          </div></section>
+          <section class="kad-section kad-band" aria-labelledby="after-title"><div><p class="kad-kicker">02 · Setelah bergabung</p><h2 id="after-title">Percakapan tetap punya pagar.</h2></div><ul class="kad-check-list"><li>Baca konteks dan aturan ruang sebelum ikut berdiskusi.</li><li>Gunakan tautan publik sebagai sumber; jadwal terbaru dikonfirmasi di Discord.</li><li>Jaga identitas dan pengalaman orang lain tanpa memaksa atribusi publik.</li></ul></section>
+          <section class="kad-section" aria-labelledby="social-title"><div class="kad-section-heading"><p class="kad-kicker">03 · Kanal publik</p><h2 id="social-title">Ikuti sumber yang bisa kamu periksa.</h2></div><div class="kad-grid kad-grid--three"><a class="kad-card kad-source-link" href={X_URL} target="_blank" rel="noopener noreferrer"><strong>X / @KADSocialHub</strong><span>Profil publik dan sumber pengumuman</span></a><a class="kad-card kad-source-link" href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer"><strong>Instagram / @kadsocialhub</strong><span>Indeks visual dan sumber komunitas</span></a><a class="kad-card kad-source-link" href={DISCORD_URL} target="_blank" rel="noopener noreferrer"><strong>Discord</strong><span>Ruang percakapan dan konfirmasi</span></a></div></section>
+        </>
+      )}
+
+      {kind === 'programs' && (
+        <>
+          <section class="kad-page-hero" aria-labelledby="page-title"><p class="kad-eyebrow">Katalog program</p><div class="kad-hero-grid"><h1 id="page-title">Cari aktivitas yang bisa kamu mulai.</h1><div><p class="kad-lede">Lima kartu berikut berangkat dari sumber publik. Ketersediaan bukan asumsi—konfirmasi langkah berikutnya di Discord.</p><a class="kad-button kad-button--primary" href={DISCORD_URL} target="_blank" rel="noopener noreferrer">Tanya di Discord</a></div></div></section>
+          <section class="kad-section" aria-labelledby="programs-title"><div class="kad-filter-row" aria-label="Jalan pintas kategori program"><a class="kad-pill" href="#all">Semua</a><a class="kad-pill" href="#language">Klub bahasa</a><a class="kad-pill" href="#career">Pendidikan &amp; karier</a></div><div id="all" class="kad-grid kad-grid--two">{PROGRAMS.map((item, index) => {
+            const categoryId = item.category === 'Klub bahasa' ? 'language' : 'career';
+            const isFirstInCategory = PROGRAMS.findIndex((candidate) => candidate.category === item.category) === index;
+            return <article class="kad-card kad-program-card" id={isFirstInCategory ? categoryId : undefined}><div class="kad-card-top"><span class="kad-pill kad-pill-soft">{item.category}</span><span class="kad-status">Konfirmasi di Discord</span></div><h2 id={`${item.slug}-title`}><a href={href(`/programs/${item.slug}`)}>{item.title}</a></h2><p>{item.summary}</p><div class="kad-card-actions"><a class="kad-source-link" href={item.sourceUrl} target="_blank" rel="noopener noreferrer">{item.sourceLabel} ↗</a><a class="kad-text-link" href={href(`/programs/${item.slug}`)}>Lihat detail</a></div></article>;
+          })}</div><p id="programs-title" class="kad-note">Status ketersediaan, kapasitas, pendaftaran, dan arsip tetap terlihat sebagai hal yang perlu dikonfirmasi.</p></section>
+        </>
+      )}
+
+      {kind === 'program' && program && (
+        <>
+          <section class="kad-page-hero kad-detail-hero" aria-labelledby="page-title"><p class="kad-eyebrow">Program · {program.category}</p><div class="kad-hero-grid"><div><span class="kad-large-marker">{program.title.slice(0, 1)}</span><h1 id="page-title">{program.title}</h1></div><div><p class="kad-lede">{program.summary}</p><span class="kad-status">Ketersediaan perlu dikonfirmasi di Discord</span></div></div></section>
+          <section class="kad-section" aria-labelledby="known-title"><div class="kad-grid kad-grid--two"><article class="kad-card kad-evidence-panel"><p class="kad-kicker">Yang sudah diketahui</p><h2 id="known-title">Berangkat dari sumber.</h2><ul class="kad-check-list">{program.known.map((fact) => <li>{fact}</li>)}</ul></article><article class="kad-card kad-evidence-panel kad-evidence-pending"><p class="kad-kicker">Konfirmasi di Discord</p><h2>Langkah berikutnya.</h2><ul class="kad-check-list">{program.confirm.map((fact) => <li>{fact}</li>)}</ul><a class="kad-button kad-button--primary" href={DISCORD_URL} target="_blank" rel="noopener noreferrer">Konfirmasi sekarang</a></article></div></section>
+          <section class="kad-section kad-detail-actions"><a class="kad-source-link" href={program.sourceUrl} target="_blank" rel="noopener noreferrer">{program.sourceLabel} ↗</a><a class="kad-text-link" href={href('/programs')}>← Kembali ke program</a></section>
+          <section class="kad-section" aria-labelledby="related-title"><div class="kad-section-heading"><p class="kad-kicker">Program lain</p><h2 id="related-title">Mungkin kamu juga ingin melihat.</h2></div><div class="kad-grid kad-grid--three">{PROGRAMS.filter((item) => item.slug !== program.slug).slice(0, 3).map((item) => <a class="kad-card kad-related-card" href={href(`/programs/${item.slug}`)}><span class="kad-pill kad-pill-soft">{item.category}</span><strong>{item.title}</strong><span class="kad-status">Konfirmasi di Discord</span></a>)}</div></section>
+        </>
+      )}
+
+      {kind === 'events' && (
+        <><section class="kad-page-hero" aria-labelledby="page-title"><p class="kad-eyebrow">Meja acara</p><div class="kad-hero-grid"><h1 id="page-title">Jadwal publik, saat datanya siap.</h1><div><p class="kad-lede">Belum ada acara yang dipublikasikan. Untuk sekarang, jadwal dan detail terbaru dikonfirmasi di Discord.</p><a class="kad-button kad-button--primary" href={DISCORD_URL} target="_blank" rel="noopener noreferrer">Tanya jadwal di Discord</a></div></div></section><section class="kad-section" aria-labelledby="event-state-title"><div class="kad-calendar-spine"><span class="kad-calendar-line" aria-hidden="true"></span><div class="kad-empty-state" data-event-count="0" data-event-state="empty"><span class="kad-status">0 acara publik</span><h2 id="event-state-title">Belum ada acara publik.</h2><p>Acara akan muncul setelah detail, waktu, jalur pendaftaran, dan sumber revisinya disetujui.</p></div></div><div class="kad-state-guide"><details><summary>Jika data menjadi lama</summary><p>Data akan diberi label stale, bukan disajikan sebagai jadwal baru.</p></details><details><summary>Jika layanan bermasalah</summary><p>Status error akan dijelaskan secara tekstual. Data privat tidak menjadi cadangan publik.</p></details></div></section></>
+      )}
+
+      {kind === 'event' && (
+        <><section class="kad-page-hero" aria-labelledby="page-title"><p class="kad-eyebrow">Dokumentasi acara</p><div class="kad-hero-grid"><h1 id="page-title">Acara ini belum dipublikasikan.</h1><div><p class="kad-lede">ID <code>{id ?? 'tidak tersedia'}</code> belum memiliki catatan publik yang disetujui.</p><a class="kad-button kad-button--outline" href={href('/events')}>Kembali ke acara</a></div></div></section><section class="kad-section"><div class="kad-empty-state kad-not-published"><span class="kad-status">Not published</span><h2>Belum ada rekaman publik untuk ditampilkan.</h2><p>Ringkasan, waktu, pendaftaran, recap, sumber, dan koreksi hanya tampil setelah proses persetujuan selesai.</p></div></section></>
+      )}
+
+      {kind === 'volunteer' && (
+        <><section class="kad-page-hero" aria-labelledby="page-title"><p class="kad-eyebrow">Cara berkontribusi</p><div class="kad-hero-grid"><h1 id="page-title">Kerja komunitas bergerak dalam siklus.</h1><div><p class="kad-lede">Model anonim tiga bulan ini membantu pekerjaan masuk, dikerjakan, dan diserahkan tanpa menjadikan identitas sebagai syarat.</p><a class="kad-button kad-button--primary" href={DISCORD_URL} target="_blank" rel="noopener noreferrer">Mulai percakapan</a></div></div></section><section class="kad-section" aria-labelledby="cycle-title"><div class="kad-cycle" id="cycle-title"><article class="kad-card"><span class="kad-marker">01</span><h2>Intake</h2><p>Kebutuhan program dan kontribusi dicatat dengan lingkup kerja yang jelas.</p></article><article class="kad-card"><span class="kad-marker">02</span><h2>Program work</h2><p>Tim berbasis program mengerjakan satu langkah yang bisa diserahkan.</p></article><article class="kad-card"><span class="kad-marker">03</span><h2>Handover</h2><p>Catatan dan konteks dipindahkan agar siklus berikutnya tidak mulai dari nol.</p></article></div></section><section class="kad-section kad-band"><h2>Attribution adalah opt-in.</h2><p>Kontribusi publik memakai nama pilihan, lingkup, dan masa berlaku hanya setelah persetujuan.</p></section></>
+      )}
+
+      {kind === 'stories' && (
+        <><section class="kad-page-hero" aria-labelledby="page-title"><p class="kad-eyebrow">Cerita komunitas</p><div class="kad-hero-grid"><h1 id="page-title">Cerita yang bisa diperiksa, bukan ditebak.</h1><div><p class="kad-lede">Indeks ini dimulai dari sumber publik. Atribusi, transkrip, media, dan publikasi final tetap menunggu persetujuan editorial.</p><a class="kad-button kad-button--primary" href={DISCORD_URL} target="_blank" rel="noopener noreferrer">Bagikan konteks</a></div></div></section><section class="kad-section" aria-labelledby="story-state"><div class="kad-empty-state kad-evidence-pending"><span class="kad-status">Menunggu persetujuan</span><h2 id="story-state">Belum ada cerita yang siap terbit.</h2><p>Format Cerita Aja Dulu tersedia sebagai sumber untuk ditinjau, tanpa menyalin identitas atau media.</p><a class="kad-source-link" href="https://www.instagram.com/kadsocialhub/p/DZKQziKv8le/" target="_blank" rel="noopener noreferrer">Sumber publik Cerita Aja Dulu ↗</a></div></section></>
+      )}
+
+      {kind === 'history' && (
+        <><section class="kad-page-hero" aria-labelledby="page-title"><p class="kad-eyebrow">Memori institusional</p><div class="kad-hero-grid"><h1 id="page-title">Sejarah sedang ditinjau.</h1><div><p class="kad-lede">Kami memilih menampilkan checklist bukti daripada mengisi timeline dengan cerita yang belum dikorroborasi.</p><a class="kad-button kad-button--outline" href={href('/stories')}>Lihat indeks cerita</a></div></div></section><section class="kad-section"><div class="kad-empty-state" data-claim-state="pending"><span class="kad-status">Evidence review</span><h2>Timeline publik belum siap.</h2><ul class="kad-check-list"><li>Kejadian perlu sumber publik bertanggal dan saling menguatkan.</li><li>Definisi metrik, pemilik editorial, dan atribusi perlu disetujui.</li><li>Harus ada jalur koreksi dan pencabutan sebelum terbit.</li></ul></div></section><section class="kad-section kad-band"><h2>Menemukan koreksi?</h2><p>Kirim konteks melalui komunitas agar dapat masuk ke proses review, tanpa menjanjikan publikasi.</p></section></>
+      )}
+
+      {kind === 'impact' && (
+        <><section class="kad-page-hero" aria-labelledby="page-title"><p class="kad-eyebrow">Dampak komunitas</p><div class="kad-hero-grid"><h1 id="page-title">Definisi dulu, angka kemudian.</h1><div><p class="kad-lede">Belum ada total yang dipublikasikan. Setiap metrik harus punya periode, sumber, penyebut, dan freshness.</p><a class="kad-button kad-button--outline" href={href('/support')}>Lihat cara mendukung</a></div></div></section><section class="kad-section" aria-labelledby="ledger-title"><div class="kad-section-heading"><p class="kad-kicker">Impact ledger</p><h2 id="ledger-title">Empat jenis catatan.</h2></div><div class="kad-grid kad-grid--two"><article class="kad-card"><h3>Aktivitas</h3><p>Sesi dan program yang benar-benar berlangsung.</p></article><article class="kad-card"><h3>Partisipasi</h3><p>Kehadiran dengan definisi dan periode yang jelas.</p></article><article class="kad-card"><h3>Output</h3><p>Dokumentasi atau artefak yang dihasilkan.</p></article><article class="kad-card"><h3>Kontribusi volunteer</h3><p>Lingkup dan waktu kontribusi tanpa mengekspos identitas privat.</p></article></div></section></>
+      )}
+
+      {kind === 'support' && (
+        <><section class="kad-page-hero" aria-labelledby="page-title"><p class="kad-eyebrow">Dukungan</p><div class="kad-hero-grid"><h1 id="page-title">Bantu membuat program tetap bisa dipertanggungjawabkan.</h1><div><p class="kad-lede">Ini adalah proposal akuntabilitas, bukan halaman pembayaran. Mulai dari memahami apa yang dukungan memungkinkan.</p><a class="kad-button kad-button--primary" href={DISCORD_URL} target="_blank" rel="noopener noreferrer">Bicarakan dukungan</a></div></div></section><section class="kad-section" aria-labelledby="support-title"><div class="kad-section-heading"><p class="kad-kicker">Allocation blueprint</p><h2 id="support-title">Area yang diusulkan.</h2></div><div class="kad-grid kad-grid--two">{['Keberlanjutan program', 'Infrastruktur dokumentasi', 'Peralatan volunteer', 'Keselamatan dan moderasi'].map((label) => <article class="kad-card"><span class="kad-status">Proposed</span><h3>{label}</h3><p>Ruang kerja yang perlu pemilik, batas, dan laporan sebelum dianggap funded.</p></article>)}</div></section><section class="kad-section kad-band"><h2>Bagaimana dukungan diatur?</h2><p>Pembayaran baru dapat dipertimbangkan setelah ada pemilik, cadence laporan, kebijakan refund, batas akuntansi, dan laporan penggunaan dana publik.</p></section></>
+      )}
+
+      {kind === 'credits' && (
+        <><section class="kad-page-hero" aria-labelledby="page-title"><p class="kad-eyebrow">Kredit kontribusi</p><div class="kad-hero-grid"><h1 id="page-title">Kontribusi dihargai tanpa memaksa identitas.</h1><div><p class="kad-lede">Default kami anonim. Nama pilihan, peran, program, siklus, cakupan, masa berlaku, dan status pencabutan hanya tampil dengan consent.</p><a class="kad-button kad-button--primary" href={DISCORD_URL} target="_blank" rel="noopener noreferrer">Tanyakan proses kontribusi</a></div></div></section><section class="kad-section"><div class="kad-empty-state" data-claim-state="pending"><span class="kad-status">Anonymous by default</span><h2>Belum ada kredit publik yang disetujui.</h2><p>Discord ID, profil privat, dan identitas tanpa izin tidak pernah masuk ke halaman ini.</p></div></section></>
+      )}
+
+      {kind === 'program' && !program && <section class="kad-section"><div class="kad-empty-state"><span class="kad-status">Not published</span><h1>Program tidak ditemukan.</h1><p>Program ini belum memiliki halaman publik.</p><a class="kad-button kad-button--outline" href={href('/programs')}>Kembali ke program</a></div></section>}
+    </div>
+  </main>
+  <Footer client:only="react" locale={locale} />
+</Layout>
+
+<style>
+  .kad-translation-notice { margin: 1rem 0 0; padding: .75rem 1rem; border: 1px solid #dfe4ec; border-radius: 999px; color: #687081; font-size: .85rem; }
+  .kad-kicker { margin: 0 0 1rem; color: #0055ff; font-size: .78rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
+  .kad-hero-grid { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(280px, .85fr); align-items: end; gap: clamp(2rem, 7vw, 7rem); }
+  p { line-height: 1.65; }
+  .kad-lede { max-width: 34rem; margin: 0 0 1.5rem; color: #687081; font-size: 1.08rem; }
+  .kad-section-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 2rem; margin-bottom: 1.75rem; }
+  .kad-marker, .kad-large-marker { display: inline-flex; align-items: center; justify-content: center; width: 2.5rem; height: 2.5rem; border-radius: 50%; background: #ffbd3e; color: #111318; font-weight: 800; }
+  .kad-large-marker { width: 4rem; height: 4rem; margin-bottom: 1.25rem; font-size: 2rem; }
+  .kad-card p, .kad-empty-state p { margin: 0; color: #687081; }
+  .kad-band { display: grid; grid-template-columns: .8fr 1.2fr; gap: 3rem; padding: 2rem; border-radius: 2rem; background: #edf4ff; }
+  .kad-check-list { display: grid; gap: .8rem; margin: 0; padding: 0; list-style: none; }
+  .kad-check-list li { position: relative; padding-inline-start: 1.5rem; line-height: 1.5; }
+  .kad-check-list li::before { content: '→'; position: absolute; inset-inline-start: 0; color: #0055ff; font-weight: 800; }
+  :global(html[dir='rtl']) .kad-check-list li::before { content: '←'; }
+  .kad-text-link { color: #0055ff; font-weight: 800; text-decoration: none; }
+  .kad-source-link span { color: #687081; font-size: .9rem; font-weight: 500; }
+  .kad-filter-row { display: flex; flex-wrap: wrap; gap: .6rem; margin-bottom: 1.5rem; }
+  .kad-pill-soft { border: 0; background: #edf4ff; }
+  .kad-card-top, .kad-card-actions { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+  .kad-program-card { display: flex; flex-direction: column; }
+  .kad-card-actions { flex-wrap: wrap; margin-top: auto; padding-top: 1.4rem; }
+  .kad-program-card h2 { margin: 1.25rem 0 .6rem; font-size: 1.55rem; }
+  .kad-program-card h2 a { color: inherit; text-decoration: none; }
+  .kad-note { margin-top: 1.25rem; color: #687081; font-size: .9rem; }
+  .kad-evidence-panel { min-height: 18rem; }
+  .kad-evidence-pending { background: #edf4ff; }
+  .kad-evidence-panel .kad-button { margin-top: auto; align-self: start; }
+  .kad-detail-actions { display: flex; flex-wrap: wrap; gap: 1.5rem; }
+  .kad-related-card { gap: .9rem; color: #111318; text-decoration: none; }
+  .kad-related-card strong { font-size: 1.15rem; }
+  .kad-calendar-spine { position: relative; display: grid; grid-template-columns: 2rem 1fr; gap: 1rem; }
+  .kad-calendar-line { width: 2px; margin: .5rem auto 0; background: #0055ff; }
+  .kad-empty-state { background: #fafcff; }
+  .kad-empty-state h2, .kad-empty-state h1 { margin: 1rem 0 .6rem; }
+  .kad-state-guide { display: grid; gap: .75rem; margin: 1rem 0 0 3rem; }
+  .kad-state-guide details { padding: 1rem 1.25rem; border: 1px solid #dfe4ec; border-radius: 1rem; }
+  .kad-state-guide summary { cursor: pointer; font-weight: 800; }
+  .kad-cycle { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+  .kad-cycle .kad-card:nth-child(2) { transform: translateY(2rem); background: #dff7eb; }
+  .kad-cycle .kad-card:nth-child(2):hover { transform: translateY(calc(2rem - 2px)); }
+  code { padding: .15rem .35rem; border-radius: .4rem; background: #edf4ff; color: #111318; }
+  @media (max-width: 760px) { .kad-hero-grid, .kad-grid--three, .kad-grid--two, .kad-band, .kad-cycle { grid-template-columns: 1fr; } .kad-section-heading { display: block; } .kad-cycle .kad-card:nth-child(2), .kad-cycle .kad-card:nth-child(2):hover { transform: none; } .kad-state-guide { margin-left: 0; } }
+  @media (prefers-reduced-motion: reduce) { .kad-card { transition: none; } .kad-card:hover, .kad-card:focus-within, .kad-cycle .kad-card:nth-child(2), .kad-cycle .kad-card:nth-child(2):hover { transform: none; } }
+</style>

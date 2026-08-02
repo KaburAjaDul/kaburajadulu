@@ -3,6 +3,7 @@ import Layout from '../../layouts/Layout.astro'
 import Navbar from '../../components/layout/Navbar'
 import HeroSection from '../../components/home/HeroSection'
 import DestinationShowcase from '../../components/home/DestinationShowcase'
+import CommunityGateway from '../../components/home/CommunityGateway'
 import AboutSection from '../../components/home/AboutSection'
 import CTASection from '../../components/home/CTASection'
 import { BlogSection } from '../../components/blog/BlogSection'
@@ -36,9 +37,10 @@ const gscVerification = import.meta.env.GOOGLE_SITE_VERIFICATION;
   currentPath={currentPath}
 >
   <Navbar client:only="react" locale={locale} currentPath={currentPath} />
-  <main>
+  <main id="main-content" tabindex="-1">
     <HeroSection client:only="react" locale={locale} />
     <DestinationShowcase client:only="react" locale={locale} />
+    <CommunityGateway locale={locale} />
     <AboutSection client:only="react" locale={locale} />
     {blogPosts.length > 0 && <BlogSection client:only="react" posts={blogPosts} locale={locale} />}
     <CTASection client:only="react" locale={locale} />

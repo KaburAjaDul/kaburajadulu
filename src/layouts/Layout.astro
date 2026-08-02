@@ -21,17 +21,27 @@ const {
   currentPath = Astro.url.pathname,
 } = Astro.props;
 
-const dir = LOCALE_DIR[locale] ?? 'ltr';
-const canonicalURL = canonical || `https://kaburajadulu.com${currentPath}`;
 const siteUrl = 'https://kaburajadulu.com';
+const dir = LOCALE_DIR[locale] ?? 'ltr';
+const withTrailingSlash = (value: string): string => {
+  const url = new URL(value, siteUrl);
+  if (!url.pathname.endsWith('/')) url.pathname = `${url.pathname}/`;
+  return url.toString();
+};
+const canonicalURL = withTrailingSlash(canonical || currentPath);
+
+const pathSegments = currentPath.split('/').filter(Boolean);
+if (pathSegments[0] && LOCALES.includes(pathSegments[0] as Locale)) pathSegments.shift();
+const pagePath = pathSegments.length > 0 ? `/${pathSegments.join('/')}` : '/';
 
 const hreflangLinks = LOCALES.map((loc) => {
-  const locPath = loc === 'id' ? '/' : `/${loc}/`;
+  const prefix = loc === 'id' ? '' : `/${loc}`;
+  const locPath = pagePath === '/' ? `${prefix}/` : `${prefix}${pagePath}/`;
   return {
     locale: loc === 'zh-cn' ? 'zh-CN' : loc === 'zh-tw' ? 'zh-TW' : loc,
     url: `${siteUrl}${locPath}`,
   };
-}).concat([{ locale: 'x-default', url: `${siteUrl}/en/` }]);
+}).concat([{ locale: 'x-default', url: withTrailingSlash(`/en${pagePath}`) }]);
 ---
 
 <!doctype html>

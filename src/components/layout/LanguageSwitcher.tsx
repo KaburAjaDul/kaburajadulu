@@ -26,7 +26,7 @@ export function LanguageSwitcher({ currentLocale, currentPath, className }: Lang
   function getLocalizedUrl(targetLocale: Locale): string {
     const basePath = currentPath.replace(localePrefixRegex, '') || '/';
     const suffix = basePath === '/' ? '' : basePath;
-    if (targetLocale === 'id') return `/id${suffix}`;
+    if (targetLocale === 'id') return suffix || '/';
     return `/${targetLocale}${suffix}`;
   }
 

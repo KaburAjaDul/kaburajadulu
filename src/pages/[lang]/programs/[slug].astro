@@ -1,0 +1,8 @@
+---
+import CommunityPage from '@/components/community-system/CommunityPage.astro';
+import { LOCALES, type Locale } from '@/i18n/constants';
+import { PROGRAMS } from '@/content/community-site';
+export function getStaticPaths() { return LOCALES.filter((locale) => locale !== 'id').flatMap((locale) => PROGRAMS.map((program) => ({ params: { lang: locale, slug: program.slug } }))); }
+const locale = Astro.params.lang as Locale;
+---
+<CommunityPage kind="program" slug={Astro.params.slug} locale={locale} currentPath={`/${locale}/programs/${Astro.params.slug}`} />

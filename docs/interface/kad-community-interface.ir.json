@@ -1,0 +1,199 @@
+{
+  "$schema": "../../../.codex/skills/engineer-interfaces/assets/interface-system.schema.json",
+  "schema_version": "1.0",
+  "kind": "interface-ir",
+  "name": "KAD Community Website",
+  "description": "An evidence-led public community website that preserves the existing KAD visual character while making programs, events, volunteer work, history, impact, and support understandable without exposing private Discord operations.",
+  "platform": "web",
+  "provenance": {
+    "status": "inferred",
+    "source": "docs/interface/page-system.md",
+    "note": "Synthesized from the production main branch, public KADSocialHub source links, the rejected PR20 review, and the approved task map. Private Discord evidence is excluded from the runtime contract."
+  },
+  "tokens": {
+    "color": {
+      "paper": {"type": "color", "value": "#ffffff", "unit": null, "provenance": {"status": "observed", "source": "src/styles/global.css", "note": "Existing site background."}},
+      "ink": {"type": "color", "value": "#111318", "unit": null, "provenance": {"status": "inferred", "source": "production homepage screenshot", "note": "Near-black editorial text derived from the existing high-contrast typography."}},
+      "cobalt": {"type": "color", "value": "#0055ff", "unit": null, "provenance": {"status": "observed", "source": "src/styles/global.css", "note": "Existing KAD primary blue."}},
+      "sky": {"type": "color", "value": "#edf4ff", "unit": null, "provenance": {"status": "inferred", "source": "production homepage screenshot", "note": "Soft blue field supporting the existing cobalt accent."}},
+      "sun": {"type": "color", "value": "#ffbd3e", "unit": null, "provenance": {"status": "inferred", "source": "public/icon.svg", "note": "Warm accent sampled conceptually from the brand mark; used sparingly."}},
+      "mint": {"type": "color", "value": "#dff7eb", "unit": null, "provenance": {"status": "inferred", "source": "public/icon.svg", "note": "Secondary supportive accent from the brand mark."}},
+      "muted": {"type": "color", "value": "#687081", "unit": null, "provenance": {"status": "inferred", "source": "production homepage screenshot", "note": "Readable secondary text, not a claim-bearing signal."}},
+      "line": {"type": "color", "value": "#dfe4ec", "unit": null, "provenance": {"status": "inferred", "source": "production homepage screenshot", "note": "Subtle structural boundary."}}
+    },
+    "type": {
+      "sans": {"type": "font-family", "value": "Plus Jakarta Sans", "unit": null, "provenance": {"status": "observed", "source": "src/layouts/Layout.astro", "note": "Existing interface typeface."}},
+      "hand": {"type": "font-family", "value": "Caveat", "unit": null, "provenance": {"status": "observed", "source": "src/layouts/Layout.astro", "note": "Existing handwritten accent; never used for essential body copy."}},
+      "display": {"type": "font-size", "value": 64, "unit": "px", "provenance": {"status": "inferred", "source": "production homepage screenshot", "note": "Desktop maximum; fluidly clamps down on smaller viewports."}},
+      "body": {"type": "font-size", "value": 17, "unit": "px", "provenance": {"status": "inferred", "source": "production homepage screenshot", "note": "Comfortable editorial reading size."}}
+    },
+    "space": {
+      "section": {"type": "space", "value": 112, "unit": "px", "provenance": {"status": "inferred", "source": "production homepage screenshot", "note": "Large desktop section rhythm; reduced responsively."}},
+      "gutter": {"type": "space", "value": 24, "unit": "px", "provenance": {"status": "inferred", "source": "production homepage screenshot", "note": "Default page gutter."}},
+      "card": {"type": "space", "value": 24, "unit": "px", "provenance": {"status": "inferred", "source": "production homepage screenshot", "note": "Default component inset."}}
+    },
+    "radius": {
+      "control": {"type": "radius", "value": 999, "unit": "px", "provenance": {"status": "observed", "source": "src/components/ui/button.tsx", "note": "Existing pill-button language."}},
+      "card": {"type": "radius", "value": 28, "unit": "px", "provenance": {"status": "inferred", "source": "src/components/destination-card.tsx", "note": "Soft, community-oriented cards derived from the 32px destination cards."}},
+      "media": {"type": "radius", "value": 32, "unit": "px", "provenance": {"status": "observed", "source": "src/components/destination-card.tsx", "note": "Existing destination media radius."}}
+    },
+    "motion": {
+      "fast": {"type": "duration", "value": 160, "unit": "ms", "provenance": {"status": "inferred", "source": "web adapter", "note": "Feedback transition."}},
+      "settle": {"type": "duration", "value": 320, "unit": "ms", "provenance": {"status": "inferred", "source": "web adapter", "note": "Finite reveal and panel motion."}}
+    },
+    "provenance": {"status": "inferred", "source": "production main and docs/interface/page-system.md", "note": "Observed brand primitives are retained; supporting tokens are reconstructed and must pass visual review."}
+  },
+  "capabilities": {
+    "semantic-navigation": {
+      "support": {"web": "native", "webapp": "native", "tui": "adapted"},
+      "mapping_provenance": {
+        "web": {"status": "observed", "source": "src/components/layout/Navbar.tsx", "note": "Existing anchor navigation."},
+        "webapp": {"status": "inferred", "source": "web adapter", "note": "Same semantic links."},
+        "tui": {"status": "inferred", "source": "interface contract", "note": "Would map to a numbered page menu; not implemented."}
+      },
+      "fallback": "All destinations remain ordinary crawlable links.",
+      "requirement": "required",
+      "provenance": {"status": "observed", "source": "production website", "note": "Visitors must move among page families without relying on client JavaScript."}
+    },
+    "source-provenance": {
+      "support": {"web": "native", "webapp": "native", "tui": "adapted"},
+      "mapping_provenance": {
+        "web": {"status": "inferred", "source": "content inventory guardrails", "note": "Rendered as source links and availability labels."},
+        "webapp": {"status": "inferred", "source": "content inventory guardrails", "note": "Same contract with live freshness later."},
+        "tui": {"status": "inferred", "source": "interface contract", "note": "Would render canonical URLs as text; not implemented."}
+      },
+      "fallback": "Unknown availability and approval states remain visible as text.",
+      "requirement": "required",
+      "provenance": {"status": "observed", "source": "docs/community-rewrite/content-inventory.md", "note": "Public program claims require canonical sources and explicit uncertainty."}
+    },
+    "responsive-recomposition": {
+      "support": {"web": "native", "webapp": "native", "tui": "adapted"},
+      "mapping_provenance": {
+        "web": {"status": "inferred", "source": "web adapter", "note": "CSS grid and container queries/breakpoints."},
+        "webapp": {"status": "inferred", "source": "web adapter", "note": "Same browser primitives."},
+        "tui": {"status": "inferred", "source": "interface contract", "note": "Would reflow to a linear list; not implemented."}
+      },
+      "fallback": "Every multi-column region becomes a semantic single column below 720px.",
+      "requirement": "required",
+      "provenance": {"status": "observed", "source": "existing mobile homepage", "note": "The current site already recomposes its destination feature for mobile."}
+    },
+    "keyboard-focus": {
+      "support": {"web": "native", "webapp": "native", "tui": "native"},
+      "mapping_provenance": {
+        "web": {"status": "inferred", "source": "web adapter", "note": "Native tab order, skip link, visible focus, Escape for menu."},
+        "webapp": {"status": "inferred", "source": "web adapter", "note": "Same browser primitives."},
+        "tui": {"status": "inferred", "source": "interface contract", "note": "Native key map would require a TUI adapter; not implemented."}
+      },
+      "fallback": "All content and actions remain available in source order with the menu expanded.",
+      "requirement": "required",
+      "provenance": {"status": "inferred", "source": "web adapter minimum acceptance", "note": "Required for the redesign gate."}
+    },
+    "localized-routing": {
+      "support": {"web": "native", "webapp": "native", "tui": "adapted"},
+      "mapping_provenance": {
+        "web": {"status": "observed", "source": "src/i18n/constants.ts", "note": "Thirteen locale prefixes and Arabic RTL exist."},
+        "webapp": {"status": "inferred", "source": "Astro routing", "note": "Same static route contract."},
+        "tui": {"status": "inferred", "source": "interface contract", "note": "Locale picker could map to a setting; not implemented."}
+      },
+      "fallback": "Untranslated community copy uses the approved Indonesian source and displays the interface locale correctly.",
+      "requirement": "required",
+      "provenance": {"status": "observed", "source": "src/i18n/constants.ts", "note": "Locale routing must remain intact; content translation can expand later."}
+    },
+    "event-data": {
+      "support": {"web": "adapted", "webapp": "native", "tui": "adapted"},
+      "mapping_provenance": {
+        "web": {"status": "unknown", "source": "community rewrite plan", "note": "No approved public event projection exists yet."},
+        "webapp": {"status": "unknown", "source": "community rewrite plan", "note": "D1/R2 and KAD-Agent projection are later slices."},
+        "tui": {"status": "unknown", "source": "community rewrite plan", "note": "No TUI adapter planned."}
+      },
+      "fallback": "Render a useful empty state and explain that schedules are confirmed in Discord.",
+      "requirement": "unavailable",
+      "provenance": {"status": "unknown", "source": "docs/community-rewrite/implementation-plan.md", "note": "The design must not invent public events."}
+    }
+  },
+  "regions": [
+    {"id": "site_header", "role": "banner", "label": "Site header", "children": ["skip_link", "brand_link", "primary_nav", "join_header"], "provenance": {"status": "inferred", "source": "production navbar", "note": "Expanded into the complete public information architecture."}},
+    {"id": "page_intro", "role": "region", "label": "Page introduction", "children": ["page_eyebrow", "page_heading", "page_summary", "primary_action"], "provenance": {"status": "inferred", "source": "production hero", "note": "Shared page-family opening pattern."}},
+    {"id": "page_content", "role": "main", "label": "Page content", "children": ["program_collection", "event_state", "journey_collection", "proof_collection"], "provenance": {"status": "inferred", "source": "approved page map", "note": "Page-specific modules render inside a consistent main landmark."}},
+    {"id": "site_footer", "role": "contentinfo", "label": "Site footer", "children": ["footer_navigation", "join_footer"], "provenance": {"status": "inferred", "source": "production footer", "note": "Expanded footer repeats key public routes and external sources."}}
+  ],
+  "components": [
+    {"id": "skip_link", "kind": "link", "region": "site_header", "label": "Lewati ke konten", "capabilities": ["keyboard-focus"], "props": {}, "states": [], "events": ["activate_link"], "actions": ["navigate_internal"], "focusable": true, "provenance": {"status": "inferred", "source": "web adapter", "note": "Required keyboard affordance."}},
+    {"id": "brand_link", "kind": "link", "region": "site_header", "label": "KaburAjaDulu", "capabilities": ["semantic-navigation", "localized-routing", "keyboard-focus"], "props": {}, "states": [], "events": ["activate_link"], "actions": ["navigate_internal"], "focusable": true, "provenance": {"status": "observed", "source": "src/components/layout/Navbar.tsx", "note": "Existing brand home link."}},
+    {"id": "primary_nav", "kind": "navigation", "region": "site_header", "label": "Navigasi utama", "capabilities": ["semantic-navigation", "localized-routing", "responsive-recomposition", "keyboard-focus"], "props": {"page_family_count": 10}, "states": ["mobile_menu"], "events": ["toggle_menu", "dismiss_menu"], "actions": ["set_menu_state"], "focusable": true, "provenance": {"status": "inferred", "source": "approved page map", "note": "Groups ten page families into four top-level destinations plus support actions."}},
+    {"id": "join_header", "kind": "link", "region": "site_header", "label": "Gabung Discord", "capabilities": ["semantic-navigation", "keyboard-focus"], "props": {"external": true}, "states": [], "events": ["activate_link"], "actions": ["open_discord"], "focusable": true, "provenance": {"status": "observed", "source": "src/constants/urls.ts", "note": "Uses the current approved invite."}},
+    {"id": "page_eyebrow", "kind": "text", "region": "page_intro", "label": "Page category", "capabilities": [], "props": {}, "states": [], "events": [], "actions": [], "focusable": false, "provenance": {"status": "inferred", "source": "page-system.md", "note": "Orients visitors without replacing the H1."}},
+    {"id": "page_heading", "kind": "heading", "region": "page_intro", "label": "Page heading", "capabilities": ["responsive-recomposition"], "props": {"level": 1}, "states": [], "events": [], "actions": [], "focusable": false, "provenance": {"status": "inferred", "source": "production hero", "note": "Large, concise, readable display heading."}},
+    {"id": "page_summary", "kind": "paragraph", "region": "page_intro", "label": "Page summary", "capabilities": ["responsive-recomposition"], "props": {}, "states": [], "events": [], "actions": [], "focusable": false, "provenance": {"status": "inferred", "source": "production hero", "note": "Explains what the visitor can do without unsupported claims."}},
+    {"id": "primary_action", "kind": "link", "region": "page_intro", "label": "Primary page action", "capabilities": ["semantic-navigation", "keyboard-focus"], "props": {}, "states": [], "events": ["activate_link"], "actions": ["navigate_internal"], "focusable": true, "provenance": {"status": "inferred", "source": "page-system.md", "note": "Each page has one dominant next step."}},
+    {"id": "program_collection", "kind": "list", "region": "page_content", "label": "Program unggulan", "capabilities": ["source-provenance", "responsive-recomposition", "keyboard-focus"], "props": {"initial_count": 5}, "states": ["program_availability"], "events": ["activate_link"], "actions": ["open_source"], "focusable": false, "provenance": {"status": "observed", "source": "public KADSocialHub source inventory", "note": "Five canonical source-backed program cards; availability remains explicit."}},
+    {"id": "event_state", "kind": "status", "region": "page_content", "label": "Jadwal komunitas", "capabilities": ["event-data", "source-provenance"], "props": {"initial_count": 0}, "states": ["event_feed"], "events": [], "actions": [], "focusable": false, "provenance": {"status": "unknown", "source": "community rewrite plan", "note": "No public event projection exists; empty state is intentional."}},
+    {"id": "journey_collection", "kind": "list", "region": "page_content", "label": "Cara komunitas bekerja", "capabilities": ["responsive-recomposition"], "props": {"initial_count": 3}, "states": [], "events": [], "actions": [], "focusable": false, "provenance": {"status": "inferred", "source": "volunteer cycle requirements", "note": "Three-step public journey: discover, participate, contribute."}},
+    {"id": "proof_collection", "kind": "list", "region": "page_content", "label": "Bukti dan status", "capabilities": ["source-provenance", "responsive-recomposition"], "props": {}, "states": ["claim_approval"], "events": ["activate_link"], "actions": ["open_source"], "focusable": false, "provenance": {"status": "inferred", "source": "content inventory guardrails", "note": "Proof modules label snapshot scope and approval status instead of inventing impact."}},
+    {"id": "footer_navigation", "kind": "navigation", "region": "site_footer", "label": "Navigasi kaki", "capabilities": ["semantic-navigation", "localized-routing", "keyboard-focus"], "props": {}, "states": [], "events": ["activate_link"], "actions": ["navigate_internal"], "focusable": false, "provenance": {"status": "inferred", "source": "page-system.md", "note": "Provides a stable route index."}},
+    {"id": "join_footer", "kind": "link", "region": "site_footer", "label": "Gabung Discord", "capabilities": ["semantic-navigation", "keyboard-focus"], "props": {"external": true}, "states": [], "events": ["activate_link"], "actions": ["open_discord"], "focusable": true, "provenance": {"status": "observed", "source": "src/constants/urls.ts", "note": "Repeats the current approved invite at the end of the journey."}}
+  ],
+  "states": [
+    {"id": "mobile_menu", "initial": "closed", "values": ["closed", "open"], "provenance": {"status": "inferred", "source": "responsive navigation requirement", "note": "Escape and route activation close the menu and restore focus."}},
+    {"id": "program_availability", "initial": "confirm_on_discord", "values": ["confirm_on_discord", "recurring_confirmed", "archived", "approval_gated"], "provenance": {"status": "observed", "source": "content inventory", "note": "Current program availability is not fully established."}},
+    {"id": "event_feed", "initial": "empty", "values": ["empty", "loading", "published", "stale", "error"], "provenance": {"status": "unknown", "source": "community rewrite plan", "note": "The prototype proves honest states without a backend."}},
+    {"id": "claim_approval", "initial": "pending", "values": ["pending", "approved", "revoked"], "provenance": {"status": "observed", "source": "content inventory guardrails", "note": "History, impact, media, and attribution stay pending until approved."}}
+  ],
+  "events": [
+    {"id": "activate_link", "type": "activate", "targets": ["skip_link", "brand_link", "join_header", "primary_action", "program_collection", "proof_collection", "footer_navigation", "join_footer"], "provenance": {"status": "inferred", "source": "web adapter", "note": "Mouse, touch, and keyboard activation use native anchors."}},
+    {"id": "toggle_menu", "type": "click", "targets": ["primary_nav"], "provenance": {"status": "inferred", "source": "responsive navigation requirement", "note": "Toggles the mobile disclosure."}},
+    {"id": "dismiss_menu", "type": "keydown_escape", "targets": ["primary_nav"], "provenance": {"status": "inferred", "source": "web adapter", "note": "Closes the disclosure and restores focus to its trigger."}}
+  ],
+  "actions": [
+    {"id": "navigate_internal", "type": "navigate", "targets": ["skip_link", "brand_link", "primary_nav", "primary_action", "footer_navigation"], "params": {"preserve_locale": true}, "provenance": {"status": "inferred", "source": "localized routing contract", "note": "All internal paths preserve the selected locale."}},
+    {"id": "open_discord", "type": "open_external", "targets": ["join_header", "join_footer"], "params": {"new_tab": true, "rel": "noopener noreferrer"}, "provenance": {"status": "observed", "source": "existing Discord CTAs", "note": "External invite opens safely."}},
+    {"id": "open_source", "type": "open_external", "targets": ["program_collection", "proof_collection"], "params": {"new_tab": true, "rel": "noopener noreferrer"}, "provenance": {"status": "inferred", "source": "content inventory guardrails", "note": "Visitors can inspect canonical public sources."}},
+    {"id": "set_menu_state", "type": "set_state", "targets": ["primary_nav"], "params": {"state": "mobile_menu"}, "provenance": {"status": "inferred", "source": "responsive navigation requirement", "note": "Single owner controls the mobile menu."}}
+  ],
+  "focus": {
+    "order": ["skip_link", "brand_link", "primary_nav", "join_header", "primary_action", "join_footer"],
+    "trap": false,
+    "default": "skip_link"
+  },
+  "navigation": {
+    "mode": "linear",
+    "links": [
+      {"from": "skip_link", "to": "page_heading"},
+      {"from": "brand_link", "to": "primary_nav"},
+      {"from": "primary_nav", "to": "join_header"},
+      {"from": "primary_action", "to": "program_collection"},
+      {"from": "footer_navigation", "to": "join_footer"}
+    ]
+  },
+  "media": [
+    {"id": "brand_mark", "type": "icon", "src": "/icon.svg", "alt": "KaburAjaDulu", "fallback": "KaburAjaDulu", "implementation_safe": true, "provenance": {"status": "observed", "source": "public/icon.svg", "note": "Repository-owned brand asset."}},
+    {"id": "destination_photos", "type": "image", "src": "/images/{seoul,tokyo,singapore,berlin_2}.webp", "alt": "Kota tujuan komunitas Indonesia di luar negeri", "fallback": "Daftar kota tujuan populer", "implementation_safe": true, "provenance": {"status": "observed", "source": "existing production homepage", "note": "Existing repository assets retained in their current role."}},
+    {"id": "social_post_media", "type": "none", "fallback": "A canonical public source link and CSS-authored program marker", "implementation_safe": false, "provenance": {"status": "observed", "source": "content inventory guardrails", "note": "Social CDN media is evidence-only until rights and redistribution approval exist."}},
+    {"id": "private_discord_evidence", "type": "none", "fallback": "A neutral pending-approval state with no private details", "implementation_safe": false, "provenance": {"status": "observed", "source": "private Discord evidence boundary", "note": "Private role counts, messages, reports, and testimony never enter the public runtime or repository evidence pack."}}
+  ],
+  "motion": {
+    "allowed": true,
+    "reduced_motion": "remove",
+    "transitions": [
+      {"id": "menu_reveal", "from": "closed", "to": "open", "duration": 160, "easing": "ease-out", "provenance": {"status": "inferred", "source": "web adapter", "note": "Opacity and transform only; removed under reduced motion."}},
+      {"id": "card_feedback", "from": "rest", "to": "hover_or_focus", "duration": 160, "easing": "ease-out", "provenance": {"status": "inferred", "source": "production card language", "note": "Small transform and shadow feedback; no perpetual motion."}}
+    ]
+  },
+  "evaluation": {
+    "criteria": [
+      {"id": "preserve_brand_character", "statement": "The redesign preserves the existing white, cobalt, rounded, optimistic visual character and destination collage while avoiding PR20's global dark shell.", "provenance": {"status": "inferred", "source": "user design feedback and production screenshots", "note": "Requires screenshot review."}},
+      {"id": "page_family_coverage", "statement": "All ten public page families use one design system and expose an honest primary action and state.", "provenance": {"status": "inferred", "source": "approved task map", "note": "Verified by route and IR traceability tests."}},
+      {"id": "safe_public_content", "statement": "The runtime contains five canonical public program sources, zero private Discord identifiers, and zero unapproved social media assets.", "provenance": {"status": "observed", "source": "content inventory guardrails", "note": "Verified by browser and build-output tests."}},
+      {"id": "responsive_accessible_runtime", "statement": "The complete surface works at 1280x720 and 390x844, supports keyboard focus, Arabic RTL, 200 percent zoom, and reduced motion without horizontal overflow or clipped text.", "provenance": {"status": "inferred", "source": "web adapter minimum acceptance", "note": "Verified with Playwright and inspected screenshots."}}
+    ],
+    "evidence": [
+      {"id": "production_desktop", "source": "local-evidence://baseline/homepage-desktop", "summary": "Existing production-aligned desktop homepage with playful typography, cobalt CTAs, large whitespace, and destination collage.", "provenance": {"status": "observed", "source": "local screenshot", "note": "Comparison-only evidence; not committed or bundled into the website."}},
+      {"id": "production_mobile", "source": "local-evidence://baseline/homepage-mobile", "summary": "Existing mobile homepage showing intentional single-column recomposition.", "provenance": {"status": "observed", "source": "local screenshot", "note": "Comparison-only evidence; not committed or bundled into the website."}},
+      {"id": "public_source_inventory", "source": "research-evidence://phase-0/public-content-inventory", "summary": "Public KADSocialHub sources and publication guardrails observed 2026-08-02; restricted research is not copied into this branch.", "provenance": {"status": "observed", "source": "Phase 0 research", "note": "Only canonical public URLs and safe summaries are used at runtime."}},
+      {"id": "runtime_trace", "source": "scripts/validate-interface-runtime.mjs", "summary": "Built-output traceability proves ten root surfaces, five canonical program sources, zero-event state markers, readiness states, and private-media guards.", "provenance": {"status": "observed", "source": "local verification 2026-08-02", "note": "The command passed against the production build."}},
+      {"id": "browser_gates", "source": "tests/e2e/community-design.spec.ts", "summary": "Playwright covers desktop/mobile overflow and screenshots, menu and focus restoration, Arabic RTL, reduced motion, source-backed programs, and readiness states.", "provenance": {"status": "observed", "source": "local Chromium verification 2026-08-02", "note": "The complete repository suite passed 41 tests."}}
+    ],
+    "status": "tested",
+    "notes": "IR validation, production build, runtime traceability, browser interaction, responsive/RTL/reduced-motion checks, screenshot inspection, privacy guards, and dependency audits pass. Human visual approval is still required before production promotion."
+  }
+}

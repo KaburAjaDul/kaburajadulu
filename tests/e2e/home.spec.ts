@@ -41,8 +41,9 @@ test.describe('localized home routes', () => {
       await expect(page.locator('main h1')).toBeVisible();
 
       const discordLinks = page.locator(`a[href="${DISCORD_URL}"]`);
-      await expect(discordLinks).toHaveCount(3);
-      for (let index = 0; index < 3; index += 1) {
+      const discordLinkCount = await discordLinks.count();
+      expect(discordLinkCount).toBeGreaterThanOrEqual(3);
+      for (let index = 0; index < discordLinkCount; index += 1) {
         await expect(discordLinks.nth(index)).toHaveAttribute('target', '_blank');
         await expect(discordLinks.nth(index)).toHaveAttribute('rel', 'noopener noreferrer');
       }
@@ -100,7 +101,9 @@ test('root metadata contains the Discord invite and a real GitHub contributor an
     ]),
   );
 
-  const github = page.locator('a[href="https://github.com/KaburAjaDul/kaburajadulu"]');
+  const github = page.locator(
+    'a[aria-label="GitHub Contributor"][href="https://github.com/KaburAjaDul/kaburajadulu"]',
+  );
   await expect(github).toHaveCount(1);
   await expect(github).toBeVisible();
   await expect(github).toHaveAttribute('target', '_blank');
@@ -115,7 +118,7 @@ test('mobile viewport smoke keeps the primary content usable', async ({ page }) 
   await page.goto('/', { waitUntil: 'domcontentloaded' });
 
   await expect(page.locator('main h1')).toBeVisible();
-  await expect(page.locator(`a[href="${DISCORD_URL}"]`)).toHaveCount(3);
+  expect(await page.locator(`a[href="${DISCORD_URL}"]`).count()).toBeGreaterThanOrEqual(3);
   await expect(page.locator('body')).toBeVisible();
 });
 

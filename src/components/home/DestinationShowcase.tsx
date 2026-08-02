@@ -25,12 +25,12 @@ const destinations = [
 
 const collageSlots = [
   {
-    className: 'left-[-3%] top-[22%] w-[28%] sm:w-[28%] aspect-[1.5/1]',
+    className: 'left-0 top-[22%] w-[28%] sm:w-[28%] aspect-[1.5/1]',
     transform: 'rotate(7.83deg)',
     sizes: '(max-width: 640px) 28vw, 28vw',
   },
   {
-    className: 'right-[-2%] top-[-8%] w-[23%] sm:w-[23%] aspect-[1.56/1]',
+    className: 'right-0 top-[-8%] w-[23%] sm:w-[23%] aspect-[1.56/1]',
     transform: 'rotate(-9.5deg)',
     sizes: '(max-width: 640px) 23vw, 23vw',
   },

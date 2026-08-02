@@ -34,7 +34,7 @@ export function HeroSection({ locale = 'id' }: HeroSectionProps) {
             {t('hero.cta_primary')}
           </a>
           <a
-            href={`/${locale === 'id' ? '' : locale + '/'}#blog`}
+            href={`${locale === 'id' ? '' : `/${locale}`}/programs`}
             className="text-blue-600 hover:underline font-medium mt-2 sm:mt-0"
           >
             {t('hero.cta_secondary')}

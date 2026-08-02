@@ -1,8 +1,9 @@
 'use client';
 
+import { useEffect, useRef, useState } from 'react';
+import { Menu, X } from 'lucide-react';
 import { DISCORD_URL } from '@/constants/urls';
-import { LanguageSwitcher } from './LanguageSwitcher';
-import { translate } from '@/i18n/dictionaries';
+import { LanguageSwitcher } from '@/components/layout/LanguageSwitcher';
 import type { Locale } from '@/i18n/constants';
 
 interface NavbarProps {
@@ -10,42 +11,94 @@ interface NavbarProps {
   currentPath?: string;
 }
 
+const NAV_ITEMS = [
+  { label: 'Komunitas', path: '/community' },
+  { label: 'Program', path: '/programs' },
+  { label: 'Agenda', path: '/events' },
+  { label: 'Relawan', path: '/volunteer' },
+] as const;
+
+function localizedPath(locale: Locale, path: string): string {
+  const prefix = locale === 'id' ? '' : `/${locale}`;
+  return `${prefix}${path}` || '/';
+}
+
 export function Navbar({ locale = 'id', currentPath = '/' }: NavbarProps) {
-  const t = (key: string) => translate(locale, key);
+  const [isOpen, setIsOpen] = useState(false);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
+  const homePath = localizedPath(locale, '/');
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape') return;
+      setIsOpen(false);
+      menuButtonRef.current?.focus();
+    };
+
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [isOpen]);
 
   return (
-    <nav className="navbar container mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-4 flex items-center justify-between">
-      {/* Logo */}
-      <a href={`/${locale === 'id' ? '' : locale + '/'}`} className="font-bold text-lg flex items-center" aria-label="Kembali ke halaman utama">
-        <img
-          src="/icon.svg"
-          alt="KaburAjaDulu Logo"
-          width={140}
-          height={28}
-          className="w-32 sm:w-40 h-auto"
-        />
+    <header className="kad-masthead" data-testid="site-header" lang={locale === 'id' ? undefined : 'id'}>
+      <a className="kad-skip-link" href="#main-content">
+        Lewati ke konten
       </a>
+      <nav className="navbar kad-nav kad-container" aria-label="Navigasi utama">
+        <a href={homePath} className="kad-brand" aria-label="KaburAjaDulu — halaman utama">
+          <img src="/icon.svg" alt="KaburAjaDulu" width={160} height={32} />
+        </a>
 
-      {/* Navigation Links */}
-      <div className="flex items-center gap-4">
-        <a
-          href={`/${locale === 'id' ? '' : locale + '/'}#blog`}
-          className="text-gray-700 hover:text-blue-600 font-medium transition-colors text-sm sm:text-base"
+        <button
+          ref={menuButtonRef}
+          type="button"
+          className="kad-menu-button"
+          aria-expanded={isOpen}
+          aria-controls="primary-navigation"
+          aria-label={isOpen ? 'Tutup navigasi' : 'Buka navigasi'}
+          onClick={() => setIsOpen((current) => !current)}
         >
-          {t('nav.blog')}
-        </a>
-        <LanguageSwitcher currentLocale={locale} currentPath={currentPath} />
-        <a
-          href={DISCORD_URL}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-sm sm:text-base px-3 sm:px-4 py-2 rounded-full border border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white transition-colors font-medium"
-          aria-label={t('footer.discord')}
+          {isOpen ? <X aria-hidden="true" /> : <Menu aria-hidden="true" />}
+        </button>
+
+        <div
+          id="primary-navigation"
+          className="kad-nav-panel"
+          data-open={isOpen ? 'true' : 'false'}
         >
-          {t('nav.contact')}
-        </a>
-      </div>
-    </nav>
+          <div className="kad-nav-links">
+            {NAV_ITEMS.map((item) => {
+              const href = localizedPath(locale, item.path);
+              const active = currentPath === href || currentPath.startsWith(`${href}/`);
+
+              return (
+                <a key={item.path} href={href} aria-current={active ? 'page' : undefined}>
+                  {item.label}
+                </a>
+              );
+            })}
+          </div>
+
+          <div className="kad-nav-actions">
+            <LanguageSwitcher currentLocale={locale} currentPath={currentPath} />
+            <a className="kad-button kad-button--outline" href={localizedPath(locale, '/support')}>
+              Dukung KAD
+            </a>
+            <a
+              href={DISCORD_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="kad-button kad-button--primary"
+              aria-label="Gabung Discord KaburAjaDulu"
+            >
+              Gabung Discord
+            </a>
+          </div>
+        </div>
+      </nav>
+    </header>
   );
 }
 
