@@ -4,6 +4,10 @@
     "about": "Om oss",
     "destinations": "Resmål",
     "blog": "Blogg",
+    "community": "Gemenskap",
+    "programs": "Program",
+    "events": "Evenemang",
+    "join_discord": "Gå med i Discord",
     "contact": "Kontakt",
     "language": "Språk"
   },
@@ -76,7 +80,19 @@
     "contact": "Kontakt",
     "email": "E-post",
     "discord": "Discord",
+    "community": "Gemenskap",
+    "programs": "Program",
+    "events": "Evenemang",
     "copyright": "© 2026 KaburAjaDulu. Alla rättigheter förbehållna."
+  },
+  "a11y": {
+    "skip_to_content": "Hoppa till huvudinnehållet",
+    "primary_navigation": "Huvudnavigering",
+    "footer_navigation": "Sidfotsnavigering",
+    "home_link": "Till startsidan",
+    "open_menu": "Öppna meny",
+    "close_menu": "Stäng meny",
+    "translation_notice": "Sidans innehåll visas på engelska tills översättningen har granskats."
   },
   "common": {
     "loading": "Laddar...",

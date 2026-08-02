@@ -41,7 +41,7 @@ test.describe('localized home routes', () => {
       await expect(page.locator('main h1')).toBeVisible();
 
       const discordLinks = page.locator(`a[href="${DISCORD_URL}"]`);
-      await expect(discordLinks).toHaveCount(3);
+      await expect(discordLinks).toHaveCount(4);
       for (let index = 0; index < 3; index += 1) {
         await expect(discordLinks.nth(index)).toHaveAttribute('target', '_blank');
         await expect(discordLinks.nth(index)).toHaveAttribute('rel', 'noopener noreferrer');
@@ -115,7 +115,7 @@ test('mobile viewport smoke keeps the primary content usable', async ({ page }) 
   await page.goto('/', { waitUntil: 'domcontentloaded' });
 
   await expect(page.locator('main h1')).toBeVisible();
-  await expect(page.locator(`a[href="${DISCORD_URL}"]`)).toHaveCount(3);
+  await expect(page.locator(`a[href="${DISCORD_URL}"]`)).toHaveCount(4);
   await expect(page.locator('body')).toBeVisible();
 });
 

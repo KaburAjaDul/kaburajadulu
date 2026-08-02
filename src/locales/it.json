@@ -4,6 +4,10 @@
     "about": "Chi siamo",
     "destinations": "Destinazioni",
     "blog": "Blog",
+    "community": "Comunità",
+    "programs": "Programmi",
+    "events": "Eventi",
+    "join_discord": "Unisciti a Discord",
     "contact": "Contatti",
     "language": "Lingua"
   },
@@ -76,7 +80,19 @@
     "contact": "Contatti",
     "email": "Email",
     "discord": "Discord",
+    "community": "Comunità",
+    "programs": "Programmi",
+    "events": "Eventi",
     "copyright": "© 2026 KaburAjaDulu. Tutti i diritti riservati."
+  },
+  "a11y": {
+    "skip_to_content": "Vai al contenuto principale",
+    "primary_navigation": "Navigazione principale",
+    "footer_navigation": "Navigazione del piè di pagina",
+    "home_link": "Torna alla home",
+    "open_menu": "Apri menu",
+    "close_menu": "Chiudi menu",
+    "translation_notice": "Il contenuto di questa pagina è mostrato in inglese finché la traduzione non viene revisionata."
   },
   "common": {
     "loading": "Caricamento...",

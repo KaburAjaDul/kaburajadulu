@@ -4,6 +4,10 @@
     "about": "关于我们",
     "destinations": "目的地",
     "blog": "博客",
+    "community": "社区",
+    "programs": "项目",
+    "events": "活动",
+    "join_discord": "加入 Discord",
     "contact": "联系我们",
     "language": "语言"
   },
@@ -76,7 +80,19 @@
     "contact": "联系我们",
     "email": "电子邮件",
     "discord": "Discord",
+    "community": "社区",
+    "programs": "项目",
+    "events": "活动",
     "copyright": "© 2026 KaburAjaDulu. 版权所有。"
+  },
+  "a11y": {
+    "skip_to_content": "跳至主要内容",
+    "primary_navigation": "主导航",
+    "footer_navigation": "页脚导航",
+    "home_link": "返回首页",
+    "open_menu": "打开菜单",
+    "close_menu": "关闭菜单",
+    "translation_notice": "本页正文在翻译审核完成前暂以英文显示。"
   },
   "common": {
     "loading": "加载中...",

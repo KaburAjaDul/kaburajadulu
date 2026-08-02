@@ -9,10 +9,12 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
+    "build:staging": "PUBLIC_DEPLOY_ENV=staging astro build && node scripts/prepare-staging-artifact.mjs",
     "preview": "astro preview",
     "check": "astro check",
     "astro": "astro",
     "cf:preview": "astro build && wrangler dev",
+    "validate:staging": "node scripts/validate-staging-config.mjs",
     "deploy": "astro build && wrangler deploy",
     "deploy:ci": "wrangler deploy",
     "test:e2e": "playwright test"

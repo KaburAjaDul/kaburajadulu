@@ -1,5 +1,7 @@
 'use client';
 
+import { useEffect, useRef, useState } from 'react';
+import { Menu, X } from 'lucide-react';
 import { DISCORD_URL } from '@/constants/urls';
 import { LanguageSwitcher } from './LanguageSwitcher';
 import { translate } from '@/i18n/dictionaries';
@@ -10,42 +12,85 @@ interface NavbarProps {
   currentPath?: string;
 }
 
+const sections = [
+  { key: 'nav.community', slug: 'community' },
+  { key: 'nav.programs', slug: 'programs' },
+  { key: 'nav.events', slug: 'events' },
+] as const;
+
+function localizedRoot(locale: Locale): string {
+  return locale === 'id' ? '' : `${locale}/`;
+}
+
 export function Navbar({ locale = 'id', currentPath = '/' }: NavbarProps) {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
   const t = (key: string) => translate(locale, key);
+  const root = `/${localizedRoot(locale)}`;
+  const unprefixedPath = currentPath.replace(/^\/(id|en|ja|zh-cn|zh-tw|ko|es|ar|nl|it|de|fr|sv)(?=\/|$)/, '');
+  const currentSection = unprefixedPath.split('/').filter(Boolean)[0];
+
+  useEffect(() => {
+    if (!menuOpen) return;
+
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape') return;
+      setMenuOpen(false);
+      menuButtonRef.current?.focus();
+    };
+
+    window.addEventListener('keydown', closeOnEscape);
+    return () => window.removeEventListener('keydown', closeOnEscape);
+  }, [menuOpen]);
 
   return (
-    <nav className="navbar container mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-4 flex items-center justify-between">
-      {/* Logo */}
-      <a href={`/${locale === 'id' ? '' : locale + '/'}`} className="font-bold text-lg flex items-center" aria-label="Kembali ke halaman utama">
-        <img
-          src="/icon.svg"
-          alt="KaburAjaDulu Logo"
-          width={140}
-          height={28}
-          className="w-32 sm:w-40 h-auto"
-        />
-      </a>
+    <header className="site-header">
+      <nav className="navbar page-width" aria-label={t('a11y.primary_navigation')}>
+        <a href={root} className="brand-mark" aria-label={t('a11y.home_link')}>
+          <img src="/icon.svg" alt="KaburAjaDulu" width={140} height={28} />
+        </a>
 
-      {/* Navigation Links */}
-      <div className="flex items-center gap-4">
-        <a
-          href={`/${locale === 'id' ? '' : locale + '/'}#blog`}
-          className="text-gray-700 hover:text-blue-600 font-medium transition-colors text-sm sm:text-base"
+        <button
+          ref={menuButtonRef}
+          type="button"
+          className="menu-toggle"
+          aria-label={menuOpen ? t('a11y.close_menu') : t('a11y.open_menu')}
+          aria-expanded={menuOpen}
+          aria-controls="primary-navigation"
+          onClick={() => setMenuOpen((open) => !open)}
         >
-          {t('nav.blog')}
-        </a>
-        <LanguageSwitcher currentLocale={locale} currentPath={currentPath} />
-        <a
-          href={DISCORD_URL}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-sm sm:text-base px-3 sm:px-4 py-2 rounded-full border border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white transition-colors font-medium"
-          aria-label={t('footer.discord')}
-        >
-          {t('nav.contact')}
-        </a>
-      </div>
-    </nav>
+          {menuOpen ? <X aria-hidden="true" /> : <Menu aria-hidden="true" />}
+        </button>
+
+        <div id="primary-navigation" className={`nav-cluster${menuOpen ? ' is-open' : ''}`}>
+          <div className="nav-links">
+            {sections.map(({ key, slug }) => (
+              <a
+                key={slug}
+                href={`${root}${slug}`}
+                className="nav-link"
+                aria-current={currentSection === slug ? 'page' : undefined}
+                onClick={() => setMenuOpen(false)}
+              >
+                {t(key)}
+              </a>
+            ))}
+          </div>
+          <div className="nav-actions">
+            <LanguageSwitcher currentLocale={locale} currentPath={currentPath} />
+            <a
+              className="button button-small"
+              href={DISCORD_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => setMenuOpen(false)}
+            >
+              {t('nav.join_discord')}
+            </a>
+          </div>
+        </div>
+      </nav>
+    </header>
   );
 }
 

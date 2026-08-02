@@ -1,0 +1,95 @@
+---
+import type { Locale } from '@/i18n/constants';
+import type { CommunitySection } from '@/content/community-shell';
+import { PROGRAM_ROWS, localizedShellCopy } from '@/content/community-shell';
+import { DISCORD_URL } from '@/constants/urls';
+import { translate } from '@/i18n/dictionaries';
+
+interface Props {
+  section: CommunitySection;
+  locale: Locale;
+}
+
+const { section, locale } = Astro.props;
+const copy = localizedShellCopy(locale, section);
+const isArabic = locale === 'ar';
+const usesEnglishFallback = locale !== 'id' && locale !== 'en';
+const translationNotice = translate(locale, 'a11y.translation_notice');
+const programRows = locale === 'id'
+  ? PROGRAM_ROWS.map((program) => ({
+      ...program,
+      title: program.title === 'Language clubs' ? 'Klub bahasa' : program.title === 'Education & career sessions' ? 'Sesi pendidikan & karier' : program.title,
+      category: program.category === 'Language club' ? 'Klub bahasa' : program.category === 'Community story' ? 'Cerita komunitas' : 'Pendidikan & karier',
+      status: program.status === 'Availability to confirm' ? 'Ketersediaan dikonfirmasi' : 'Menunggu persetujuan',
+      summary: program.title === 'Language clubs'
+        ? 'Ruang latihan bahasa Inggris, Mandarin, Jepang, Korea, dan Prancis; ketersediaan terbaru tetap perlu dikonfirmasi.'
+        : program.title === 'Education & career sessions'
+          ? 'Sesi berbasis sumber tentang Apple Developer Academy dan persiapan GKS.'
+          : 'Format cerita komunitas tentang kehidupan praktis di luar negeri; publikasinya tetap menunggu persetujuan.',
+    }))
+  : PROGRAM_ROWS;
+---
+
+<div class="community-shell" data-section={section} data-locale={locale} data-copy-locale={usesEnglishFallback ? 'en' : locale}>
+  {usesEnglishFallback && <p class="translation-notice page-width" lang={locale}>{translationNotice}</p>}
+  <section class="shell-hero page-width" aria-labelledby="shell-title">
+    <div class="hero-kicker">{copy.eyebrow}</div>
+    <div class="hero-grid">
+      <h1 id="shell-title">{copy.title}</h1>
+      <div class="hero-note">
+        <p>{copy.description}</p>
+        <a class="button button-primary" href={DISCORD_URL} target="_blank" rel="noopener noreferrer">
+          {isArabic ? 'انضم إلى Discord' : locale === 'id' ? 'Gabung ke Discord' : 'Join Discord'}
+        </a>
+      </div>
+    </div>
+  </section>
+
+  {section === 'community' && (
+    <section class="journey page-width" aria-labelledby="journey-title">
+      <div class="section-heading">
+        <span class="section-index">01</span>
+        <h2 id="journey-title">{locale === 'id' ? 'Pilih pintu masukmu' : 'Choose your way in'}</h2>
+      </div>
+      <div class="journey-list">
+        <article class="journey-step"><span>01</span><div><h3>{locale === 'id' ? 'Datang dengan pertanyaan' : 'Arrive with a question'}</h3><p>{locale === 'id' ? 'Cari konteks untuk studi, kerja, bahasa, atau hidup sehari-hari di luar negeri.' : 'Bring a question about study, work, language, or daily life abroad.'}</p></div></article>
+        <article class="journey-step"><span>02</span><div><h3>{locale === 'id' ? 'Temukan ritme belajar' : 'Find a learning rhythm'}</h3><p>{locale === 'id' ? 'Ikuti klub bahasa dan sesi berbagi yang punya sumber dan status jelas.' : 'Browse language clubs and sharing sessions with clear sources and status.'}</p></div></article>
+        <article class="journey-step"><span>03</span><div><h3>{locale === 'id' ? 'Bergabung saat siap' : 'Join when ready'}</h3><p>{locale === 'id' ? 'Discord adalah ruang percakapan; tautan publik tetap menjadi sumber kebenaran.' : 'Discord is the conversation space; public links remain the source of truth.'}</p></div></article>
+      </div>
+    </section>
+  )}
+
+  {section === 'programs' && (
+    <section class="program-list page-width" aria-labelledby="program-list-title">
+      <div class="section-heading">
+        <span class="section-index">02</span>
+        <h2 id="program-list-title">{locale === 'id' ? 'Keluarga program' : 'Program families'}</h2>
+      </div>
+      <div class="program-rows">
+        {programRows.map((program, index) => (
+          <article class="program-row" data-status={program.status.toLowerCase().replaceAll(' ', '-')}>
+            <span class="row-number">{String(index + 1).padStart(2, '0')}</span>
+            <div class="row-copy"><h3>{program.title}</h3><p>{program.summary}</p></div>
+            <div class="row-meta"><span class="category-label">{program.category}</span><span class="status-label">{program.status}</span></div>
+          </article>
+        ))}
+      </div>
+      <p class="editorial-note">{locale === 'id' ? 'Catatan editorial: beberapa lead riset sengaja tidak dimasukkan ke daftar program aktif.' : 'Editorial note: research leads are intentionally excluded from this live list.'}</p>
+    </section>
+  )}
+
+  {section === 'events' && (
+    <section class="events-panel page-width" aria-labelledby="events-title">
+      <div class="section-heading"><span class="section-index">03</span><h2 id="events-title">{locale === 'id' ? 'Status publikasi' : 'Publication status'}</h2></div>
+      <div class="empty-state" data-event-state="empty">
+        <span class="state-marker">{locale === 'id' ? 'Kosong' : 'Empty'}</span>
+        <h3>{locale === 'id' ? 'Belum ada acara publik.' : 'No public events yet.'}</h3>
+        <p>{locale === 'id' ? 'Kami akan menampilkan acara setelah detail, waktu, dan jalur pendaftaran disetujui.' : 'Events appear here only after details, timing, and a registration path are approved.'}</p>
+      </div>
+      <div class="state-guide" aria-label={locale === 'id' ? 'Contoh status acara' : 'Event state examples'}>
+        <details data-event-state="stale"><summary>{locale === 'id' ? 'Contoh: data lama' : 'Example: stale data'}</summary><p>{locale === 'id' ? 'Data terakhir tersedia, tetapi sudah melewati batas kesegaran. Kami menandainya dan tidak menyamarkannya sebagai jadwal baru.' : 'The last projection is older than its freshness window. We label it instead of presenting it as a current schedule.'}</p></details>
+        <details data-event-state="error"><summary>{locale === 'id' ? 'Contoh: layanan bermasalah' : 'Example: service error'}</summary><p>{locale === 'id' ? 'Layanan publik sedang tidak tersedia. Coba lagi nanti; data privat tidak pernah menjadi cadangan.' : 'The public service is temporarily unavailable. Try again later; private data is never used as a fallback.'}</p></details>
+      </div>
+    </section>
+  )}
+</div>

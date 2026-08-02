@@ -30,6 +30,9 @@ jobs:
       - name: Install dependencies
         run: bun install --frozen-lockfile
 
+      - name: Validate staging configuration
+        run: bun run validate:staging
+
       - name: Audit dependencies
         run: npm audit --audit-level=moderate
 
@@ -41,7 +44,7 @@ jobs:
         run: |
           set -euo pipefail
           grep -Fq "export const DISCORD_URL = 'https://discord.gg/RUFFbEaeDx';" src/constants/urls.ts
-          grep -Fq '"sameAs": [DISCORD_URL]' src/layouts/Layout.astro
+          grep -Fq 'sameAs: [DISCORD_URL]' src/layouts/Layout.astro
           for component in \
             src/components/layout/Navbar.tsx \
             src/components/home/HeroSection.tsx \
@@ -55,6 +58,9 @@ jobs:
 
       - name: Build production site
         run: bun run build
+
+      - name: Wrangler staging dry-run
+        run: bunx wrangler deploy --env staging --dry-run
 
       - name: Smoke-test generated routes and invite
         shell: bash

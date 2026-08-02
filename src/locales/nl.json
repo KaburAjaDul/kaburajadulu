@@ -4,6 +4,10 @@
     "about": "Over ons",
     "destinations": "Bestemmingen",
     "blog": "Blog",
+    "community": "Community",
+    "programs": "Programma's",
+    "events": "Evenementen",
+    "join_discord": "Word lid van Discord",
     "contact": "Contact",
     "language": "Taal"
   },
@@ -76,7 +80,19 @@
     "contact": "Contact",
     "email": "E-mail",
     "discord": "Discord",
+    "community": "Community",
+    "programs": "Programma's",
+    "events": "Evenementen",
     "copyright": "© 2026 KaburAjaDulu. Alle rechten voorbehouden."
+  },
+  "a11y": {
+    "skip_to_content": "Naar hoofdinhoud",
+    "primary_navigation": "Hoofdnavigatie",
+    "footer_navigation": "Voetnavigatie",
+    "home_link": "Terug naar home",
+    "open_menu": "Menu openen",
+    "close_menu": "Menu sluiten",
+    "translation_notice": "De inhoud van deze pagina wordt in het Engels getoond totdat de vertaling is gecontroleerd."
   },
   "common": {
     "loading": "Laden...",

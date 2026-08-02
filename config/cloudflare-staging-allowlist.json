@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "productionWorkerName": "kaburajadulu",
+  "stagingWorkerName": "kaburajadulu-staging",
+  "assetsDirectory": "./dist",
+  "communityEventsEnabled": "false",
+  "allowedStagingKeys": [
+    "name",
+    "workers_dev",
+    "preview_urls",
+    "vars",
+    "assets"
+  ],
+  "stagingWorkersDev": true,
+  "stagingPreviewUrls": true,
+  "allowedStagingAssetKeys": [
+    "directory",
+    "not_found_handling"
+  ],
+  "allowedVariableKeys": [
+    "COMMUNITY_EVENTS_ENABLED"
+  ],
+  "forbiddenStagingKeys": [
+    "routes",
+    "route",
+    "custom_domains",
+    "customDomains",
+    "domains",
+    "d1_databases",
+    "r2_buckets",
+    "kv_namespaces",
+    "durable_objects",
+    "queues",
+    "services",
+    "dispatch_namespaces",
+    "hyperdrive",
+    "vectorize",
+    "ai",
+    "browser",
+    "images",
+    "analytics_engine_datasets",
+    "mtls_certificates",
+    "pipelines",
+    "send_email",
+    "secrets_store",
+    "workers_ai",
+    "service_bindings",
+    "wasm_modules",
+    "text_blobs",
+    "data_blobs",
+    "unsafe"
+  ]
+}

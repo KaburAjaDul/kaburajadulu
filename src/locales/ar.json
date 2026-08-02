@@ -4,6 +4,10 @@
     "about": "من نحن",
     "destinations": "الوجهات",
     "blog": "المدونة",
+    "community": "المجتمع",
+    "programs": "البرامج",
+    "events": "الفعاليات",
+    "join_discord": "انضم إلى Discord",
     "contact": "اتصل بنا",
     "language": "اللغة"
   },
@@ -76,7 +80,19 @@
     "contact": "اتصل بنا",
     "email": "البريد الإلكتروني",
     "discord": "Discord",
+    "community": "المجتمع",
+    "programs": "البرامج",
+    "events": "الفعاليات",
     "copyright": "© 2026 KaburAjaDulu. جميع الحقوق محفوظة."
+  },
+  "a11y": {
+    "skip_to_content": "الانتقال إلى المحتوى الرئيسي",
+    "primary_navigation": "التنقل الرئيسي",
+    "footer_navigation": "تنقل التذييل",
+    "home_link": "العودة إلى الصفحة الرئيسية",
+    "open_menu": "فتح القائمة",
+    "close_menu": "إغلاق القائمة",
+    "translation_notice": "يُعرض محتوى هذه الصفحة باللغة الإنجليزية إلى حين اكتمال مراجعة الترجمة."
   },
   "common": {
     "loading": "جارٍ التحميل...",
