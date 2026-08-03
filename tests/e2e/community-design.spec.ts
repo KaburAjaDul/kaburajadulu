@@ -55,6 +55,13 @@ const TASK_HEADERS = [
   ['/events/not-published/', 'record', 'Status', 'Belum dipublikasikan'],
 ] as const;
 
+const INFORMATION_FIRST_ROUTES = [
+  ['/programs/', 'catalogue'],
+  ['/events/', 'operational'],
+  ['/volunteer/', 'operational'],
+  ['/stories/', 'evidence'],
+] as const;
+
 async function expectNoHorizontalOverflow(page: Page) {
   const dimensions = await page.evaluate(() => ({
     body: document.body.scrollWidth,
@@ -123,13 +130,58 @@ test.describe('route-specific first viewport', () => {
     });
   }
 
-  test('Programs exposes real category controls in the compact header', async ({ page }) => {
+  test('Programs exposes real category controls at the start of the catalogue', async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 720 });
     await page.goto('/programs/', { waitUntil: 'domcontentloaded' });
-    const filters = page.locator('.kad-task-header .kad-filter-row');
+    const filters = page.locator('.kad-filter-row--content');
     await expect(filters.getByRole('link')).toHaveCount(3);
     const box = await filters.boundingBox();
     expect((box?.y ?? 721) + (box?.height ?? 0)).toBeLessThanOrEqual(720);
+  });
+
+  test.describe('information-first task headers', () => {
+    for (const [route, variant] of INFORMATION_FIRST_ROUTES) {
+      test(`${route} is compact, useful, and contained on desktop and mobile`, async ({ page }) => {
+        for (const viewport of [
+          { width: 1280, height: 720, maxHeaderHeight: 300, maxTitleSize: 48 },
+          { width: 390, height: 844, maxHeaderHeight: 310, maxTitleSize: 36 },
+        ]) {
+          await page.setViewportSize({ width: viewport.width, height: viewport.height });
+          await page.goto(route, { waitUntil: 'domcontentloaded' });
+
+          const header = page.locator(`[data-page-header="task"][data-header-variant="${variant}"]`);
+          await expect(header).toHaveCount(1);
+          await expect(header).toHaveAttribute('data-header-density', 'compact');
+          await expect(header.locator('h1')).toBeVisible();
+
+          const metrics = await header.evaluate((element) => {
+            const title = element.querySelector('h1');
+            const stats = element.querySelector('.kad-task-header__stats');
+            const action = element.querySelector('.kad-task-header__actions a, .kad-task-header__actions button');
+            const rect = element.getBoundingClientRect();
+            const titleStyle = title ? getComputedStyle(title) : null;
+            const statsRect = stats?.getBoundingClientRect() ?? null;
+            const actionRect = action?.getBoundingClientRect() ?? null;
+            return {
+              headerHeight: rect.height,
+              titleSize: titleStyle ? Number.parseFloat(titleStyle.fontSize) : 0,
+              statsBottom: statsRect ? statsRect.bottom : 0,
+              actionBottom: actionRect ? actionRect.bottom : 0,
+              statsCount: stats?.querySelectorAll(':scope > div').length ?? 0,
+              actionCount: element.querySelectorAll('.kad-task-header__actions a, .kad-task-header__actions button').length,
+            };
+          });
+
+          expect(metrics.headerHeight, `${route} header should stay compact at ${viewport.width}px`).toBeLessThanOrEqual(viewport.maxHeaderHeight);
+          expect(metrics.titleSize, `${route} title should not use hero scale at ${viewport.width}px`).toBeLessThanOrEqual(viewport.maxTitleSize);
+          expect(metrics.statsCount, `${route} header should expose its information summary`).toBe(3);
+          expect(metrics.actionCount, `${route} header should expose a useful next action`).toBeGreaterThan(0);
+          expect(metrics.statsBottom, `${route} stats should be visible near the first viewport`).toBeLessThanOrEqual(viewport.height + 16);
+          expect(metrics.actionBottom, `${route} action should be visible near the first viewport`).toBeLessThanOrEqual(viewport.height + 16);
+          await expectNoHorizontalOverflow(page);
+        }
+      });
+    }
   });
 });
 
@@ -326,7 +378,7 @@ test('production excludes staging fixtures and keeps language fallback explicit'
 
   await page.goto('/en/programs/', { waitUntil: 'domcontentloaded' });
   await expect(page.locator('main')).toHaveAttribute('lang', 'en');
-  await expect(page.getByRole('heading', { name: 'Choose something you can actually follow through on.' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Community programs' })).toBeVisible();
   await expect(page.getByText('Sumber publik di X', { exact: true })).toHaveCount(0);
   await expect(page.locator('.kad-program-card').first()).toContainText('Public source on X');
 

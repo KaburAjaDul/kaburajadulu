@@ -58,7 +58,7 @@ test('English and fallback locale surfaces do not mix Indonesian fixture copy', 
   await page.goto('/en/events/', { waitUntil: 'domcontentloaded' });
   await expect(page.locator('main')).toHaveAttribute('lang', 'en');
   await expect(page.locator('.kad-demo-banner')).toContainText('Demo data');
-  await expect(page.getByRole('heading', { name: 'Know what is happening before you set aside the time.' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Community events' })).toBeVisible();
   await expect(page.getByText('Data simulasi', { exact: true })).toHaveCount(0);
 
   await page.goto('/ja/volunteer/', { waitUntil: 'domcontentloaded' });

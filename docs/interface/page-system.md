@@ -111,6 +111,17 @@ every route. The first viewport must expose the page's actual job:
 All non-Community page headers are compact task headers. Their role is
 information scent and control access, not visual spectacle.
 
+Runtime compactness contract:
+
+- desktop H1 stays between `32px` and `48px`; mobile stays between `32px`
+  and `36px`;
+- desktop header padding stays between `28px` and `36px`; mobile uses
+  `24px 16px 20px`;
+- title, task summary, three status facts, primary action, and route-specific
+  controls appear before decorative or explanatory modules;
+- page-family colour is a thin status cue, not a full landing-page scene;
+- `/community` remains the only inner route with an orientation hero.
+
 ## Page family designs
 
 ### 1. Home `/`

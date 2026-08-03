@@ -25,6 +25,22 @@ Examples of the chosen direction:
 - "Tahu apa yang berlangsung sebelum menyisihkan waktu."
 - "Setiap kerja punya jejak. Setiap nama tetap pilihan."
 
+## Inner-page header direction
+
+Audience: a prospective or current member who has already selected a specific
+route and now needs facts, status, and a next action rather than persuasion.
+
+| Direction | Clarity | Humane tone | Task fit | CTA fit | Natural ID | Page fit | Total |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| Directory label plus factual summary | 10 | 8 | 10 | 9 | 9 | 10 | 56 |
+| Question-led headline | 8 | 9 | 8 | 8 | 9 | 7 | 49 |
+| Status-led headline | 9 | 7 | 9 | 9 | 8 | 8 | 50 |
+
+The selected direction uses the page name as H1 and moves the task into one
+plain summary sentence. Examples: `Program komunitas`, `Agenda komunitas`,
+`Cara kerja relawan`, and `Cerita dan dokumentasi`. The header does not make a
+campaign promise; counts, status, filters, and the next action carry the value.
+
 ## Glossary
 
 - **Program**: a repeatable activity or pathway.
