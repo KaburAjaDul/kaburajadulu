@@ -14,7 +14,8 @@ interface LanguageSwitcherProps {
 }
 
 export function LanguageSwitcher({ currentLocale, currentPath, className }: LanguageSwitcherProps) {
-  const t = (key: string) => translate(currentLocale, key);
+  const shellLocale = currentLocale === 'id' ? 'id' : 'en';
+  const t = (key: string) => translate(shellLocale, key);
   const [isOpen, setIsOpen] = useState(false);
   const detectedLocale =
     typeof document !== 'undefined'
@@ -63,7 +64,7 @@ export function LanguageSwitcher({ currentLocale, currentPath, className }: Lang
       {isOpen && (
         <div
           role="listbox"
-          aria-label="Select language"
+          aria-label={t('nav.language')}
           className={cn(
             'absolute right-0 mt-1 w-52 max-h-80 overflow-y-auto',
             'bg-white rounded-xl shadow-lg border border-gray-100',
@@ -99,7 +100,7 @@ export function LanguageSwitcher({ currentLocale, currentPath, className }: Lang
                   <span className="w-1.5 h-1.5 rounded-full bg-blue-500" />
                 )}
                 {isDetected && !isActive && (
-                  <span className="text-xs text-gray-400 font-medium">detected</span>
+                  <span className="text-xs text-gray-400 font-medium">{t('nav.detected')}</span>
                 )}
               </a>
             );

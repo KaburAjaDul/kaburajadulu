@@ -59,6 +59,7 @@
     "read_more": "Weiterlesen",
     "empty_category": "Hoppla! In dieser Kategorie gibt es keine Beiträge",
     "categories": {
+      "All": "Alle",
       "Lowongan": "Stellenausschreibungen",
       "Beasiswa": "Stipendien",
       "Event": "Veranstaltungen",

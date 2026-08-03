@@ -5,18 +5,32 @@
     "destinations": "Destinasi",
     "blog": "Blog",
     "contact": "Kontak",
-    "language": "Bahasa"
+    "language": "Bahasa",
+    "community": "Komunitas",
+    "programs": "Program",
+    "events": "Agenda",
+    "volunteer": "Relawan",
+    "stories": "Cerita",
+    "impact": "Dampak",
+    "credits": "Kredit",
+    "support": "Dukung KAD",
+    "join_discord": "Gabung Discord",
+    "skip_to_content": "Lewati ke konten",
+    "open_navigation": "Buka navigasi",
+    "close_navigation": "Tutup navigasi",
+    "main_navigation": "Navigasi utama",
+    "detected": "terdeteksi"
   },
   "hero": {
     "headline": "Kabur Aja Dulu",
-    "subheadline": "Temukan kesempatan studi dan kerja di luar negeri. Kami membantu masyarakat Indonesia siapapun yang ingin merasakan pengalaman bekerja dan belajar di luar negeri.",
-    "cta_primary": "Mulai Sekarang",
-    "cta_secondary": "Jelajahi Program",
+    "subheadline": "Punya rencana studi, kerja, atau hidup di luar negeri? Mulai dari sumber yang bisa diperiksa dan orang yang pernah melewati pertanyaan serupa.",
+    "cta_primary": "Masuk ke komunitas",
+    "cta_secondary": "Lihat program",
     "badge": "Ruang Publik Komunitas"
   },
   "about": {
-    "headline": "Tentang KaburAjaDulu",
-    "subheadline": "Komunitas yang membantu masyarakat Indonesia siapapun yang ingin merasakan pengalaman bekerja dan belajar di luar negeri.",
+    "headline": "Bertanya dulu sebelum melangkah jauh.",
+    "subheadline": "KaburAjaDulu mempertemukan orang Indonesia yang sedang mencari jalan untuk belajar, bekerja, dan membangun hidup di luar negeri.",
     "stat1_value": "500+",
     "stat1_label": "Anggota Aktif",
     "stat2_value": "10+",
@@ -25,11 +39,11 @@
     "stat3_label": "Lowongan Tersedia",
     "feature1_title": "Informasi Akurat",
     "feature1_desc": "Kami memastikan setiap informasi yang kami berikan adalah informasi terkini dan valid.",
-    "feature2_title": "Komunitas Supportif",
+    "feature2_title": "Hubungi tim KAD",
     "feature2_desc": "Bergabung dengan komunitas yang saling mendukung dan berbagi pengalaman.",
     "feature3_title": "Gratis untuk Semua",
     "feature3_desc": "Semua fitur dan informasi yang kami berikan adalah gratis untuk diakses.",
-    "github_contributor": "GitHub Contributor"
+    "github_contributor": "Ikut membangun website"
   },
   "destinations": {
     "headline": "Destinasi Populer",
@@ -47,9 +61,9 @@
     }
   },
   "cta": {
-    "headline": "Siap Memulai Perjalananmu?",
-    "subheadline": "Temukan program, percakapan, dan langkah berikutnya bersama komunitas.",
-    "cta_primary": "Gabung dengan Kami",
+    "headline": "Masih bingung mulai dari mana?",
+    "subheadline": "Bawa satu pertanyaan ke komunitas. Cari ruang yang tepat, dengarkan pengalaman orang lain, lalu tentukan langkahmu sendiri.",
+    "cta_primary": "Buka Discord KAD",
     "cta_secondary": "Hubungi Kami"
   },
   "blog": {
@@ -59,6 +73,7 @@
     "read_more": "Baca Selengkapnya",
     "empty_category": "Oops! Belum ada postingan untuk kategori ini",
     "categories": {
+      "All": "Semua",
       "Lowongan": "Lowongan",
       "Beasiswa": "Beasiswa",
       "Event": "Event",
@@ -76,6 +91,11 @@
     "contact": "Kontak",
     "email": "Email",
     "discord": "Discord",
+    "explore": "Jelajahi",
+    "public_sources": "Sumber publik",
+    "github_contributor": "Repositori website",
+    "join_discord": "Gabung Discord",
+    "community_note": "Informasi program selalu dikonfirmasi melalui sumber publik atau Discord.",
     "copyright": "© 2026 KaburAjaDulu. Hak cipta dilindungi."
   },
   "common": {

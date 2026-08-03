@@ -7,6 +7,8 @@ const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const distDir = join(root, 'dist');
 const irPath = join(root, 'docs/interface/kad-community-interface.ir.json');
 const programFixturePath = join(root, 'src/content/community-site.ts');
+const stagingFixturePath = join(root, 'src/content/staging-fixtures.ts');
+const stagingMode = process.env.PUBLIC_STAGING_FIXTURES === 'true';
 
 const requiredRoutes = [
   '/',
@@ -45,7 +47,9 @@ const forbiddenRuntimePatterns = [
   { label: 'old Discord invite', pattern: /https?:\/\/discord\.com\/invite\/KaburAjaDulu/i },
   { label: 'private Discord identifier field', pattern: /discord_(?:message|announcement_message|scheduled_event)_id|announcement_channel_id|host_voice_channel_id/i },
   { label: 'research manifest filename', pattern: /source-manifest\.json/i },
+  { label: 'private fixture identifier field', pattern: /discord[_-](?:id|message|channel)|(?:privateMetric|private_metric|demographics)\s*[:=]/i },
 ];
+const fixtureIdPattern = /demo-(?:event|session|volunteer|contribution|metric|record|preview|consent)-[a-z0-9-]+/i;
 
 async function walk(directory) {
   const entries = await readdir(directory, { withFileTypes: true });
@@ -63,9 +67,10 @@ function fail(message) {
   process.exitCode = 1;
 }
 
-const [irRaw, programFixture, distStat] = await Promise.all([
+const [irRaw, programFixture, stagingFixture, distStat] = await Promise.all([
   readFile(irPath, 'utf8'),
   readFile(programFixturePath, 'utf8'),
+  readFile(stagingFixturePath, 'utf8'),
   stat(distDir).catch(() => null),
 ]);
 
@@ -151,10 +156,31 @@ if (externalImageSources.length) {
   fail(`external image src found in dist: ${[...new Set(externalImageSources)].join(', ')}`);
 }
 
-if (!htmlText.includes('data-event-count="0"')) fail('empty event state marker is missing');
-if (!htmlText.includes('data-event-state="empty"')) fail('empty event state value is missing');
-for (const marker of ['Evidence review', 'Proposed', 'Anonymous by default', 'Not published']) {
-  if (!htmlText.includes(marker)) fail(`readiness marker missing: ${marker}`);
+if (!stagingMode && !htmlText.includes('data-fixtures="disabled"')) fail('production fixture boundary marker is missing');
+if (stagingMode) {
+  if (!htmlText.includes('data-fixture-id="demo-preview-fixture-kad-2026"')) fail('staging fixture banner marker is missing');
+  if (!htmlText.includes('data-fixture-state="upcoming"')) fail('staging event state marker is missing');
+  if (!fixtureIdPattern.test(htmlText)) fail('staging fixture IDs are missing');
+  if (!htmlText.includes('Data simulasi') && !htmlText.includes('Demo data')) fail('staging demo label is missing');
+  const indexablePages = html
+    .filter(([, content]) => !/<meta\s+name=["']robots["']\s+content=["']noindex, nofollow["']/i.test(content))
+    .map(([file]) => file);
+  if (indexablePages.length) fail(`staging pages missing noindex: ${indexablePages.slice(0, 5).join(', ')}`);
+} else {
+  if (fixtureIdPattern.test(htmlText)) fail('fixture IDs leaked into production runtime');
+  if (/Data simulasi|Demo data/.test(htmlText)) fail('demo labels leaked into production runtime');
+  if (!htmlText.includes('data-event-count="0"')) fail('production empty event count is missing');
+  if (!htmlText.includes('data-event-state="empty"')) fail('production empty event state is missing');
+  for (const marker of ['Tinjauan bukti', 'Belum siap', 'Anonim secara bawaan', 'Belum dipublikasikan']) {
+    if (!htmlText.includes(marker)) fail(`production readiness marker missing: ${marker}`);
+  }
+}
+
+if (!stagingFixture.includes('PUBLIC_STAGING_FIXTURES') || !stagingFixture.includes('demo: true')) {
+  fail('typed staging fixture boundary is missing');
+}
+for (const forbiddenField of ['email:', 'discordId', 'channelId', 'messageId', 'avatarUrl', 'demographics']) {
+  if (stagingFixture.includes(forbiddenField)) fail(`forbidden fixture field found: ${forbiddenField}`);
 }
 
 for (const [file, content] of runtime) {

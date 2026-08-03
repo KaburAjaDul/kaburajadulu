@@ -10,12 +10,13 @@ interface HeroSectionProps {
 }
 
 export function HeroSection({ locale = 'id' }: HeroSectionProps) {
+  const contentLocale = locale === 'id' ? 'id' : 'en';
   const t = useMemo(() => {
-    return (key: string) => translate(locale, key);
-  }, [locale]);
+    return (key: string) => translate(contentLocale, key);
+  }, [contentLocale]);
 
   return (
-    <section className="kad-home-hero py-10 md:py-16 lg:py-24">
+    <section className="kad-home-hero py-10 md:py-16 lg:py-24" lang={contentLocale} data-requested-locale={locale}>
       <div className="kad-home-hero__ornaments" aria-hidden="true">
         <div className="kad-home-hero__dither">
           <img src="/images/seoul.webp" alt="" width="720" height="480" />
@@ -23,11 +24,11 @@ export function HeroSection({ locale = 'id' }: HeroSectionProps) {
         <div className="kad-home-hero__route"><span></span></div>
         <div className="kad-home-hero__note">
           <strong>KAD</strong>
-          <span>made with<br />curiosity</span>
+          <span>EST.<br />2024</span>
         </div>
       </div>
       <div className="kad-home-hero__content container mx-auto text-center px-4 md:px-6">
-        <p className="kad-home-hero__kicker">Komunitas belajar lintas kota</p>
+        <p className="kad-home-hero__kicker">{t('hero.badge')}</p>
         <h1 className="text-4xl md:text-5xl font-extrabold mb-4 md:mb-6">
           {t('hero.headline')}
         </h1>

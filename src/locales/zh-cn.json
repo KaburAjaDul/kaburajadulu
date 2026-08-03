@@ -59,6 +59,7 @@
     "read_more": "阅读更多",
     "empty_category": "糟糕！此类别暂无文章",
     "categories": {
+      "All": "全部",
       "Lowongan": "职位空缺",
       "Beasiswa": "奖学金",
       "Event": "活动",

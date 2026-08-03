@@ -42,7 +42,8 @@ const collageSlots = [
 ] as const;
 
 export default function DestinationShowcase({ locale = 'id' }: DestinationShowcaseProps) {
-  const t = (key: string) => translate(locale, key);
+  const contentLocale = locale === 'id' ? 'id' : 'en';
+  const t = (key: string) => translate(contentLocale, key);
   const [activeIndex, setActiveIndex] = useState(0);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
@@ -88,6 +89,8 @@ export default function DestinationShowcase({ locale = 'id' }: DestinationShowca
     <section
       className="py-12"
       data-testid="destination-showcase"
+      data-requested-locale={locale}
+      lang={contentLocale}
       aria-labelledby="destinations-heading"
     >
       <div className="container mx-auto px-4">

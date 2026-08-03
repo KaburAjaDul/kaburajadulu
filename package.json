@@ -17,6 +17,7 @@
     "deploy:ci": "wrangler deploy",
     "deploy:staging": "wrangler deploy --env staging",
     "test:e2e": "playwright test",
+    "test:e2e:staging": "playwright test --config=playwright.staging.config.ts",
     "validate:interface-runtime": "node scripts/validate-interface-runtime.mjs",
     "test:e2e:community": "playwright test tests/e2e/community-design.spec.ts"
   },

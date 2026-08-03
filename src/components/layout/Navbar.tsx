@@ -5,6 +5,7 @@ import { Menu, X } from 'lucide-react';
 import { DISCORD_URL } from '@/constants/urls';
 import { LanguageSwitcher } from '@/components/layout/LanguageSwitcher';
 import type { Locale } from '@/i18n/constants';
+import { translate } from '@/i18n/dictionaries';
 
 interface NavbarProps {
   locale?: Locale;
@@ -12,10 +13,10 @@ interface NavbarProps {
 }
 
 const NAV_ITEMS = [
-  { label: 'Komunitas', path: '/community' },
-  { label: 'Program', path: '/programs' },
-  { label: 'Agenda', path: '/events' },
-  { label: 'Relawan', path: '/volunteer' },
+  { key: 'community', path: '/community' },
+  { key: 'programs', path: '/programs' },
+  { key: 'events', path: '/events' },
+  { key: 'volunteer', path: '/volunteer' },
 ] as const;
 
 function localizedPath(locale: Locale, path: string): string {
@@ -24,6 +25,8 @@ function localizedPath(locale: Locale, path: string): string {
 }
 
 export function Navbar({ locale = 'id', currentPath = '/' }: NavbarProps) {
+  const contentLocale = locale === 'id' ? 'id' : 'en';
+  const t = (key: string) => translate(contentLocale, key);
   const [isOpen, setIsOpen] = useState(false);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const homePath = localizedPath(locale, '/');
@@ -42,12 +45,12 @@ export function Navbar({ locale = 'id', currentPath = '/' }: NavbarProps) {
   }, [isOpen]);
 
   return (
-    <header className="kad-masthead" data-testid="site-header" lang={locale === 'id' ? undefined : 'id'}>
+    <header className="kad-masthead" data-testid="site-header" lang={contentLocale} data-requested-locale={locale}>
       <a className="kad-skip-link" href="#main-content">
-        Lewati ke konten
+        {t('nav.skip_to_content')}
       </a>
-      <nav className="navbar kad-nav kad-container" aria-label="Navigasi utama">
-        <a href={homePath} className="kad-brand" aria-label="KaburAjaDulu — halaman utama">
+      <nav className="navbar kad-nav kad-container" aria-label={t('nav.main_navigation')}>
+        <a href={homePath} className="kad-brand" aria-label={`KaburAjaDulu, ${t('nav.home')}`}>
           <img src="/icon.svg" alt="KaburAjaDulu" width={160} height={32} />
         </a>
 
@@ -57,7 +60,7 @@ export function Navbar({ locale = 'id', currentPath = '/' }: NavbarProps) {
           className="kad-menu-button"
           aria-expanded={isOpen}
           aria-controls="primary-navigation"
-          aria-label={isOpen ? 'Tutup navigasi' : 'Buka navigasi'}
+          aria-label={isOpen ? t('nav.close_navigation') : t('nav.open_navigation')}
           onClick={() => setIsOpen((current) => !current)}
         >
           {isOpen ? <X aria-hidden="true" /> : <Menu aria-hidden="true" />}
@@ -75,7 +78,7 @@ export function Navbar({ locale = 'id', currentPath = '/' }: NavbarProps) {
 
               return (
                 <a key={item.path} href={href} aria-current={active ? 'page' : undefined}>
-                  {item.label}
+                  {t(`nav.${item.key}`)}
                 </a>
               );
             })}
@@ -84,16 +87,16 @@ export function Navbar({ locale = 'id', currentPath = '/' }: NavbarProps) {
           <div className="kad-nav-actions">
             <LanguageSwitcher currentLocale={locale} currentPath={currentPath} />
             <a className="kad-button kad-button--outline" href={localizedPath(locale, '/support')}>
-              Dukung KAD
+              {t('nav.support')}
             </a>
             <a
               href={DISCORD_URL}
               target="_blank"
               rel="noopener noreferrer"
               className="kad-button kad-button--primary"
-              aria-label="Gabung Discord KaburAjaDulu"
+              aria-label={`${t('nav.join_discord')} KaburAjaDulu`}
             >
-              Gabung Discord
+              {t('nav.join_discord')}
             </a>
           </div>
         </div>

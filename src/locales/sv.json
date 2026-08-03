@@ -59,6 +59,7 @@
     "read_more": "Läs mer",
     "empty_category": "Hoppsan! Det finns inga inlägg i den här kategorin",
     "categories": {
+      "All": "Alla",
       "Lowongan": "Lediga tjänster",
       "Beasiswa": "Stipendier",
       "Event": "Evenemang",

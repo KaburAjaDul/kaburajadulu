@@ -1,248 +1,141 @@
 ---
 import Layout from '@/layouts/Layout.astro';
 import type { Locale } from '@/i18n/constants';
-import { DISCORD_URL, INSTAGRAM_URL, PROGRAMS, X_URL, localizedPath, pageTitle, programBySlug } from '@/content/community-site';
-import type { CommunityPageKind } from '@/content/community-site';
+import { DISCORD_URL, INSTAGRAM_URL, PROGRAMS, X_URL, localizedPath, pageTitle, programBySlug, communityCopy, localizedProgram } from '@/content/community-site';
+import { STAGING_FIXTURES_ENABLED, activeStagingEvents, fixtureText, stagingEventById, stagingSessionByProgramId, STAGING_ATTRIBUTION, STAGING_CONTRIBUTIONS, STAGING_METRICS, STAGING_PUBLISHED_RECORDS, STAGING_TEAMS, STAGING_VOLUNTEERS } from '@/content/staging-fixtures';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import TaskHeader from '@/components/community-system/TaskHeader.astro';
+import DemoBanner from '@/components/community-system/DemoBanner.astro';
+import EventScheduleCard from '@/components/community-system/EventScheduleCard.astro';
+import VolunteerProfileCard from '@/components/community-system/VolunteerProfileCard.astro';
+import MetricCard from '@/components/community-system/MetricCard.astro';
+import StatePanel from '@/components/community-system/StatePanel.astro';
+import StatusBadge from '@/components/community-system/StatusBadge.astro';
+import SessionPreview from '@/components/community-system/SessionPreview.astro';
+import AttributionConsentCard from '@/components/community-system/AttributionConsentCard.astro';
 import '@/styles/global.css';
 
-interface Props {
-  kind: CommunityPageKind;
-  locale: Locale;
-  currentPath: string;
-  slug?: string;
-  id?: string;
-}
-
+interface Props { kind: import('@/content/community-site').CommunityPageKind; locale: Locale; currentPath: string; slug?: string; id?: string; }
 const { kind, locale, currentPath, slug, id } = Astro.props;
 const program = slug ? programBySlug(slug) : undefined;
-const title = pageTitle(kind, program);
-const description = 'KaburAjaDulu adalah komunitas publik untuk menemukan ritme belajar, program, dan cara berkontribusi dengan status yang jelas.';
-const fallbackText = locale === 'id' ? null : 'Konten komunitas ini menggunakan sumber bahasa Indonesia. Struktur, status, dan jalur navigasi tetap tersedia dalam locale pilihanmu.';
+const localized = program ? localizedProgram(locale, program) : undefined;
+const copy = communityCopy(locale, kind);
+const title = pageTitle(kind, localized ?? program, locale);
+const description = copy.description;
 const href = (path: string): string => localizedPath(locale, path);
+const stagingEvents = activeStagingEvents();
+const event = id ? stagingEventById(id) : undefined;
+const isEnglish = locale !== 'id';
+const fallbackText = !['id', 'en'].includes(locale)
+  ? 'This community surface is available in English while a full translation is prepared.'
+  : null;
+const contentLanguage = locale === 'id' ? 'id' : 'en';
 ---
 
-<Layout title={title} description={description} canonical={`https://kaburajadulu.com${currentPath}`} locale={locale} currentPath={currentPath}>
+<Layout title={title} description={description} canonical={`https://kaburajadulu.com${currentPath}`} locale={locale} currentPath={currentPath} robots={STAGING_FIXTURES_ENABLED ? 'noindex, nofollow' : undefined}>
   <Navbar client:only="react" locale={locale} currentPath={currentPath} />
-  <main id="main-content" class="kad-page">
+  <main id="main-content" class="kad-page" lang={contentLanguage} data-requested-locale={locale} data-fixtures={STAGING_FIXTURES_ENABLED ? 'enabled' : 'disabled'}>
     <div class="kad-container">
-      {fallbackText && <p class="kad-translation-notice" lang="id">{fallbackText}</p>}
+      {fallbackText && <p class="kad-translation-notice" lang="en" role="status">{fallbackText}</p>}
+      <DemoBanner locale={locale} />
 
       {kind === 'community' && (
         <>
           <section class="kad-page-hero" aria-labelledby="page-title" data-page-header="orientation">
-            <p class="kad-eyebrow">Menemukan komunitas</p>
-            <div class="kad-hero-grid"><h1 id="page-title">Komunitas bukan cuma server.</h1><div><p class="kad-lede">Temukan pertanyaan yang ingin kamu jawab, ritme belajar yang cocok, lalu percakapan yang terasa berguna.</p><a class="kad-button kad-button--primary" href={DISCORD_URL} target="_blank" rel="noopener noreferrer">Gabung ke Discord</a></div></div>
+            <p class="kad-eyebrow">{copy.eyebrow}</p>
+            <div class="kad-hero-grid"><h1 id="page-title">{copy.title}</h1><div><p class="kad-lede">{copy.description}</p><a class="kad-button kad-button--primary" href={DISCORD_URL} target="_blank" rel="noopener noreferrer">{copy.actions.discord}</a></div></div>
           </section>
-          <section class="kad-section" aria-labelledby="journey-title"><div class="kad-section-heading"><p class="kad-kicker">01 · Jalur partisipasi</p><h2 id="journey-title">Pilih pintu masukmu.</h2></div><div class="kad-grid kad-grid--three">
-            <article class="kad-card kad-journey-card"><span class="kad-marker">01</span><h3>Temukan ruang</h3><p>Mulai dari kebutuhan studi, kerja, bahasa, atau hidup sehari-hari di luar negeri.</p></article>
-            <article class="kad-card kad-journey-card"><span class="kad-marker">02</span><h3>Ikuti rutinitas</h3><p>Telusuri klub dan sesi yang punya sumber publik serta status yang bisa dibaca.</p></article>
-            <article class="kad-card kad-journey-card"><span class="kad-marker">03</span><h3>Berkontribusi kembali</h3><p>Saat siap, bantu membuat ruang belajar dan dokumentasi lebih mudah diakses.</p></article>
+          <section class="kad-section" aria-labelledby="journey-title"><div class="kad-section-heading"><p class="kad-kicker">01 · {isEnglish ? 'Participation path' : 'Jalur partisipasi'}</p><h2 id="journey-title">{isEnglish ? 'Choose your entry point.' : 'Pilih pintu masukmu.'}</h2></div><div class="kad-grid kad-grid--three">
+            {[isEnglish ? ['Find a space', 'Start with study, work, language, or everyday life abroad.'] : ['Temukan ruang', 'Mulai dari kebutuhan studi, kerja, bahasa, atau hidup sehari-hari di luar negeri.'], isEnglish ? ['Follow a rhythm', 'Find clubs and sessions with public sources and readable status.'] : ['Ikuti rutinitas', 'Telusuri klub dan sesi yang punya sumber publik serta status yang bisa dibaca.'], isEnglish ? ['Contribute back', 'Help make learning spaces and documentation easier to access.'] : ['Berkontribusi kembali', 'Bantu membuat ruang belajar dan dokumentasi lebih mudah diakses.']].map(([heading, text], index) => <article class="kad-card kad-journey-card"><span class="kad-marker">0{index + 1}</span><h3>{heading}</h3><p>{text}</p></article>)}
           </div></section>
-          <section class="kad-section kad-band" aria-labelledby="after-title"><div><p class="kad-kicker">02 · Setelah bergabung</p><h2 id="after-title">Percakapan tetap punya pagar.</h2></div><ul class="kad-check-list"><li>Baca konteks dan aturan ruang sebelum ikut berdiskusi.</li><li>Gunakan tautan publik sebagai sumber; jadwal terbaru dikonfirmasi di Discord.</li><li>Jaga identitas dan pengalaman orang lain tanpa memaksa atribusi publik.</li></ul></section>
-          <section class="kad-section" aria-labelledby="social-title"><div class="kad-section-heading"><p class="kad-kicker">03 · Kanal publik</p><h2 id="social-title">Ikuti sumber yang bisa kamu periksa.</h2></div><div class="kad-grid kad-grid--three"><a class="kad-card kad-source-link" href={X_URL} target="_blank" rel="noopener noreferrer"><strong>X / @KADSocialHub</strong><span>Profil publik dan sumber pengumuman</span></a><a class="kad-card kad-source-link" href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer"><strong>Instagram / @kadsocialhub</strong><span>Indeks visual dan sumber komunitas</span></a><a class="kad-card kad-source-link" href={DISCORD_URL} target="_blank" rel="noopener noreferrer"><strong>Discord</strong><span>Ruang percakapan dan konfirmasi</span></a></div></section>
+          <section class="kad-section kad-band" aria-labelledby="after-title"><div><p class="kad-kicker">02 · {isEnglish ? 'After joining' : 'Setelah bergabung'}</p><h2 id="after-title">{isEnglish ? 'Conversations still have guardrails.' : 'Percakapan tetap punya pagar.'}</h2></div><ul class="kad-check-list">{(isEnglish ? ['Read room context and rules before joining.', 'Use public links as sources and confirm current schedules in Discord.', 'Respect identity and experience without forcing public attribution.'] : ['Baca konteks dan aturan ruang sebelum ikut berdiskusi.', 'Gunakan tautan publik sebagai sumber; jadwal terbaru dikonfirmasi di Discord.', 'Jaga identitas dan pengalaman orang lain tanpa memaksa atribusi publik.']).map((item) => <li>{item}</li>)}</ul></section>
+          <section class="kad-section" aria-labelledby="social-title"><div class="kad-section-heading"><p class="kad-kicker">03 · {isEnglish ? 'Public channels' : 'Kanal publik'}</p><h2 id="social-title">{isEnglish ? 'Follow sources you can inspect.' : 'Ikuti sumber yang bisa kamu periksa.'}</h2></div><div class="kad-grid kad-grid--three"><a class="kad-card kad-source-link" href={X_URL} target="_blank" rel="noopener noreferrer"><strong>X / @KADSocialHub</strong><span>{isEnglish ? 'Public profile and announcements' : 'Profil publik dan sumber pengumuman'}</span></a><a class="kad-card kad-source-link" href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer"><strong>Instagram / @kadsocialhub</strong><span>{isEnglish ? 'Visual index and community source' : 'Indeks visual dan sumber komunitas'}</span></a><a class="kad-card kad-source-link" href={DISCORD_URL} target="_blank" rel="noopener noreferrer"><strong>Discord</strong><span>{isEnglish ? 'Conversation and confirmation space' : 'Ruang percakapan dan konfirmasi'}</span></a></div></section>
         </>
       )}
 
       {kind === 'programs' && (
         <>
-          <TaskHeader
-            eyebrow="Katalog program"
-            title="Cari aktivitas yang bisa kamu mulai."
-            summary="Semua program berangkat dari sumber publik. Ketersediaan bukan asumsi—konfirmasi langkah berikutnya sebelum ikut."
-            variant="catalogue"
-            stats={[
-              { value: String(PROGRAMS.length), label: 'Program publik', state: 'ready' },
-              { value: '2', label: 'Kategori' },
-              { value: 'Konfirmasi', label: 'Status terbaru', state: 'pending' },
-            ]}
-          >
-            <a slot="actions" class="kad-button kad-button--primary" href={DISCORD_URL} target="_blank" rel="noopener noreferrer">Tanya di Discord</a>
-            <div slot="footer" class="kad-filter-row" aria-label="Jalan pintas kategori program"><a class="kad-pill" href="#all">Semua</a><a class="kad-pill" href="#language">Klub bahasa</a><a class="kad-pill" href="#career">Pendidikan &amp; karier</a></div>
+          <TaskHeader eyebrow={copy.eyebrow} title={copy.title} summary={copy.description} variant="catalogue" locale={locale} stats={[{ value: String(PROGRAMS.length), label: isEnglish ? 'Public programs' : 'Program publik', state: 'ready' }, { value: '2', label: isEnglish ? 'Categories' : 'Kategori' }, { value: isEnglish ? 'Confirm' : 'Konfirmasi', label: isEnglish ? 'Latest status' : 'Status terbaru', state: 'pending' }]}>
+            <a slot="actions" class="kad-button kad-button--primary" href={DISCORD_URL} target="_blank" rel="noopener noreferrer">{copy.actions.discord}</a>
+            <div slot="footer" class="kad-filter-row" aria-label={isEnglish ? 'Program categories' : 'Kategori program'}><a class="kad-pill" href="#all">{isEnglish ? 'All' : 'Semua'}</a><a class="kad-pill" href="#language">{isEnglish ? 'Language clubs' : 'Klub bahasa'}</a><a class="kad-pill" href="#career">{isEnglish ? 'Education and career' : 'Pendidikan & karier'}</a></div>
           </TaskHeader>
-          <section class="kad-section" aria-labelledby="programs-title">
-            <div id="all" class="kad-grid kad-grid--two">
-              {PROGRAMS.map((item, index) => {
-                const categoryId = item.category === 'Klub bahasa' ? 'language' : 'career';
-                const isFirstInCategory = PROGRAMS.findIndex((candidate) => candidate.category === item.category) === index;
-                const cover = item.media[0];
-                return (
-                  <article class="kad-card kad-program-card" id={isFirstInCategory ? categoryId : undefined} data-media-count={item.media.length}>
-                    {cover ? (
-                      <a class="kad-program-card__media" href={href(`/programs/${item.slug}`)} aria-label={`Lihat detail ${item.title}`}>
-                        <img data-program-poster src={cover.src} alt={cover.alt} width={cover.width} height={cover.height} loading={index === 0 ? 'eager' : 'lazy'} decoding="async" />
-                        <p class="kad-media-fallback" hidden>Poster {item.title} gagal dimuat. Buka sumber publik atau detail program untuk dokumentasi dan status.</p>
-                      </a>
-                    ) : (
-                      <div class="kad-program-card__fallback" data-media-state="unavailable">
-                        <span class="kad-large-marker" aria-hidden="true">{item.title.slice(0, 1)}</span>
-                        <p>Belum ada media milik KAD yang disetujui untuk program ini.</p>
-                      </div>
-                    )}
-                    <div class="kad-card-top"><span class="kad-pill kad-pill-soft">{item.category}</span><span class="kad-status">Konfirmasi di Discord</span></div>
-                    <h2 id={`${item.slug}-title`}><a href={href(`/programs/${item.slug}`)}>{item.title}</a></h2>
-                    <p>{item.summary}</p>
-                    <div class="kad-card-actions"><a class="kad-source-link" href={item.sourceUrl} target="_blank" rel="noopener noreferrer">{item.sourceLabel} ↗</a><a class="kad-text-link" href={href(`/programs/${item.slug}`)}>Lihat detail</a></div>
-                  </article>
-                );
-              })}
-            </div>
-            <p id="programs-title" class="kad-note">Poster adalah dokumentasi pengumuman publik, bukan bukti bahwa jadwal lama masih aktif. Ketersediaan, kapasitas, pendaftaran, dan arsip tetap perlu dikonfirmasi.</p>
-          </section>
+          <section class="kad-section" aria-labelledby="programs-title"><div id="all" class="kad-grid kad-grid--two">{PROGRAMS.map((source, index) => { const item = localizedProgram(locale, source); const cover = item.media[0]; const categoryId = source.category === 'Klub bahasa' ? 'language' : 'career'; const firstInCategory = PROGRAMS.findIndex((candidate) => candidate.category === source.category) === index; return <article class="kad-card kad-program-card" id={firstInCategory ? categoryId : undefined} data-program-id={item.slug}>{cover ? <a class="kad-program-card__media" href={href(`/programs/${item.slug}`)}><img data-program-poster src={cover.src} alt={cover.alt} width={cover.width} height={cover.height} loading={index === 0 ? 'eager' : 'lazy'} decoding="async" /><p class="kad-media-fallback" hidden>{isEnglish ? 'Poster failed to load. Open the public source.' : 'Poster gagal dimuat. Buka sumber publik.'}</p></a> : null}<div class="kad-card-top"><span class="kad-pill kad-pill-soft">{item.category}</span><span class="kad-status">{isEnglish ? 'Confirm on Discord' : 'Konfirmasi di Discord'}</span></div><h2><a href={href(`/programs/${item.slug}`)}>{item.title}</a></h2><p>{item.summary}</p><div class="kad-card-actions"><a class="kad-source-link" href={item.sourceUrl} target="_blank" rel="noopener noreferrer">{item.sourceLabel} ↗</a><a class="kad-text-link" href={href(`/programs/${item.slug}`)}>{copy.actions.detail}</a></div></article>; })}</div><p id="programs-title" class="kad-note">{isEnglish ? 'Posters document public announcements. They are not proof of an active schedule.' : 'Poster mendokumentasikan pengumuman publik, bukan bukti jadwal yang masih aktif.'}</p></section>
+          {STAGING_FIXTURES_ENABLED && <section class="kad-section" aria-labelledby="sample-sessions-title"><div class="kad-section-heading"><div><p class="kad-kicker">{copy.states.demo}</p><h2 id="sample-sessions-title">{isEnglish ? 'See how a next-session module would work.' : 'Lihat cara modul jadwal berikutnya bekerja.'}</h2></div><p class="kad-note">{isEnglish ? 'These dates are fictional and exist only to review the staging experience.' : 'Tanggal ini fiktif dan hanya dipakai untuk menilai pengalaman staging.'}</p></div><div class="kad-grid kad-grid--two">{PROGRAMS.map((item) => stagingSessionByProgramId(item.slug)).filter((session) => session !== undefined).map((session) => <SessionPreview session={session} locale={locale} programHref={href(`/programs/${session.programId}`)} />)}</div></section>}
         </>
       )}
 
-      {kind === 'program' && program && (
+      {kind === 'program' && localized && (
         <>
-          <TaskHeader
-            eyebrow={`Program · ${program.category}`}
-            title={program.title}
-            summary={program.summary}
-            variant="record"
-            stats={[
-              { value: String(program.media.length), label: 'Poster publik', state: program.media.length > 0 ? 'ready' : 'pending' },
-              { value: program.category, label: 'Kategori' },
-              { value: 'Konfirmasi', label: 'Ketersediaan', state: 'pending' },
-            ]}
-          >
-            <span slot="marker" class="kad-large-marker">{program.title.slice(0, 1)}</span>
-            <a slot="actions" class="kad-button kad-button--primary" href={DISCORD_URL} target="_blank" rel="noopener noreferrer">Konfirmasi di Discord</a>
-            <a slot="actions" class="kad-source-link" href={program.sourceUrl} target="_blank" rel="noopener noreferrer">Buka sumber publik ↗</a>
-          </TaskHeader>
-          <section class="kad-section kad-documentation" aria-labelledby="documentation-title" data-program-gallery-count={program.media.length}>
-            <div class="kad-section-heading"><div><p class="kad-kicker">Dokumentasi publik</p><h2 id="documentation-title">Poster dari KADSocialHub.</h2></div><p class="kad-note">Dokumentasi ini merekam pengumuman pada tanggal sumber—bukan jadwal aktif otomatis.</p></div>
-            {program.media.length > 0 ? (
-              <div class:list={['kad-program-gallery', program.media.length === 1 && 'kad-program-gallery--single']}>
-                {program.media.map((media, mediaIndex) => (
-                  <figure class="kad-program-figure">
-                    <div class="kad-program-figure__media">
-                      <img data-program-poster src={media.src} alt={media.alt} width={media.width} height={media.height} loading={mediaIndex === 0 ? 'eager' : 'lazy'} decoding="async" />
-                      <p class="kad-media-fallback" hidden>{program.title}: poster gagal dimuat. Gunakan tautan sumber publik berikut untuk melihat dokumentasi asli.</p>
-                    </div>
-                    <figcaption><span>{media.caption}</span><a href={media.sourceUrl} target="_blank" rel="noopener noreferrer">Buka sumber publik ↗</a></figcaption>
-                  </figure>
-                ))}
-              </div>
-            ) : (
-              <div class="kad-empty-state" data-media-state="unavailable"><span class="kad-status">Tanpa media KAD</span><h3>Dokumentasi visual belum tersedia.</h3><p>Media pada sumber GKS berasal dari akun pihak ketiga, jadi tidak disalin ke website.</p></div>
-            )}
-          </section>
-          <section class="kad-section" aria-labelledby="known-title"><div class="kad-grid kad-grid--two"><article class="kad-card kad-evidence-panel"><p class="kad-kicker">Yang sudah diketahui</p><h2 id="known-title">Berangkat dari sumber.</h2><ul class="kad-check-list">{program.known.map((fact) => <li>{fact}</li>)}</ul></article><article class="kad-card kad-evidence-panel kad-evidence-pending"><p class="kad-kicker">Konfirmasi di Discord</p><h2>Langkah berikutnya.</h2><ul class="kad-check-list">{program.confirm.map((fact) => <li>{fact}</li>)}</ul><a class="kad-button kad-button--primary" href={DISCORD_URL} target="_blank" rel="noopener noreferrer">Konfirmasi sekarang</a></article></div></section>
-          <section class="kad-section kad-detail-actions"><a class="kad-source-link" href={program.sourceUrl} target="_blank" rel="noopener noreferrer">{program.sourceLabel} ↗</a><a class="kad-text-link" href={href('/programs')}>← Kembali ke program</a></section>
-          <section class="kad-section" aria-labelledby="related-title"><div class="kad-section-heading"><p class="kad-kicker">Program lain</p><h2 id="related-title">Mungkin kamu juga ingin melihat.</h2></div><div class="kad-grid kad-grid--three">{PROGRAMS.filter((item) => item.slug !== program.slug).slice(0, 3).map((item) => <a class="kad-card kad-related-card" href={href(`/programs/${item.slug}`)}><span class="kad-pill kad-pill-soft">{item.category}</span><strong>{item.title}</strong><span class="kad-status">Konfirmasi di Discord</span></a>)}</div></section>
+          <TaskHeader eyebrow={`${copy.eyebrow} · ${localized.category}`} title={localized.title} summary={localized.summary} variant="record" locale={locale} stats={[{ value: String(localized.media.length), label: isEnglish ? 'Public posters' : 'Poster publik', state: localized.media.length > 0 ? 'ready' : 'pending' }, { value: localized.category, label: isEnglish ? 'Category' : 'Kategori' }, { value: isEnglish ? 'Confirm' : 'Konfirmasi', label: isEnglish ? 'Availability' : 'Ketersediaan', state: 'pending' }]}><a slot="actions" class="kad-button kad-button--primary" href={DISCORD_URL} target="_blank" rel="noopener noreferrer">{copy.actions.discord}</a></TaskHeader>
+          {localized.media.length > 0 && <section class="kad-section kad-documentation" aria-labelledby="documentation-title"><div class:list={['kad-program-gallery', localized.media.length === 1 && 'kad-program-gallery--single']}>{localized.media.map((media) => <figure class="kad-program-figure"><div class="kad-program-figure__media"><img data-program-poster src={media.src} alt={media.alt} width={media.width} height={media.height} loading="lazy" decoding="async" /><p class="kad-media-fallback" hidden>{isEnglish ? 'Poster failed to load. Open the public source.' : 'Poster gagal dimuat. Buka sumber publik.'}</p></div><figcaption><span>{media.caption}</span><a href={media.sourceUrl} target="_blank" rel="noopener noreferrer">{isEnglish ? 'Open public source' : 'Buka sumber publik'} ↗</a></figcaption></figure>)}</div></section>}
+          <section class="kad-section" aria-labelledby="known-title"><div class="kad-grid kad-grid--two"><article class="kad-card"><p class="kad-kicker">{isEnglish ? 'Known' : 'Yang sudah diketahui'}</p><h2 id="known-title">{isEnglish ? 'Starts from a source.' : 'Berangkat dari sumber.'}</h2><ul class="kad-check-list">{localized.known.map((fact) => <li>{fact}</li>)}</ul></article><article class="kad-card kad-evidence-pending"><p class="kad-kicker">{isEnglish ? 'Confirm on Discord' : 'Konfirmasi di Discord'}</p><h2>{isEnglish ? 'Next step.' : 'Langkah berikutnya.'}</h2><ul class="kad-check-list">{localized.confirm.map((fact) => <li>{fact}</li>)}</ul><a class="kad-button kad-button--primary" href={DISCORD_URL} target="_blank" rel="noopener noreferrer">{copy.actions.discord}</a></article></div></section>
         </>
       )}
 
       {kind === 'events' && (
-        <><TaskHeader eyebrow="Meja acara" title="Agenda yang sudah layak dipublikasikan." summary="Jadwal hanya muncul setelah waktu, jalur pendaftaran, dan sumber revisinya disetujui." variant="operational" stats={[{ value: '0', label: 'Acara publik', state: 'pending' }, { value: 'Belum tersedia', label: 'Sinkronisasi', state: 'pending' }, { value: 'Discord', label: 'Konfirmasi saat ini' }]}><a slot="actions" class="kad-button kad-button--primary" href={DISCORD_URL} target="_blank" rel="noopener noreferrer">Tanya jadwal di Discord</a></TaskHeader><section class="kad-section" aria-labelledby="event-state-title"><div class="kad-calendar-spine"><span class="kad-calendar-line" aria-hidden="true"></span><div class="kad-empty-state" data-event-count="0" data-event-state="empty"><span class="kad-status">0 acara publik</span><h2 id="event-state-title">Belum ada rekaman agenda yang lolos review.</h2><p>Scaffold ini akan menampilkan tanggal, zona waktu, status, program, dan sumber revisi tanpa mengubah posting lama menjadi jadwal baru.</p></div></div><div class="kad-state-guide"><details><summary>Jika data menjadi lama</summary><p>Data akan diberi label stale, bukan disajikan sebagai jadwal baru.</p></details><details><summary>Jika layanan bermasalah</summary><p>Status error akan dijelaskan secara tekstual. Data privat tidak menjadi cadangan publik.</p></details></div></section></>
+        <><TaskHeader eyebrow={copy.eyebrow} title={copy.title} summary={copy.description} variant="operational" locale={locale} stats={[{ value: STAGING_FIXTURES_ENABLED ? String(stagingEvents.length) : '0', label: isEnglish ? 'Events shown' : 'Agenda tampil', state: stagingEvents.length ? 'ready' : 'pending' }, { value: STAGING_FIXTURES_ENABLED ? copy.states.demo : copy.states.empty, label: isEnglish ? 'Dataset' : 'Sumber data', state: STAGING_FIXTURES_ENABLED ? 'ready' : 'pending' }, { value: 'Discord', label: isEnglish ? 'Latest confirmation' : 'Konfirmasi terbaru' }]}><a slot="actions" class="kad-button kad-button--primary" href={DISCORD_URL} target="_blank" rel="noopener noreferrer">{copy.actions.discord}</a></TaskHeader><section class="kad-section" aria-labelledby="event-state-title">{STAGING_FIXTURES_ENABLED ? <div class="kad-grid kad-grid--three">{stagingEvents.map((item) => <EventScheduleCard event={item} locale={locale} href={href(`/events/${item.id}`)} />)}</div> : <div data-event-count="0" data-event-state="empty"><StatePanel state="empty" id="event-state-title" locale={locale} statusLabel={isEnglish ? '0 public events' : '0 agenda publik'} title={isEnglish ? 'No event record has passed publication review.' : 'Belum ada agenda yang lolos pemeriksaan publikasi.'} description={isEnglish ? 'This page stays empty until a dated source and its latest revision are approved.' : 'Halaman ini tetap kosong sampai sumber bertanggal dan revisi terbarunya disetujui.'} /></div>}</section></>
       )}
 
-      {kind === 'event' && (
-        <><TaskHeader eyebrow="Dokumentasi acara" title="Acara ini belum dipublikasikan." summary="Catatan publik belum melewati persetujuan sumber, waktu, pendaftaran, recap, dan koreksi." variant="record" stats={[{ value: id ?? 'Tidak tersedia', label: 'Record ID' }, { value: 'Not published', label: 'Status', state: 'pending' }, { value: '0', label: 'Dokumen publik', state: 'pending' }]}><a slot="actions" class="kad-button kad-button--outline" href={href('/events')}>Kembali ke acara</a></TaskHeader><section class="kad-section"><div class="kad-empty-state kad-not-published"><span class="kad-status">Not published</span><h2>Belum ada rekaman publik untuk ditampilkan.</h2><p>Halaman ini disiapkan untuk ringkasan, waktu, pendaftaran, recap, sumber revisi, dan jalur koreksi setelah disetujui.</p></div></section></>
-      )}
+      {kind === 'event' && (event ? <><TaskHeader eyebrow={copy.eyebrow} title={fixtureText(event.title, locale)} summary={fixtureText(event.summary, locale)} variant="record" locale={locale} stats={[{ value: event.id, label: isEnglish ? 'Fixture ID' : 'ID simulasi' }, { value: event.state, label: isEnglish ? 'State' : 'Status', state: event.state === 'completed' ? 'ready' : 'pending' }, { value: copy.states.demo, label: isEnglish ? 'Data boundary' : 'Batas data', state: 'ready' }]}><a slot="actions" class="kad-button kad-button--outline" href={href('/events')}>{copy.actions.back}</a></TaskHeader><section class="kad-section"><article class="kad-card kad-event-detail" data-fixture-id={event.id} data-fixture-state={event.state}><StatusBadge state={event.state} locale={locale} /><p>{new Intl.DateTimeFormat(isEnglish ? 'en-US' : 'id-ID', { dateStyle: 'full', timeStyle: 'short', timeZone: event.timezone }).format(new Date(event.startsAt))}</p><p>{isEnglish ? 'This deterministic record exists only to test the staging experience.' : 'Rekaman deterministik ini hanya dipakai untuk menguji pengalaman staging.'}</p></article></section></> : <><TaskHeader eyebrow={copy.eyebrow} title={copy.title} summary={copy.description} variant="record" locale={locale} stats={[{ value: id ?? 'unknown', label: isEnglish ? 'Record ID' : 'ID rekaman' }, { value: copy.states.notPublished, label: 'Status', state: 'pending' }, { value: '0', label: isEnglish ? 'Public sources' : 'Sumber publik', state: 'pending' }]}><a slot="actions" class="kad-button kad-button--outline" href={href('/events')}>{copy.actions.back}</a></TaskHeader><section class="kad-section"><StatePanel state="not-published" locale={locale} statusLabel={copy.states.notPublished} title={isEnglish ? 'No public record is available.' : 'Belum ada rekaman publik untuk ditampilkan.'} description={isEnglish ? 'This route is reserved for records approved for publication.' : 'Halaman ini disiapkan untuk rekaman yang telah disetujui.'} /></section></>)}
 
-      {kind === 'volunteer' && (
-        <><TaskHeader eyebrow="Cara berkontribusi" title="Kerja komunitas bergerak dalam siklus." summary="Pekerjaan masuk, dikerjakan oleh tim berbasis program, lalu diserahkan tanpa menjadikan identitas publik sebagai syarat." variant="operational" stats={[{ value: '3 bulan', label: 'Satu siklus' }, { value: '3', label: 'Tahap kerja', state: 'ready' }, { value: 'Opt-in', label: 'Atribusi' }]}><a slot="actions" class="kad-button kad-button--primary" href={DISCORD_URL} target="_blank" rel="noopener noreferrer">Mulai percakapan</a></TaskHeader><section class="kad-section" aria-labelledby="cycle-title"><div class="kad-cycle" id="cycle-title"><article class="kad-card"><span class="kad-marker">01</span><h2>Intake</h2><p>Kebutuhan program dan kontribusi dicatat dengan lingkup kerja yang jelas.</p></article><article class="kad-card"><span class="kad-marker">02</span><h2>Program work</h2><p>Tim berbasis program mengerjakan satu langkah yang bisa diserahkan.</p></article><article class="kad-card"><span class="kad-marker">03</span><h2>Handover</h2><p>Catatan dan konteks dipindahkan agar siklus berikutnya tidak mulai dari nol.</p></article></div></section><section class="kad-section kad-band"><h2>Attribution adalah opt-in.</h2><p>Kontribusi publik memakai nama pilihan, lingkup, dan masa berlaku hanya setelah persetujuan.</p></section></>
-      )}
+      {kind === 'volunteer' && (<><TaskHeader eyebrow={copy.eyebrow} title={copy.title} summary={copy.description} variant="operational" locale={locale} stats={[{ value: isEnglish ? '3 months' : '3 bulan', label: isEnglish ? 'One cycle' : 'Satu siklus', state: 'ready' }, { value: '3', label: isEnglish ? 'Work stages' : 'Tahap kerja', state: 'ready' }, { value: STAGING_FIXTURES_ENABLED ? String(STAGING_VOLUNTEERS.length) : '0', label: isEnglish ? 'Profiles shown' : 'Profil tampil', state: STAGING_FIXTURES_ENABLED ? 'ready' : 'pending' }]}><a slot="actions" class="kad-button kad-button--primary" href={DISCORD_URL} target="_blank" rel="noopener noreferrer">{copy.actions.discord}</a></TaskHeader><section class="kad-section" aria-labelledby="cycle-title"><div class="kad-cycle" id="cycle-title">{(isEnglish ? [['Intake', 'Turn a need into a clear piece of work.'], ['Program work', 'Finish one useful step with the program team.'], ['Handover', 'Leave decisions and context for the next cycle.']] : [['Penerimaan', 'Ubah kebutuhan menjadi lingkup kerja yang jelas.'], ['Kerja program', 'Tuntaskan satu langkah berguna bersama tim program.'], ['Serah terima', 'Tinggalkan keputusan dan konteks untuk siklus berikutnya.']]).map(([heading, text], index) => <article class="kad-card"><span class="kad-marker">0{index + 1}</span><h2>{heading}</h2><p>{text}</p></article>)}</div></section>{STAGING_FIXTURES_ENABLED ? <><section class="kad-section" aria-labelledby="demo-structure-title"><div class="kad-section-heading"><div><p class="kad-kicker">{copy.states.demo}</p><h2 id="demo-structure-title">{isEnglish ? 'A sample structure built around the work.' : 'Contoh struktur yang mengikuti kebutuhan kerja.'}</h2></div><p class="kad-note">{isEnglish ? 'These are fictional teams, not the current KAD organization chart.' : 'Semua tim ini fiktif, bukan bagan organisasi KAD saat ini.'}</p></div><div class="kad-grid kad-grid--three">{STAGING_TEAMS.map((team) => <article class="kad-card" data-fixture-id={team.id} data-fixture-state={team.state}><StatusBadge state={team.state} locale={locale} /><h3>{fixtureText(team.name, locale)}</h3><p>{fixtureText(team.purpose, locale)}</p><small>{fixtureText(team.handoff, locale)}</small></article>)}</div></section><section class="kad-section" aria-labelledby="demo-profiles-title"><div class="kad-section-heading"><div><p class="kad-kicker">{copy.states.demo}</p><h2 id="demo-profiles-title">{isEnglish ? 'Sample volunteer profiles with explicit attribution.' : 'Profil relawan contoh dengan atribusi yang jelas.'}</h2></div></div><div class="kad-grid kad-grid--three">{STAGING_VOLUNTEERS.map((profile) => <VolunteerProfileCard profile={profile} locale={locale} />)}</div></section></> : <section class="kad-section"><StatePanel state="pending" locale={locale} statusLabel={copy.states.pending} title={isEnglish ? 'Volunteer profiles require explicit permission.' : 'Profil relawan membutuhkan izin yang jelas.'} description={isEnglish ? 'The public site never invents an identity.' : 'Situs publik tidak pernah mengarang identitas.'} /></section>}</>)}
 
-      {kind === 'stories' && (
-        <><TaskHeader eyebrow="Cerita komunitas" title="Cerita yang bisa diperiksa, bukan ditebak." summary="Atribusi, transkrip, media, dan publikasi final menunggu persetujuan editorial dan consent." variant="evidence" stats={[{ value: '0', label: 'Cerita terbit', state: 'pending' }, { value: '1', label: 'Sumber untuk review' }, { value: 'Pending', label: 'Editorial approval', state: 'pending' }]}><a slot="actions" class="kad-button kad-button--primary" href={DISCORD_URL} target="_blank" rel="noopener noreferrer">Bagikan konteks</a></TaskHeader><section class="kad-section" aria-labelledby="story-state"><div class="kad-empty-state kad-evidence-pending"><span class="kad-status">Menunggu persetujuan</span><h2 id="story-state">Belum ada cerita yang siap terbit.</h2><p>Format Cerita Aja Dulu tersedia sebagai sumber untuk ditinjau, tanpa menyalin identitas atau media.</p><a class="kad-source-link" href="https://www.instagram.com/kadsocialhub/p/DZKQziKv8le/" target="_blank" rel="noopener noreferrer">Sumber publik Cerita Aja Dulu ↗</a></div></section></>
-      )}
+      {kind === 'stories' && (<><TaskHeader eyebrow={copy.eyebrow} title={copy.title} summary={copy.description} variant="evidence" locale={locale} stats={[{ value: STAGING_FIXTURES_ENABLED ? String(STAGING_PUBLISHED_RECORDS.filter((r) => r.recordType === 'story').length) : '0', label: isEnglish ? 'Stories shown' : 'Cerita tampil', state: STAGING_FIXTURES_ENABLED ? 'ready' : 'pending' }, { value: isEnglish ? 'Required' : 'Wajib', label: isEnglish ? 'Editorial approval' : 'Persetujuan editorial', state: 'pending' }, { value: isEnglish ? 'Opt-in' : 'Dengan izin', label: isEnglish ? 'Attribution' : 'Atribusi' }]}><a slot="actions" class="kad-button kad-button--primary" href={DISCORD_URL} target="_blank" rel="noopener noreferrer">{copy.actions.discord}</a></TaskHeader><section class="kad-section">{STAGING_FIXTURES_ENABLED ? <div class="kad-grid kad-grid--two">{STAGING_PUBLISHED_RECORDS.filter((record) => record.recordType === 'story').map((record) => <article class="kad-card" data-fixture-id={record.id} data-fixture-state={record.state}><StatusBadge state={record.state} locale={locale} /><h2>{fixtureText(record.title, locale)}</h2><p>{copy.states.demo}</p></article>)}</div> : <StatePanel state="pending" locale={locale} statusLabel={copy.states.pending} title={copy.states.empty} description={isEnglish ? 'A story publishes only after editorial approval and attribution permission.' : 'Cerita hanya terbit setelah persetujuan editorial dan izin atribusi.'} />}</section></>)}
 
-      {kind === 'history' && (
-        <><TaskHeader eyebrow="Memori institusional" title="Sejarah sedang ditinjau." summary="Timeline tetap kosong sampai sumber bertanggal, definisi metrik, atribusi, dan jalur koreksi disetujui." variant="evidence" stats={[{ value: 'Evidence review', label: 'Status', state: 'pending' }, { value: '3', label: 'Syarat publikasi' }, { value: 'Belum siap', label: 'Timeline', state: 'pending' }]}><a slot="actions" class="kad-button kad-button--outline" href={href('/stories')}>Lihat indeks cerita</a></TaskHeader><section class="kad-section"><div class="kad-empty-state" data-claim-state="pending"><span class="kad-status">Evidence review</span><h2>Timeline publik belum siap.</h2><ul class="kad-check-list"><li>Kejadian perlu sumber publik bertanggal dan saling menguatkan.</li><li>Definisi metrik, pemilik editorial, dan atribusi perlu disetujui.</li><li>Harus ada jalur koreksi dan pencabutan sebelum terbit.</li></ul></div></section><section class="kad-section kad-band"><h2>Menemukan koreksi?</h2><p>Kirim konteks melalui komunitas agar dapat masuk ke proses review, tanpa menjanjikan publikasi.</p></section></>
-      )}
-
-      {kind === 'impact' && (
-        <><TaskHeader eyebrow="Dampak komunitas" title="Definisi dulu, angka kemudian." summary="Setiap metrik membutuhkan periode, sumber, penyebut, dan freshness sebelum menjadi klaim publik." variant="evidence" stats={[{ value: '0', label: 'Total dipublikasikan', state: 'pending' }, { value: '4', label: 'Keluarga metrik', state: 'ready' }, { value: 'Required', label: 'Sumber + periode' }]}><a slot="actions" class="kad-button kad-button--outline" href={href('/support')}>Lihat cara mendukung</a></TaskHeader><section class="kad-section" aria-labelledby="ledger-title"><div class="kad-section-heading"><p class="kad-kicker">Impact ledger</p><h2 id="ledger-title">Empat jenis catatan.</h2></div><div class="kad-grid kad-grid--two"><article class="kad-card"><h3>Aktivitas</h3><p>Sesi dan program yang benar-benar berlangsung.</p></article><article class="kad-card"><h3>Partisipasi</h3><p>Kehadiran dengan definisi dan periode yang jelas.</p></article><article class="kad-card"><h3>Output</h3><p>Dokumentasi atau artefak yang dihasilkan.</p></article><article class="kad-card"><h3>Kontribusi volunteer</h3><p>Lingkup dan waktu kontribusi tanpa mengekspos identitas privat.</p></article></div></section></>
-      )}
-
-      {kind === 'support' && (
-        <><TaskHeader eyebrow="Dukungan" title="Bantu membuat program tetap bisa dipertanggungjawabkan." summary="Ini proposal akuntabilitas, bukan halaman pembayaran. Dukungan baru layak dikumpulkan setelah batas dan pelaporannya jelas." variant="proposal" stats={[{ value: '4', label: 'Area diusulkan', state: 'ready' }, { value: '0', label: 'Pembayaran aktif', state: 'pending' }, { value: 'Belum siap', label: 'Governance', state: 'pending' }]}><a slot="actions" class="kad-button kad-button--primary" href={DISCORD_URL} target="_blank" rel="noopener noreferrer">Bicarakan dukungan</a></TaskHeader><section class="kad-section" aria-labelledby="support-title"><div class="kad-section-heading"><p class="kad-kicker">Allocation blueprint</p><h2 id="support-title">Area yang diusulkan.</h2></div><div class="kad-grid kad-grid--two">{['Keberlanjutan program', 'Infrastruktur dokumentasi', 'Peralatan volunteer', 'Keselamatan dan moderasi'].map((label) => <article class="kad-card"><span class="kad-status">Proposed</span><h3>{label}</h3><p>Ruang kerja yang perlu pemilik, batas, dan laporan sebelum dianggap funded.</p></article>)}</div></section><section class="kad-section kad-band"><h2>Bagaimana dukungan diatur?</h2><p>Pembayaran baru dapat dipertimbangkan setelah ada pemilik, cadence laporan, kebijakan refund, batas akuntansi, dan laporan penggunaan dana publik.</p></section></>
-      )}
+      {kind === 'impact' && (<><TaskHeader eyebrow={copy.eyebrow} title={copy.title} summary={copy.description} variant="evidence" locale={locale} stats={[{ value: STAGING_FIXTURES_ENABLED ? String(STAGING_METRICS.length) : '0', label: isEnglish ? 'Metrics shown' : 'Metrik tampil', state: STAGING_FIXTURES_ENABLED ? 'ready' : 'pending' }, { value: '4', label: isEnglish ? 'Required fields' : 'Data wajib', state: 'ready' }, { value: isEnglish ? 'Required' : 'Wajib', label: isEnglish ? 'Source and period' : 'Sumber dan periode', state: 'pending' }]}><a slot="actions" class="kad-button kad-button--outline" href={href('/support')}>{copy.actions.support}</a></TaskHeader><section class="kad-section"><div class="kad-grid kad-grid--three">{STAGING_FIXTURES_ENABLED ? STAGING_METRICS.map((metric) => <MetricCard metric={metric} locale={locale} />) : <StatePanel state="pending" locale={locale} statusLabel={copy.states.pending} title={isEnglish ? 'Metrics need a source and period.' : 'Metrik membutuhkan sumber dan periode.'} description={copy.description} />}</div></section></>)}
 
       {kind === 'credits' && (
-        <><TaskHeader eyebrow="Kredit kontribusi" title="Kontribusi dihargai tanpa memaksa identitas." summary="Nama pilihan, peran, program, siklus, cakupan, masa berlaku, dan pencabutan hanya tampil dengan consent." variant="evidence" stats={[{ value: 'Anonymous', label: 'Default' }, { value: '0', label: 'Kredit disetujui', state: 'pending' }, { value: 'Required', label: 'Consent' }]}><a slot="actions" class="kad-button kad-button--primary" href={DISCORD_URL} target="_blank" rel="noopener noreferrer">Tanyakan proses kontribusi</a></TaskHeader><section class="kad-section"><div class="kad-empty-state" data-claim-state="pending"><span class="kad-status">Anonymous by default</span><h2>Belum ada kredit publik yang disetujui.</h2><p>Discord ID, profil privat, dan identitas tanpa izin tidak pernah masuk ke halaman ini.</p></div></section></>
+        <>
+          <TaskHeader eyebrow={copy.eyebrow} title={copy.title} summary={copy.description} variant="evidence" locale={locale} stats={[{ value: STAGING_FIXTURES_ENABLED ? String(STAGING_CONTRIBUTIONS.length) : '0', label: isEnglish ? 'Contributions shown' : 'Kontribusi tampil', state: STAGING_FIXTURES_ENABLED ? 'ready' : 'pending' }, { value: isEnglish ? 'Anonymous' : 'Anonim', label: isEnglish ? 'Default attribution' : 'Atribusi bawaan', state: 'ready' }, { value: isEnglish ? 'Required' : 'Wajib', label: isEnglish ? 'Permission' : 'Izin tampil', state: 'pending' }]}>
+            <a slot="actions" class="kad-button kad-button--primary" href={DISCORD_URL} target="_blank" rel="noopener noreferrer">{copy.actions.discord}</a>
+          </TaskHeader>
+          <section class="kad-section">
+            {STAGING_FIXTURES_ENABLED ? (
+              <>
+                <div class="kad-section-heading">
+                  <div>
+                    <p class="kad-kicker">{copy.states.demo}</p>
+                    <h2>{isEnglish ? 'Contribution records' : 'Rekaman kontribusi'}</h2>
+                  </div>
+                </div>
+                <div class="kad-grid kad-grid--three">
+                  {STAGING_CONTRIBUTIONS.map((item) => <article class="kad-card" data-fixture-id={item.id} data-fixture-state={item.state}><StatusBadge state={item.state} locale={locale} /><h2>{fixtureText(item.area, locale)}</h2><p>{fixtureText(item.summary, locale)}</p><small>{fixtureText(item.contributor, locale)} · {copy.states.demo}</small></article>)}
+                </div>
+                <div class="kad-section-heading kad-section-heading--nested">
+                  <div>
+                    <p class="kad-kicker">{isEnglish ? 'Consent states' : 'Status izin'}</p>
+                    <h2>{isEnglish ? 'Attribution stays within the recorded scope.' : 'Atribusi tetap mengikuti ruang lingkup izin.'}</h2>
+                  </div>
+                  <p class="kad-note">{isEnglish ? 'These fictional records exercise named, anonymous, and revoked states.' : 'Rekaman fiktif ini menguji status bernama, anonim, dan dicabut.'}</p>
+                </div>
+                <div class="kad-grid kad-grid--three">
+                  {STAGING_ATTRIBUTION.map((consent) => <AttributionConsentCard consent={consent} locale={locale} />)}
+                </div>
+              </>
+            ) : (
+              <StatePanel state="pending" locale={locale} statusLabel={isEnglish ? 'Anonymous by default' : 'Anonim secara bawaan'} title={copy.states.empty} description={isEnglish ? 'Credits stay anonymous until explicit permission is recorded.' : 'Kredit tetap anonim sampai izin tampil tercatat.'} />
+            )}
+          </section>
+        </>
       )}
 
-      {kind === 'program' && !program && <section class="kad-section"><div class="kad-empty-state"><span class="kad-status">Not published</span><h1>Program tidak ditemukan.</h1><p>Program ini belum memiliki halaman publik.</p><a class="kad-button kad-button--outline" href={href('/programs')}>Kembali ke program</a></div></section>}
+      {kind === 'history' && <><TaskHeader eyebrow={copy.eyebrow} title={copy.title} summary={copy.description} variant="evidence" locale={locale} stats={[{ value: isEnglish ? 'Evidence review' : 'Tinjauan bukti', label: 'Status', state: 'pending' }, { value: '3', label: isEnglish ? 'Publication checks' : 'Syarat publikasi' }, { value: '0', label: isEnglish ? 'Approved milestones' : 'Tonggak disetujui', state: 'pending' }]} /><section class="kad-section"><StatePanel state="pending" locale={locale} statusLabel={isEnglish ? 'Evidence review' : 'Tinjauan bukti'} title={isEnglish ? 'The public timeline is not ready.' : 'Linimasa publik belum siap.'} description={copy.description} /></section></>}
+      {kind === 'support' && <><TaskHeader eyebrow={copy.eyebrow} title={copy.title} summary={copy.description} variant="proposal" locale={locale} stats={[{ value: '4', label: isEnglish ? 'Proposed areas' : 'Area usulan', state: 'ready' }, { value: '0', label: isEnglish ? 'Active payments' : 'Pembayaran aktif', state: 'pending' }, { value: isEnglish ? 'Not ready' : 'Belum siap', label: isEnglish ? 'Governance' : 'Tata kelola', state: 'pending' }]} /><section class="kad-section"><div class="kad-grid kad-grid--two">{(isEnglish ? ['Program continuity', 'Documentation infrastructure', 'Volunteer equipment', 'Safety and moderation'] : ['Keberlanjutan program', 'Infrastruktur dokumentasi', 'Peralatan relawan', 'Keselamatan dan moderasi']).map((label) => <article class="kad-card"><StatusBadge state="pending" locale={locale} /><h3>{label}</h3><p>{isEnglish ? 'A proposed area that still needs an owner, boundary, and reporting method.' : 'Area usulan ini masih membutuhkan pemilik, batas penggunaan, dan cara pelaporan.'}</p></article>)}</div></section></>}
+      {kind === 'program' && !localized && <section class="kad-section"><StatePanel state="not-published" locale={locale} statusLabel={copy.states.notPublished} title={isEnglish ? 'Program not found.' : 'Program tidak ditemukan.'} description={isEnglish ? 'This program has no public page.' : 'Program ini belum memiliki halaman publik.'} /></section>}
     </div>
   </main>
   <Footer client:only="react" locale={locale} />
 </Layout>
 
 <script>
-  const showPosterFallback = (image: HTMLImageElement) => {
-    image.hidden = true;
-    const fallback = image.nextElementSibling;
-    if (fallback instanceof HTMLElement) fallback.hidden = false;
-  };
-
   document.querySelectorAll<HTMLImageElement>('[data-program-poster]').forEach((image) => {
-    image.addEventListener('error', () => showPosterFallback(image), { once: true });
-    if (image.complete && image.naturalWidth === 0) showPosterFallback(image);
+    const showFallback = () => {
+      image.hidden = true;
+      const fallback = image.nextElementSibling;
+      if (fallback instanceof HTMLElement) fallback.hidden = false;
+    };
+    image.addEventListener('error', showFallback, { once: true });
+    if (image.complete && image.naturalWidth === 0) showFallback();
   });
 </script>
-
-<style>
-  .kad-translation-notice { margin: 1rem 0 0; padding: .75rem 1rem; border: 1px solid #dfe4ec; border-radius: 999px; color: #687081; font-size: .85rem; }
-  .kad-kicker { margin: 0 0 1rem; color: #0055ff; font-size: .78rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
-  .kad-hero-grid { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(280px, .85fr); align-items: end; gap: clamp(2rem, 7vw, 7rem); }
-  p { line-height: 1.65; }
-  .kad-lede { max-width: 34rem; margin: 0 0 1.5rem; color: #687081; font-size: 1.08rem; }
-  .kad-section-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 2rem; margin-bottom: 1.75rem; }
-  .kad-marker, .kad-large-marker { display: inline-flex; align-items: center; justify-content: center; width: 2.5rem; height: 2.5rem; border-radius: 50%; background: #ffbd3e; color: #111318; font-weight: 800; }
-  .kad-large-marker { width: 4rem; height: 4rem; margin-bottom: 1.25rem; font-size: 2rem; }
-  .kad-card p, .kad-empty-state p { margin: 0; color: #687081; }
-  .kad-band { display: grid; grid-template-columns: .8fr 1.2fr; gap: 3rem; padding: 2rem; border-radius: 2rem; background: #edf4ff; }
-  .kad-check-list { display: grid; gap: .8rem; margin: 0; padding: 0; list-style: none; }
-  .kad-check-list li { position: relative; padding-inline-start: 1.5rem; line-height: 1.5; }
-  .kad-check-list li::before { content: '→'; position: absolute; inset-inline-start: 0; color: #0055ff; font-weight: 800; }
-  :global(html[dir='rtl']) .kad-check-list li::before { content: '←'; }
-  .kad-text-link { color: #0055ff; font-weight: 800; text-decoration: none; }
-  .kad-source-link span { color: #687081; font-size: .9rem; font-weight: 500; }
-  .kad-filter-row { display: flex; flex-wrap: wrap; gap: .6rem; margin-bottom: 1.5rem; }
-  .kad-pill-soft { border: 0; background: #edf4ff; }
-  .kad-card-top, .kad-card-actions { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
-  .kad-program-card { display: flex; flex-direction: column; overflow: hidden; }
-  .kad-program-card__media, .kad-program-card__fallback { display: grid; min-height: 20rem; margin: clamp(-32px, -3vw, -22px) clamp(-32px, -3vw, -22px) 1.5rem; place-items: center; overflow: hidden; border-bottom: 1px solid #dfe4ec; background: #fff5d8; }
-  .kad-program-card__media img { width: 100%; height: 22rem; object-fit: contain; transition: transform 160ms ease-out; }
-  .kad-program-card__media:hover img, .kad-program-card__media:focus-visible img { transform: scale(1.02); }
-  .kad-media-fallback { margin: 0; padding: 2rem; color: #687081; text-align: center; line-height: 1.6; }
-  .kad-program-card__fallback { align-content: center; gap: 1rem; padding: 2rem; text-align: center; background: #edf4ff; }
-  .kad-program-card__fallback .kad-large-marker { margin: 0 auto; }
-  .kad-card-actions { flex-wrap: wrap; margin-top: auto; padding-top: 1.4rem; }
-  .kad-program-card h2 { margin: 1.25rem 0 .6rem; font-size: 1.55rem; }
-  .kad-program-card h2 a { color: inherit; text-decoration: none; }
-  .kad-note { margin-top: 1.25rem; color: #687081; font-size: .9rem; }
-  .kad-documentation { padding-top: 0; }
-  .kad-documentation .kad-section-heading > p { max-width: 28rem; margin: 0; }
-  .kad-program-gallery { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.5rem; align-items: start; }
-  .kad-program-gallery--single { grid-template-columns: minmax(0, 46rem); }
-  .kad-program-figure { margin: 0; overflow: hidden; border: 1px solid #dfe4ec; border-radius: 2rem; background: #fff5d8; box-shadow: 0 14px 40px rgb(31 43 74 / 7%); }
-  .kad-program-figure__media { display: grid; min-height: 18rem; place-items: center; }
-  .kad-program-figure img { display: block; width: 100%; max-height: 52rem; object-fit: contain; }
-  .kad-program-figure figcaption { display: flex; align-items: start; justify-content: space-between; gap: 1rem; padding: 1.1rem 1.25rem; border-top: 1px solid #dfe4ec; background: white; color: #687081; font-size: .84rem; line-height: 1.5; }
-  .kad-program-figure figcaption a { flex: 0 0 auto; color: #0055ff; font-weight: 800; text-decoration: none; }
-  .kad-evidence-panel { min-height: 18rem; }
-  .kad-evidence-pending { background: #edf4ff; }
-  .kad-evidence-panel .kad-button { margin-top: auto; align-self: start; }
-  .kad-detail-actions { display: flex; flex-wrap: wrap; gap: 1.5rem; }
-  .kad-related-card { gap: .9rem; color: #111318; text-decoration: none; }
-  .kad-related-card strong { font-size: 1.15rem; }
-  .kad-calendar-spine { position: relative; display: grid; grid-template-columns: 2rem 1fr; gap: 1rem; }
-  .kad-calendar-line { width: 2px; margin: .5rem auto 0; background: #0055ff; }
-  .kad-empty-state { background: #fafcff; }
-  .kad-empty-state h2, .kad-empty-state h1 { margin: 1rem 0 .6rem; }
-  .kad-state-guide { display: grid; gap: .75rem; margin: 1rem 0 0 3rem; }
-  .kad-state-guide details { padding: 1rem 1.25rem; border: 1px solid #dfe4ec; border-radius: 1rem; }
-  .kad-state-guide summary { cursor: pointer; font-weight: 800; }
-  .kad-cycle { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
-  .kad-cycle .kad-card:nth-child(2) { transform: translateY(2rem); background: #dff7eb; }
-  .kad-cycle .kad-card:nth-child(2):hover { transform: translateY(calc(2rem - 2px)); }
-  code { padding: .15rem .35rem; border-radius: .4rem; background: #edf4ff; color: #111318; }
-  @media (max-width: 760px) { .kad-hero-grid, .kad-grid--three, .kad-grid--two, .kad-band, .kad-cycle, .kad-program-gallery { grid-template-columns: 1fr; } .kad-section-heading { display: block; } .kad-documentation .kad-section-heading > p { margin-top: 1rem; } .kad-program-card__media img { height: 19rem; } .kad-program-figure figcaption { display: grid; } .kad-cycle .kad-card:nth-child(2), .kad-cycle .kad-card:nth-child(2):hover { transform: none; } .kad-state-guide { margin-left: 0; } }
-  @media (prefers-reduced-motion: reduce) { .kad-card, .kad-program-card__media img { transition: none; } .kad-card:hover, .kad-card:focus-within, .kad-cycle .kad-card:nth-child(2), .kad-cycle .kad-card:nth-child(2):hover, .kad-program-card__media:hover img, .kad-program-card__media:focus-visible img { transform: none; } }
-</style>

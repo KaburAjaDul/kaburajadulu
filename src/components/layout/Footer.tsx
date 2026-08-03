@@ -3,20 +3,21 @@
 import { DISCORD_URL } from '@/constants/urls';
 import { GITHUB_URL } from '@/constants/urls';
 import type { Locale } from '@/i18n/constants';
+import { translate } from '@/i18n/dictionaries';
 
 interface FooterProps {
   locale?: Locale;
 }
 
 const FOOTER_LINKS = [
-  { label: 'Komunitas', path: '/community' },
-  { label: 'Program', path: '/programs' },
-  { label: 'Agenda', path: '/events' },
-  { label: 'Relawan', path: '/volunteer' },
-  { label: 'Cerita', path: '/stories' },
-  { label: 'Dampak', path: '/community/impact' },
-  { label: 'Kredit', path: '/community/credits' },
-  { label: 'Dukung KAD', path: '/support' },
+  { key: 'community', path: '/community' },
+  { key: 'programs', path: '/programs' },
+  { key: 'events', path: '/events' },
+  { key: 'volunteer', path: '/volunteer' },
+  { key: 'stories', path: '/stories' },
+  { key: 'impact', path: '/community/impact' },
+  { key: 'credits', path: '/community/credits' },
+  { key: 'support', path: '/support' },
 ] as const;
 
 function localizedPath(locale: Locale, path: string): string {
@@ -24,34 +25,33 @@ function localizedPath(locale: Locale, path: string): string {
 }
 
 export function Footer({ locale = 'id' }: FooterProps) {
+  const contentLocale = locale === 'id' ? 'id' : 'en';
+  const t = (key: string) => translate(contentLocale, key);
   return (
-    <footer className="kad-footer" lang={locale === 'id' ? undefined : 'id'}>
+    <footer className="kad-footer" lang={contentLocale} data-requested-locale={locale}>
       <div className="kad-container kad-footer__grid">
         <div className="kad-footer__brand">
           <img src="/icon.svg" alt="KaburAjaDulu" width={170} height={34} />
-          <p>
-            Ruang belajar, berbagi, dan bertumbuh untuk orang Indonesia yang sedang
-            mencari jalan ke dunia.
-          </p>
+          <p>{t('footer.tagline')}</p>
           <a
             href={DISCORD_URL}
             target="_blank"
             rel="noopener noreferrer"
             className="kad-button kad-button--primary"
           >
-            Gabung Discord
+            {t('footer.join_discord')}
           </a>
         </div>
 
-        <nav className="kad-footer__links" aria-label="Navigasi kaki">
-          <p className="kad-eyebrow">Jelajahi</p>
+        <nav className="kad-footer__links" aria-label={locale === 'id' ? 'Navigasi kaki' : 'Footer navigation'}>
+          <p className="kad-eyebrow">{t('footer.explore')}</p>
           {FOOTER_LINKS.map((item) => (
-            <a key={item.path} href={localizedPath(locale, item.path)}>{item.label}</a>
+              <a key={item.path} href={localizedPath(locale, item.path)}>{t(`nav.${item.key}`)}</a>
           ))}
         </nav>
 
         <div className="kad-footer__links">
-          <p className="kad-eyebrow">Sumber publik</p>
+          <p className="kad-eyebrow">{t('footer.public_sources')}</p>
           <a href="https://x.com/KADSocialHub" target="_blank" rel="noopener noreferrer">
             X · @KADSocialHub
           </a>
@@ -62,14 +62,19 @@ export function Footer({ locale = 'id' }: FooterProps) {
           >
             Instagram · @kadsocialhub
           </a>
-          <a href={GITHUB_URL} target="_blank" rel="noopener noreferrer">
-            GitHub
+          <a
+            href={GITHUB_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={t('footer.github_contributor')}
+          >
+            GitHub · {t('footer.github_contributor')}
           </a>
         </div>
       </div>
       <div className="kad-container kad-footer__bottom">
         <p>© 2026 KaburAjaDulu.</p>
-        <p>Informasi program selalu dikonfirmasi melalui sumber publik atau Discord.</p>
+        <p>{t('footer.community_note')}</p>
       </div>
     </footer>
   );

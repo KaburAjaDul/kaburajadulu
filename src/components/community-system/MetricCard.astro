@@ -1,0 +1,15 @@
+---
+import { fixtureText, type EvidenceMetric } from '@/content/staging-fixtures';
+import StatusBadge from './StatusBadge.astro';
+
+interface Props { metric: EvidenceMetric; locale?: string; }
+const { metric, locale = 'id' } = Astro.props;
+---
+
+<article class="kad-card kad-metric-card" data-fixture-id={metric.id} data-fixture-state={metric.state}>
+  <div class="kad-card-top"><span class="kad-kicker">{locale === 'id' ? 'Demo metrik' : 'Demo metric'}</span><StatusBadge state={metric.state} locale={locale} /></div>
+  <strong class="kad-metric-card__value">{metric.value}</strong>
+  <h3>{fixtureText(metric.label, locale)}</h3>
+  <p>{fixtureText(metric.definition, locale)}</p>
+  <small>{fixtureText(metric.period, locale)} · {locale === 'id' ? 'Data simulasi' : 'Demo data'}</small>
+</article>

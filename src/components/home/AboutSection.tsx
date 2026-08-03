@@ -11,10 +11,11 @@ interface AboutSectionProps {
 }
 
 export function AboutSection({ locale = 'id' }: AboutSectionProps) {
-  const t = (key: string) => translate(locale, key);
+  const contentLocale = locale === 'id' ? 'id' : 'en';
+  const t = (key: string) => translate(contentLocale, key);
 
   return (
-    <section className="py-10 md:py-16">
+    <section className="py-10 md:py-16" lang={contentLocale} data-requested-locale={locale}>
       <div className="container mx-auto px-4 md:px-6">
         <h2 className="text-3xl font-bold text-center mb-6 md:mb-8">
           {t('about.headline')}

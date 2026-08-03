@@ -1,0 +1,31 @@
+---
+import { fixtureText, type AttributionConsent } from '@/content/staging-fixtures';
+
+interface Props {
+  consent: AttributionConsent;
+  locale?: string;
+}
+
+const { consent, locale = 'id' } = Astro.props;
+const isIndonesian = locale === 'id';
+const labels = {
+  'granted-for-demo': isIndonesian ? 'Izin demo aktif' : 'Demo consent granted',
+  'anonymous-by-choice': isIndonesian ? 'Memilih anonim' : 'Anonymous by choice',
+  'revoked-demo': isIndonesian ? 'Izin demo dicabut' : 'Demo consent revoked',
+};
+---
+
+<article
+  class="kad-card kad-consent-card"
+  data-fixture-id={consent.id}
+  data-fixture-state={consent.state}
+  data-consent-status={consent.status}
+>
+  <div class="kad-card-top">
+    <span class="kad-status kad-status--semantic" data-status={consent.status}>{labels[consent.status]}</span>
+    <span class="kad-status">{isIndonesian ? 'Data simulasi' : 'Demo data'}</span>
+  </div>
+  <h3>{fixtureText(consent.subject, locale)}</h3>
+  <p>{fixtureText(consent.scope, locale)}</p>
+  <small>{isIndonesian ? 'Ruang lingkup izin' : 'Consent scope'} · {consent.revision}</small>
+</article>

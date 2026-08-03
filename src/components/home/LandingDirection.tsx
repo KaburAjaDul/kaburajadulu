@@ -1,5 +1,5 @@
 import { ArrowUpRight } from 'lucide-react';
-import { DISCORD_URL, PROGRAMS, localizedPath } from '@/content/community-site';
+import { DISCORD_URL, PROGRAMS, localizedPath, localizedProgram } from '@/content/community-site';
 import type { Locale } from '@/i18n/constants';
 
 export type LandingDirectionId = 'field-notes' | 'community-bulletin' | 'community-atlas';
@@ -8,6 +8,7 @@ interface LandingDirectionProps {
   direction?: LandingDirectionId;
   locale?: Locale;
   preview?: boolean;
+  showFallbackNotice?: boolean;
 }
 
 const DIRECTIONS: ReadonlyArray<{ id: LandingDirectionId; label: string; note: string }> = [
@@ -26,7 +27,7 @@ function posterLabel(mediaId: string, fallback: string): string {
   return fallback;
 }
 
-const STEPS = [
+const STEPS_ID = [
   {
     number: '01',
     title: 'Bawa satu pertanyaan',
@@ -42,6 +43,12 @@ const STEPS = [
     title: 'Tinggalkan jejak untuk orang lain',
     summary: 'Ikut, bantu satu siklus, dan dokumentasikan konteks yang boleh dibagikan.',
   },
+] as const;
+
+const STEPS_EN = [
+  { number: '01', title: 'Bring one question', summary: 'Start with what you want to learn, not a list of benefits.' },
+  { number: '02', title: 'Find a rhythm that fits', summary: 'Read the public source, then confirm schedule and capacity on Discord.' },
+  { number: '03', title: 'Leave something useful behind', summary: 'Join a cycle and document the context that may be shared.' },
 ] as const;
 
 function PreviewNavigation({ direction }: { direction: LandingDirectionId }) {
@@ -76,11 +83,15 @@ function PreviewNavigation({ direction }: { direction: LandingDirectionId }) {
 
 function PosterRail({ locale }: { locale: Locale }) {
   const items = POSTERS.filter(({ program }) => program.slug !== 'apple-developer-academy-batch-2027');
+  const isEnglish = locale !== 'id';
 
   return (
     <>
-      <div className="kad-field-posters" aria-label="Arsip poster program publik">
-        {items.map(({ media, program }) => (
+      <div className="kad-field-posters" aria-label={isEnglish ? 'Public program poster archive' : 'Arsip poster program publik'}>
+        {items.map(({ media: sourceMedia, program }) => {
+          const localized = localizedProgram(locale, program);
+          const media = localized.media.find((candidate) => candidate.id === sourceMedia.id);
+          return media ? (
           <figure key={media.id}>
             <a href={localizedPath(locale, `/programs/${program.slug}`)}>
               <img
@@ -93,20 +104,24 @@ function PosterRail({ locale }: { locale: Locale }) {
               />
             </a>
             <figcaption>
-              <strong>{posterLabel(media.id, program.title)}</strong>
-              <span>Arsip publik · cek status terbaru</span>
+              <strong>{posterLabel(media.id, localized.title)}</strong>
+              <span>{isEnglish ? 'Public archive · check the latest status' : 'Arsip publik · cek status terbaru'}</span>
             </figcaption>
           </figure>
-        ))}
+          ) : null;
+        })}
       </div>
-      <p className="kad-field-posters__hint">4 poster · geser untuk melihat semua →</p>
+      <p className="kad-field-posters__hint">{isEnglish ? '4 posters · swipe to see all →' : '4 poster · geser untuk melihat semua →'}</p>
     </>
   );
 }
 
 function FieldNotes({ locale }: { locale: Locale }) {
-  const lead = PROGRAMS.find((program) => program.slug === 'apple-developer-academy-batch-2027');
+  const isEnglish = locale !== 'id';
+  const leadSource = PROGRAMS.find((program) => program.slug === 'apple-developer-academy-batch-2027');
+  const lead = leadSource ? localizedProgram(locale, leadSource) : undefined;
   const leadMedia = lead?.media[0];
+  const steps = isEnglish ? STEPS_EN : STEPS_ID;
 
   return (
     <div className="kad-direction-surface kad-field-notes" data-design-direction="field-notes">
@@ -116,20 +131,19 @@ function FieldNotes({ locale }: { locale: Locale }) {
             <div>
               <p className="kad-eyebrow">02 · Field Notes</p>
               <h2 id="field-notes-heading">
-                Hal-hal kecil yang membuat kota terasa <em>dekat.</em>
+                {isEnglish ? <>Small things that make a city feel <em>closer.</em></> : <>Hal-hal kecil yang membuat kota terasa <em>dekat.</em></>}
               </h2>
             </div>
-            <p>Ritme jurnal untuk rasa penasaran, bukan katalog benefit.</p>
+            <p>{isEnglish ? 'A journal rhythm for curiosity, not a benefits catalogue.' : 'Ritme jurnal untuk rasa penasaran, bukan katalog manfaat.'}</p>
           </div>
 
           <div className="kad-field-story__layout">
             <div>
               <p className="kad-field-story__lede">
-                Mulai dari pertanyaan yang kamu bawa. Lalu temukan orang, program, dan
-                percakapan yang membantu kamu melangkah.
+                {isEnglish ? 'Start with the question you bring. Then find people, programs, and conversations that help you move.' : 'Mulai dari pertanyaan yang kamu bawa. Lalu temukan orang, program, dan percakapan yang membantu kamu melangkah.'}
               </p>
               <ol className="kad-journal-steps">
-                {STEPS.map((step) => (
+                {steps.map((step) => (
                   <li key={step.number}>
                     <b>{step.number}</b>
                     <div>
@@ -154,8 +168,8 @@ function FieldNotes({ locale }: { locale: Locale }) {
                   />
                 </a>
                 <figcaption>
-                  <strong>Belajar bersama, satu langkah sekali.</strong>
-                  <span>Sumber publik KADSocialHub · status terbaru perlu dikonfirmasi</span>
+                  <strong>{isEnglish ? 'Learn together, one step at a time.' : 'Belajar bersama, satu langkah sekali.'}</strong>
+                  <span>{isEnglish ? 'Public KADSocialHub source · confirm the latest status' : 'Sumber publik KADSocialHub · status terbaru perlu dikonfirmasi'}</span>
                 </figcaption>
               </figure>
             )}
@@ -164,12 +178,11 @@ function FieldNotes({ locale }: { locale: Locale }) {
           <PosterRail locale={locale} />
 
           <div className="kad-evidence-band" data-event-count="0" data-event-state="empty">
-            <strong>Agenda publik belum disinkronkan.</strong>
+            <strong>{isEnglish ? 'The public schedule is not synced yet.' : 'Agenda publik belum disinkronkan.'}</strong>
             <p>
-              Poster di atas adalah dokumentasi program yang disetujui, bukan janji bahwa
-              sesinya masih aktif. Jadwal, kapasitas, dan pendaftaran dikonfirmasi di Discord.
+              {isEnglish ? 'The posters above are approved program documentation, not a promise that each session is still active. Confirm schedule, capacity, and registration on Discord.' : 'Poster di atas adalah dokumentasi program yang disetujui, bukan janji bahwa sesinya masih aktif. Jadwal, kapasitas, dan pendaftaran dikonfirmasi di Discord.'}
             </p>
-            <a href={localizedPath(locale, '/events')}>Lihat status agenda</a>
+            <a href={localizedPath(locale, '/events')}>{isEnglish ? 'Check schedule status' : 'Lihat status agenda'}</a>
           </div>
         </div>
       </section>
@@ -276,9 +289,13 @@ export default function LandingDirection({
   direction = 'field-notes',
   locale = 'id',
   preview = false,
+  showFallbackNotice = true,
 }: LandingDirectionProps) {
+  const contentLanguage = locale === 'id' ? 'id' : 'en';
+  const usesFallback = locale !== 'id' && locale !== 'en';
   return (
-    <div data-interface-slice="community-home" data-program-count={PROGRAMS.length}>
+    <div lang={contentLanguage} data-interface-slice="community-home" data-program-count={PROGRAMS.length} data-requested-locale={locale}>
+      {showFallbackNotice && usesFallback && <p className="kad-translation-notice" role="status">This community section is available in English while a full translation is prepared.</p>}
       {preview && <PreviewNavigation direction={direction} />}
       {direction === 'field-notes' && <FieldNotes locale={locale} />}
       {direction === 'community-bulletin' && <CommunityBulletin locale={locale} />}

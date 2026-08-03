@@ -59,6 +59,7 @@
     "read_more": "더 읽기",
     "empty_category": "이런! 이 카테고리에는 게시물이 아직 없습니다",
     "categories": {
+      "All": "전체",
       "Lowongan": "채용 공고",
       "Beasiswa": "장학금",
       "Event": "이벤트",

@@ -37,6 +37,25 @@ The production homepage does not expose the comparison selector. It receives
 the Field Notes composition directly, while the review routes remain temporary
 branch infrastructure until a direction is approved.
 
+### Language and fixture policy
+
+Indonesian (`id`) is the source voice for community copy. English (`en`) is the
+supported fallback for community and shell surfaces until full translations
+exist. Other locale routes intentionally render the English fallback and show
+an explicit translation notice. A content surface does not mix Indonesian and
+English prose. Arabic keeps the existing `dir="rtl"` wrapper semantics.
+
+Staging may opt into deterministic, fictional records with
+`PUBLIC_STAGING_FIXTURES=true`. The fixture system uses `DemoBanner`,
+`StatusBadge`, `SessionPreview`, `EventScheduleCard`, `VolunteerProfileCard`,
+`MetricCard`, and `StatePanel` across upcoming, live, completed, pending, empty, error, and
+not-published states. Every fixture has a stable ID, state, source, revision,
+and `demo: true` marker. Production builds render honest empty or pending
+states and reject fixture IDs, demo labels, and private identifiers. Staging
+fixture event IDs are generated as static paths only in staging builds.
+Volunteer staging also demonstrates fictional program-based teams and explicit
+handoffs; it never represents the current KAD organization chart.
+
 ## Evidence deconstruction
 
 | Evidence | Status | Observation | Transferable rule | Implementation boundary |
@@ -176,7 +195,9 @@ Expressive gesture: a calendar spine that remains useful as an empty scaffold.
 
 **Job:** provide one approved public record and its documentation.
 
-- Reserved prototype state only; no fake event is rendered.
+- Production remains in a reserved state; no fake event is rendered there.
+- Isolated `noindex` staging may render visibly labelled fictional events to
+  exercise lifecycle and detail states.
 - Future regions: status/time, summary, registration, approved recap/resources,
   calendar export, source revision, and corrections.
 - The static prototype publishes explicit `not-published` and `pending` fixtures;
@@ -298,7 +319,8 @@ index becomes a later content slice after real entries exist.
   text-only.
 - Dated program posters are documentation only and never become Open Graph or
   Twitter preview images; social previews keep the neutral site artwork.
-- Event data stays at an empty state until the D1/R2 projection PR.
+- Production event data stays at an empty state until the D1/R2 projection PR;
+  isolated `noindex` staging may use visibly labelled fictional fixtures.
 - Private Discord evidence never enters the public repo, bundle, rendered HTML,
   metadata, screenshots, or test fixtures.
 - Page copy is Indonesian-first in this prototype. Existing locale navigation,

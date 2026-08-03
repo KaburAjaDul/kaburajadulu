@@ -41,10 +41,20 @@ jobs:
         run: bun run check
 
       - name: Build staging site
+        env:
+          PUBLIC_STAGING_FIXTURES: 'true'
         run: bun run build
 
       - name: Validate public runtime boundary
+        env:
+          PUBLIC_STAGING_FIXTURES: 'true'
         run: bun run validate:interface-runtime
+
+      - name: Install Playwright Chromium
+        run: bunx playwright install --with-deps chromium
+
+      - name: Run staging fixture E2E
+        run: bun run test:e2e:staging
 
       - name: Deploy isolated staging Worker
         env:

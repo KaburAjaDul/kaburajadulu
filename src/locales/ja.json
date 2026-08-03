@@ -59,6 +59,7 @@
     "read_more": "続きを読む",
     "empty_category": "おっと！このカテゴリーにはまだ投稿がありません",
     "categories": {
+      "All": "すべて",
       "Lowongan": "求人",
       "Beasiswa": "奨学金",
       "Event": "イベント",

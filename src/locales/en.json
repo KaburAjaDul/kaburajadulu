@@ -5,18 +5,32 @@
     "destinations": "Destinations",
     "blog": "Blog",
     "contact": "Contact",
-    "language": "Language"
+    "language": "Language",
+    "community": "Community",
+    "programs": "Programs",
+    "events": "Events",
+    "volunteer": "Volunteer",
+    "stories": "Stories",
+    "impact": "Impact",
+    "credits": "Credits",
+    "support": "Support KAD",
+    "join_discord": "Join Discord",
+    "skip_to_content": "Skip to content",
+    "open_navigation": "Open navigation",
+    "close_navigation": "Close navigation",
+    "main_navigation": "Main navigation",
+    "detected": "detected"
   },
   "hero": {
     "headline": "Kabur Aja Dulu",
-    "subheadline": "Discover study and work opportunities abroad. We help Indonesians experience working and learning overseas.",
-    "cta_primary": "Get Started",
+    "subheadline": "Planning to study, work, or build a life abroad? Start with sources you can inspect and people who have faced similar questions.",
+    "cta_primary": "Enter the community",
     "cta_secondary": "Explore Programs",
     "badge": "Public Community Space"
   },
   "about": {
-    "headline": "About KaburAjaDulu",
-    "subheadline": "A community helping Indonesians experience working and learning abroad.",
+    "headline": "Ask first, then take the bigger step.",
+    "subheadline": "KaburAjaDulu connects Indonesians looking for practical ways to study, work, and build a life abroad.",
     "stat1_value": "500+",
     "stat1_label": "Active Members",
     "stat2_value": "10+",
@@ -25,11 +39,11 @@
     "stat3_label": "Available Positions",
     "feature1_title": "Accurate Information",
     "feature1_desc": "We ensure every piece of information we provide is up-to-date and verified.",
-    "feature2_title": "Supportive Community",
+    "feature2_title": "Contact the KAD team",
     "feature2_desc": "Join a community that supports each other and shares experiences.",
     "feature3_title": "Free for Everyone",
     "feature3_desc": "All features and information we provide are free to access.",
-    "github_contributor": "GitHub Contributor"
+    "github_contributor": "Help build the website"
   },
   "destinations": {
     "headline": "Popular Destinations",
@@ -47,9 +61,9 @@
     }
   },
   "cta": {
-    "headline": "Ready to Start Your Journey?",
-    "subheadline": "Find programs, conversations, and your next step with the community.",
-    "cta_primary": "Join Us",
+    "headline": "Not sure where to begin?",
+    "subheadline": "Bring one question to the community. Find the right room, listen to lived experience, then choose your own next step.",
+    "cta_primary": "Open KAD Discord",
     "cta_secondary": "Contact Us"
   },
   "blog": {
@@ -59,6 +73,7 @@
     "read_more": "Read More",
     "empty_category": "Oops! There are no posts in this category",
     "categories": {
+      "All": "All",
       "Lowongan": "Job Vacancies",
       "Beasiswa": "Scholarships",
       "Event": "Events",
@@ -76,6 +91,11 @@
     "contact": "Contact",
     "email": "Email",
     "discord": "Discord",
+    "explore": "Explore",
+    "public_sources": "Public sources",
+    "github_contributor": "Website repository",
+    "join_discord": "Join Discord",
+    "community_note": "Program information is always confirmed through public sources or Discord.",
     "copyright": "© 2026 KaburAjaDulu. All rights reserved."
   },
   "common": {

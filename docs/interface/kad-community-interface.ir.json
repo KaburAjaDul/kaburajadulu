@@ -95,9 +95,20 @@
         "webapp": {"status": "inferred", "source": "Astro routing", "note": "Same static route contract."},
         "tui": {"status": "inferred", "source": "interface contract", "note": "Locale picker could map to a setting; not implemented."}
       },
-      "fallback": "Untranslated community copy uses the approved Indonesian source and displays the interface locale correctly.",
+      "fallback": "Indonesian is the source voice. Public prose without a full translation uses English inside an explicit lang=en surface and displays a translation notice.",
       "requirement": "required",
-      "provenance": {"status": "observed", "source": "src/i18n/constants.ts", "note": "Locale routing must remain intact; content translation can expand later."}
+      "provenance": {"status": "observed", "source": "src/i18n/constants.ts and docs/content/copy-system.md", "note": "Locale routing remains intact; Indonesian and English prose are not mixed inside one community content surface."}
+    },
+    "staging-fixtures": {
+      "support": {"web": "adapted", "webapp": "adapted", "tui": "unsupported"},
+      "mapping_provenance": {
+        "web": {"status": "observed", "source": "src/content/staging-fixtures.ts", "note": "A build-time flag exposes deterministic fictional preview records with visible demo labels."},
+        "webapp": {"status": "inferred", "source": "web adapter", "note": "The same typed fixture contract can feed a future data-backed preview."},
+        "tui": {"status": "inferred", "source": "interface contract", "note": "No TUI fixture preview is planned."}
+      },
+      "fallback": "Production renders honest empty or pending states and rejects fixture IDs, demo labels, and private identifiers.",
+      "requirement": "optional",
+      "provenance": {"status": "observed", "source": "src/content/staging-fixtures.ts and scripts/validate-interface-runtime.mjs", "note": "PUBLIC_STAGING_FIXTURES=true is allowed only for isolated noindex staging builds."}
     },
     "event-data": {
       "support": {"web": "adapted", "webapp": "native", "tui": "adapted"},
@@ -114,7 +125,7 @@
   "regions": [
     {"id": "site_header", "role": "banner", "label": "Site header", "children": ["skip_link", "brand_link", "primary_nav", "join_header"], "provenance": {"status": "inferred", "source": "production navbar", "note": "Expanded into the complete public information architecture."}},
     {"id": "page_intro", "role": "region", "label": "Page introduction", "children": ["page_eyebrow", "page_heading", "page_summary", "page_status_summary", "primary_action"], "provenance": {"status": "inferred", "source": "route-specific first-viewport review", "note": "Community keeps an orientation hero; catalogue, operational, evidence, proposal, and record routes use compact task headers."}},
-    {"id": "page_content", "role": "main", "label": "Page content", "children": ["program_collection", "event_state", "journey_collection", "proof_collection"], "provenance": {"status": "inferred", "source": "approved page map", "note": "Page-specific modules render inside a consistent main landmark."}},
+    {"id": "page_content", "role": "main", "label": "Page content", "children": ["program_collection", "event_state", "fixture_preview_system", "journey_collection", "proof_collection"], "provenance": {"status": "inferred", "source": "approved page map", "note": "Page-specific modules render inside a consistent main landmark."}},
     {"id": "site_footer", "role": "contentinfo", "label": "Site footer", "children": ["footer_navigation", "join_footer"], "provenance": {"status": "inferred", "source": "production footer", "note": "Expanded footer repeats key public routes and external sources."}}
   ],
   "components": [
@@ -129,6 +140,7 @@
     {"id": "primary_action", "kind": "link", "region": "page_intro", "label": "Primary page action", "capabilities": ["semantic-navigation", "keyboard-focus"], "props": {}, "states": [], "events": ["activate_link"], "actions": ["navigate_internal"], "focusable": true, "provenance": {"status": "inferred", "source": "page-system.md", "note": "Each page has one dominant next step."}},
     {"id": "program_collection", "kind": "list", "region": "page_content", "label": "Program unggulan", "capabilities": ["source-provenance", "responsive-recomposition", "keyboard-focus"], "props": {"initial_count": 5, "image_program_count": 4, "text_only_program_count": 1, "required_local_poster_count": 5, "gallery_image_count": 2, "gks_media_policy": "text_only_fallback"}, "states": ["program_availability"], "events": ["activate_link"], "actions": ["open_source"], "focusable": false, "provenance": {"status": "observed", "source": "public KADSocialHub source inventory and approved local media manifest", "note": "Five canonical source-backed program cards; four use approved local posters and GKS remains text-only with an explicit fallback."}},
     {"id": "event_state", "kind": "status", "region": "page_content", "label": "Jadwal komunitas", "capabilities": ["event-data", "source-provenance"], "props": {"initial_count": 0}, "states": ["event_feed"], "events": [], "actions": [], "focusable": false, "provenance": {"status": "unknown", "source": "community rewrite plan", "note": "No public event projection exists; empty state is intentional."}},
+    {"id": "fixture_preview_system", "kind": "status", "region": "page_content", "label": "Staging fixture preview", "capabilities": ["staging-fixtures", "localized-routing", "responsive-recomposition"], "props": {"gate": "PUBLIC_STAGING_FIXTURES=true", "components": ["DemoBanner", "StatusBadge", "SessionPreview", "EventScheduleCard", "VolunteerProfileCard", "AttributionConsentCard", "MetricCard", "StatePanel"]}, "states": ["fixture_preview", "event_feed"], "events": [], "actions": [], "focusable": false, "provenance": {"status": "observed", "source": "src/content/staging-fixtures.ts", "note": "Every preview record has a stable ID, state, source, revision, and demo marker; volunteer teams and consent states are explicitly fictional."}},
     {"id": "journey_collection", "kind": "list", "region": "page_content", "label": "Cara komunitas bekerja", "capabilities": ["responsive-recomposition"], "props": {"initial_count": 3}, "states": [], "events": [], "actions": [], "focusable": false, "provenance": {"status": "inferred", "source": "volunteer cycle requirements", "note": "Three-step public journey: discover, participate, contribute."}},
     {"id": "proof_collection", "kind": "list", "region": "page_content", "label": "Bukti dan status", "capabilities": ["source-provenance", "responsive-recomposition"], "props": {}, "states": ["claim_approval"], "events": ["activate_link"], "actions": ["open_source"], "focusable": false, "provenance": {"status": "inferred", "source": "content inventory guardrails", "note": "Proof modules label snapshot scope and approval status instead of inventing impact."}},
     {"id": "footer_navigation", "kind": "navigation", "region": "site_footer", "label": "Navigasi kaki", "capabilities": ["semantic-navigation", "localized-routing", "keyboard-focus"], "props": {}, "states": [], "events": ["activate_link"], "actions": ["navigate_internal"], "focusable": false, "provenance": {"status": "inferred", "source": "page-system.md", "note": "Provides a stable route index."}},
@@ -137,7 +149,8 @@
   "states": [
     {"id": "mobile_menu", "initial": "closed", "values": ["closed", "open"], "provenance": {"status": "inferred", "source": "responsive navigation requirement", "note": "Escape and route activation close the menu and restore focus."}},
     {"id": "program_availability", "initial": "confirm_on_discord", "values": ["confirm_on_discord", "recurring_confirmed", "archived", "approval_gated"], "provenance": {"status": "observed", "source": "content inventory", "note": "Current program availability is not fully established."}},
-    {"id": "event_feed", "initial": "empty", "values": ["empty", "loading", "published", "stale", "error"], "provenance": {"status": "unknown", "source": "community rewrite plan", "note": "The prototype proves honest states without a backend."}},
+    {"id": "event_feed", "initial": "empty", "values": ["empty", "loading", "upcoming", "live", "completed", "published", "stale", "error", "not_published"], "provenance": {"status": "observed", "source": "src/content/staging-fixtures.ts and community rewrite plan", "note": "Production starts empty; isolated staging exercises deterministic lifecycle examples without claiming real activity."}},
+    {"id": "fixture_preview", "initial": "disabled", "values": ["disabled", "enabled"], "provenance": {"status": "observed", "source": "PUBLIC_STAGING_FIXTURES build boundary", "note": "Production is disabled; noindex staging may enable fictional preview content."}},
     {"id": "claim_approval", "initial": "pending", "values": ["pending", "approved", "revoked"], "provenance": {"status": "observed", "source": "content inventory guardrails", "note": "History, impact, media, and attribution stay pending until approved."}}
   ],
   "events": [

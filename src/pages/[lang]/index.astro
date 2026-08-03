@@ -27,17 +27,28 @@ const currentPath = Astro.url.pathname;
 
 const blogPosts = await getCollection('blog', ({ data }) => !data.draft)
 const gscVerification = import.meta.env.GOOGLE_SITE_VERIFICATION;
+const pageTitle = locale === 'id'
+  ? '#KaburAjaDulu | Mulai dari pertanyaanmu'
+  : '#KaburAjaDulu | Start with your question';
+const pageDescription = locale === 'id'
+  ? 'Periksa program komunitas, status agenda, dan jalur relawan sebelum menentukan langkah berikutnya.'
+  : 'Check community programs, schedule status, and volunteer paths before choosing your next step.';
 ---
 
 <Layout
-  title="#KaburAjaDulu"
-  description="Discover study and work opportunities abroad. Trusted information platform for Indonesians."
+  title={pageTitle}
+  description={pageDescription}
   gscVerification={gscVerification}
   locale={locale}
   currentPath={currentPath}
 >
   <Navbar client:only="react" locale={locale} currentPath={currentPath} />
   <main id="main-content" tabindex="-1">
+    {locale !== 'id' && locale !== 'en' && (
+      <p class="kad-translation-notice" lang="en" role="status">
+        This page is available in English while a full translation is prepared.
+      </p>
+    )}
     <HeroSection client:only="react" locale={locale} />
     <DestinationShowcase client:only="react" locale={locale} />
     <CommunityGateway locale={locale} />

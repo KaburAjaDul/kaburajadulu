@@ -9,10 +9,11 @@ interface CTASectionProps {
 }
 
 export function CTASection({ locale = 'id' }: CTASectionProps) {
-  const t = (key: string) => translate(locale, key);
+  const contentLocale = locale === 'id' ? 'id' : 'en';
+  const t = (key: string) => translate(contentLocale, key);
 
   return (
-    <section className="py-10 md:py-16">
+    <section className="py-10 md:py-16" lang={contentLocale} data-requested-locale={locale}>
       <div className="container mx-auto text-center px-4 md:px-6">
         <h2 className="text-3xl font-bold mb-4">
           {t('cta.headline')}

@@ -1,0 +1,14 @@
+---
+import { fixtureText, type VolunteerProfile } from '@/content/staging-fixtures';
+import StatusBadge from './StatusBadge.astro';
+
+interface Props { profile: VolunteerProfile; locale?: string; }
+const { profile, locale = 'id' } = Astro.props;
+---
+
+<article class="kad-card kad-volunteer-card" data-fixture-id={profile.id} data-fixture-state={profile.state}>
+  <div class="kad-card-top"><StatusBadge state={profile.state} locale={locale} /><span class="kad-status">{locale === 'id' ? 'Demo profil' : 'Demo profile'}</span></div>
+  <h3>{fixtureText(profile.displayName, locale)}</h3>
+  <p>{fixtureText(profile.role, locale)}</p>
+  <small>{fixtureText(profile.cycle, locale)}</small>
+</article>

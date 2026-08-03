@@ -102,7 +102,7 @@ test('root metadata contains the Discord invite and a real GitHub contributor an
   );
 
   const github = page.locator(
-    'a[aria-label="GitHub Contributor"][href="https://github.com/KaburAjaDul/kaburajadulu"]',
+    'a[aria-label="Ikut membangun website"][href="https://github.com/KaburAjaDul/kaburajadulu"]',
   );
   await expect(github).toHaveCount(1);
   await expect(github).toBeVisible();

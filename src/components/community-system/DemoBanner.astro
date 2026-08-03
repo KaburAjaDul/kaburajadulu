@@ -1,0 +1,20 @@
+---
+import { PREVIEW_FIXTURE, STAGING_FIXTURES_ENABLED, STAGING_FIXTURE_VERSION } from '@/content/staging-fixtures';
+
+interface Props {
+  locale?: string;
+}
+
+const { locale = 'id' } = Astro.props;
+const label = locale === 'id' ? 'Data simulasi' : 'Demo data';
+const detail = locale === 'id'
+  ? 'Konten ini dibuat khusus untuk uji staging dan bukan fakta tentang KAD.'
+  : 'This content is staged demo data and does not describe real KAD activity.';
+---
+
+{STAGING_FIXTURES_ENABLED && (
+  <aside class="kad-demo-banner" data-fixture-id={PREVIEW_FIXTURE.id} data-fixture-state={PREVIEW_FIXTURE.state} data-fixture-version={STAGING_FIXTURE_VERSION} role="note">
+    <strong>{label}</strong>
+    <span>{detail}</span>
+  </aside>
+)}

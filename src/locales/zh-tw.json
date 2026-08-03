@@ -59,6 +59,7 @@
     "read_more": "閱讀更多",
     "empty_category": "糟糕！此類別目前沒有文章",
     "categories": {
+      "All": "全部",
       "Lowongan": "職缺",
       "Beasiswa": "獎學金",
       "Event": "活動",

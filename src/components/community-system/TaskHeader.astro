@@ -11,6 +11,7 @@ interface Props {
   summary: string;
   stats?: HeaderStat[];
   variant?: 'catalogue' | 'operational' | 'evidence' | 'proposal' | 'record';
+  locale?: string;
 }
 
 const {
@@ -19,6 +20,7 @@ const {
   summary,
   stats = [],
   variant = 'operational',
+  locale = 'id',
 } = Astro.props;
 ---
 
@@ -32,7 +34,7 @@ const {
     </div>
     <div class="kad-task-header__utility">
       {stats.length > 0 && (
-        <dl class="kad-task-header__stats" aria-label="Ringkasan halaman">
+        <dl class="kad-task-header__stats" aria-label={locale === 'id' ? 'Ringkasan halaman' : 'Page summary'}>
           {stats.map((stat) => (
             <div data-state={stat.state ?? 'default'}>
               <dt>{stat.label}</dt>

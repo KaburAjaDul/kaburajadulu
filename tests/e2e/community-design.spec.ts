@@ -44,15 +44,15 @@ const DESIGN_PREVIEWS = [
 
 const TASK_HEADERS = [
   ['/programs/', 'catalogue', 'Program publik', '5'],
-  ['/events/', 'operational', 'Acara publik', '0'],
+  ['/events/', 'operational', 'Agenda tampil', '0'],
   ['/volunteer/', 'operational', 'Satu siklus', '3 bulan'],
-  ['/stories/', 'evidence', 'Cerita terbit', '0'],
-  ['/about/history/', 'evidence', 'Status', 'Evidence review'],
-  ['/community/impact/', 'evidence', 'Keluarga metrik', '4'],
+  ['/stories/', 'evidence', 'Cerita tampil', '0'],
+  ['/about/history/', 'evidence', 'Status', 'Tinjauan bukti'],
+  ['/community/impact/', 'evidence', 'Metrik tampil', '0'],
   ['/support/', 'proposal', 'Pembayaran aktif', '0'],
-  ['/community/credits/', 'evidence', 'Kredit disetujui', '0'],
+  ['/community/credits/', 'evidence', 'Kontribusi tampil', '0'],
   ['/programs/french-club-trial/', 'record', 'Poster publik', '1'],
-  ['/events/not-published/', 'record', 'Status', 'Not published'],
+  ['/events/not-published/', 'record', 'Status', 'Belum dipublikasikan'],
 ] as const;
 
 async function expectNoHorizontalOverflow(page: Page) {
@@ -273,10 +273,10 @@ test('events begin with an honest zero-count empty state', async ({ page }) => {
 
 test('readiness states stay explicit for history, support, credits, and unpublished events', async ({ page }) => {
   const states = [
-    ['/about/history/', 'Evidence review'],
-    ['/support/', 'Proposed'],
-    ['/community/credits/', 'Anonymous by default'],
-    ['/events/not-published/', 'Not published'],
+    ['/about/history/', 'Tinjauan bukti'],
+    ['/support/', 'Belum siap'],
+    ['/community/credits/', 'Anonim secara bawaan'],
+    ['/events/not-published/', 'Belum dipublikasikan'],
   ] as const;
 
   for (const [route, marker] of states) {
@@ -289,6 +289,8 @@ test('Arabic routes preserve locale links and RTL composition', async ({ page })
   await page.goto('/ar/programs/', { waitUntil: 'networkidle' });
   await expect(page.locator('html')).toHaveAttribute('lang', 'ar');
   await expect(page.locator('html')).toHaveAttribute('dir', 'rtl');
+  await expect(page.locator('main')).toHaveAttribute('lang', 'en');
+  await expect(page.locator('[data-testid="site-header"]')).toHaveAttribute('lang', 'en');
   await expect(page.locator('.kad-nav-links a')).toHaveCount(4);
 
   const internalLinks = await page.locator('a[href]').evaluateAll((anchors) =>
@@ -314,6 +316,31 @@ test('Arabic routes preserve locale links and RTL composition', async ({ page })
     paddingInlineStart: getComputedStyle(element).paddingInlineStart,
     marker: getComputedStyle(element, '::before').content,
   }))).toEqual({ paddingInlineStart: '24px', marker: '"←"' });
+});
+
+test('production excludes staging fixtures and keeps language fallback explicit', async ({ page }) => {
+  await page.goto('/events/', { waitUntil: 'domcontentloaded' });
+  await expect(page.locator('main')).toHaveAttribute('data-fixtures', 'disabled');
+  await expect(page.locator('[data-fixture-id]')).toHaveCount(0);
+  await expect(page.getByText('Data simulasi', { exact: true })).toHaveCount(0);
+
+  await page.goto('/en/programs/', { waitUntil: 'domcontentloaded' });
+  await expect(page.locator('main')).toHaveAttribute('lang', 'en');
+  await expect(page.getByRole('heading', { name: 'Choose something you can actually follow through on.' })).toBeVisible();
+  await expect(page.getByText('Sumber publik di X', { exact: true })).toHaveCount(0);
+  await expect(page.locator('.kad-program-card').first()).toContainText('Public source on X');
+
+  await page.goto('/ja/community/', { waitUntil: 'domcontentloaded' });
+  await expect(page.locator('html')).toHaveAttribute('lang', 'ja');
+  await expect(page.locator('main')).toHaveAttribute('lang', 'en');
+  await expect(page.getByText('This community surface is available in English while a full translation is prepared.')).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Community is more than a server.' })).toBeVisible();
+
+  await page.goto('/ja/', { waitUntil: 'domcontentloaded' });
+  await expect(page.locator('html')).toHaveAttribute('lang', 'ja');
+  await expect(page.getByText('This page is available in English while a full translation is prepared.')).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Kabur Aja Dulu' })).toBeVisible();
+  await expect(page.getByText('コミュニティの公開スペース', { exact: true })).toHaveCount(0);
 });
 
 test('canonical and hreflang metadata match trailing-slash static routes', async ({ page }) => {

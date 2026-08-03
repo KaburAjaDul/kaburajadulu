@@ -59,6 +59,7 @@
     "read_more": "Lees meer",
     "empty_category": "Oeps! Er zijn geen berichten in deze categorie",
     "categories": {
+      "All": "Alles",
       "Lowongan": "Vacatures",
       "Beasiswa": "Beurzen",
       "Event": "Evenementen",
