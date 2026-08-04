@@ -3,7 +3,7 @@
   "overall_status": "pass",
   "scope": {
     "platform": "webapp",
-    "surface": "KAD public Programs, Events, Volunteer, Stories, History, Impact, Credits, and Support page families",
+    "surface": "KAD public Community, Programs, Events, Volunteer, Stories, History, Impact, Credits, and Support page families",
     "actor": "A visitor deciding what is available, what is verified, and what to do next",
     "task": "Find current community information without mistaking preview records for current KAD facts",
     "primary_action": "Inspect the relevant record or confirm the latest state through the page-specific action",
@@ -39,7 +39,7 @@
           "semantic_order": 1,
           "action_order": null,
           "focus_order": null,
-          "evidence_ids": ["events-wide", "volunteer-wide", "stories-wide", "impact-wide", "support-wide"]
+          "evidence_ids": ["community-wide", "events-wide", "volunteer-wide", "stories-wide", "impact-wide", "support-wide"]
         },
         {
           "id": "task-content-wide",
@@ -49,7 +49,7 @@
           "semantic_order": 2,
           "action_order": 1,
           "focus_order": 1,
-          "evidence_ids": ["events-wide", "volunteer-wide", "stories-wide", "impact-wide", "support-wide"]
+          "evidence_ids": ["community-wide", "events-wide", "volunteer-wide", "stories-wide", "impact-wide", "support-wide"]
         },
         {
           "id": "preview-boundary-wide",
@@ -74,7 +74,7 @@
           "semantic_order": 1,
           "action_order": null,
           "focus_order": null,
-          "evidence_ids": ["events-narrow", "volunteer-narrow", "stories-narrow", "impact-narrow", "support-narrow"]
+          "evidence_ids": ["community-narrow", "events-narrow", "volunteer-narrow", "stories-narrow", "impact-narrow", "support-narrow"]
         },
         {
           "id": "task-action-narrow",
@@ -84,7 +84,7 @@
           "semantic_order": 2,
           "action_order": 1,
           "focus_order": 1,
-          "evidence_ids": ["events-narrow", "volunteer-narrow", "stories-narrow", "support-narrow", "production-e2e"]
+          "evidence_ids": ["community-narrow", "events-narrow", "volunteer-narrow", "stories-narrow", "support-narrow", "production-e2e"]
         },
         {
           "id": "task-content-narrow",
@@ -94,7 +94,7 @@
           "semantic_order": 3,
           "action_order": 2,
           "focus_order": 2,
-          "evidence_ids": ["events-narrow", "volunteer-narrow", "stories-narrow", "impact-narrow", "support-narrow", "production-e2e"]
+          "evidence_ids": ["community-narrow", "events-narrow", "volunteer-narrow", "stories-narrow", "impact-narrow", "support-narrow", "production-e2e"]
         }
       ]
     },
@@ -115,6 +115,8 @@
     }
   ],
   "evidence": [
+    {"id": "community-wide", "kind": "screenshot", "source": "tests/e2e/community-design.spec.ts artifact community-desktop.png", "status": "observed", "note": "Community shows a compact orientation, qualified three-value pulse, five-record evidence ledger, dated activity, opt-in people, and source links in semantic order."},
+    {"id": "community-narrow", "kind": "screenshot", "source": "tests/e2e/community-design.spec.ts artifact community-mobile.png", "status": "observed", "note": "The same Community hierarchy reflows at 390x844 without horizontal overflow or hidden actions."},
     {"id": "events-wide", "kind": "screenshot", "source": "test-results/hierarchy-review/events-wide.png", "status": "observed", "note": "Schedule-first event list with one compact preview disclosure."},
     {"id": "events-narrow", "kind": "screenshot", "source": "test-results/hierarchy-review/events-narrow.png", "status": "observed", "note": "Mobile schedule header and action fit without horizontal overflow."},
     {"id": "volunteer-wide", "kind": "screenshot", "source": "test-results/hierarchy-review/volunteer-wide.png", "status": "observed", "note": "Cycle and work structure replace a generic volunteer hero."},
@@ -125,8 +127,8 @@
     {"id": "impact-narrow", "kind": "screenshot", "source": "test-results/hierarchy-review/impact-narrow.png", "status": "observed", "note": "Metric ledger is readable without two-dimensional scrolling."},
     {"id": "support-wide", "kind": "screenshot", "source": "test-results/hierarchy-review/support-wide.png", "status": "observed", "note": "Governance and funding readiness precede support solicitation."},
     {"id": "support-narrow", "kind": "screenshot", "source": "test-results/hierarchy-review/support-narrow.png", "status": "observed", "note": "Funding status and governance requirements lead on mobile."},
-    {"id": "staging-e2e", "kind": "command", "source": "bun run test:e2e:staging", "status": "observed", "note": "12 tests passed, including compact notice, lifecycle, privacy, locale, provenance, and overflow checks."},
-    {"id": "production-e2e", "kind": "command", "source": "bun run test:e2e:community", "status": "observed", "note": "58 tests passed, including route hierarchy, empty states, mobile focus, reduced motion, and responsive checks."}
+    {"id": "staging-e2e", "kind": "command", "source": "bun run test:e2e:staging", "status": "observed", "note": "13 tests passed, including Community fixture qualification, compact notice, lifecycle, privacy, locale, provenance, and overflow checks."},
+    {"id": "production-e2e", "kind": "command", "source": "bun run test:e2e", "status": "observed", "note": "80 tests passed, including exact Community content order, qualified production counts, route hierarchy, empty states, mobile focus, reduced motion, responsive checks, and screenshot artifacts."}
   ],
   "findings": [],
   "remediations": [],
@@ -134,13 +136,13 @@
     {
       "scenario_id": "sample-records-wide",
       "status": "pass",
-      "evidence_ids": ["events-wide", "volunteer-wide", "stories-wide", "impact-wide", "support-wide", "staging-e2e"],
+      "evidence_ids": ["community-wide", "events-wide", "volunteer-wide", "stories-wide", "impact-wide", "support-wide", "staging-e2e"],
       "note": "All reviewed wide routes use task-specific structures and one compact preview boundary."
     },
     {
       "scenario_id": "sample-records-narrow",
       "status": "pass",
-      "evidence_ids": ["events-narrow", "volunteer-narrow", "stories-narrow", "impact-narrow", "support-narrow", "staging-e2e"],
+      "evidence_ids": ["community-narrow", "events-narrow", "volunteer-narrow", "stories-narrow", "impact-narrow", "support-narrow", "staging-e2e"],
       "note": "All reviewed narrow routes preserve content order, action clarity, and viewport containment."
     },
     {
@@ -156,7 +158,7 @@
       "scenario_id": "sample-records-wide",
       "method": "Inspect final-size screenshots and run the staging Playwright contract.",
       "expected": "Route purpose, useful information, and actions appear before secondary explanation; preview copy is not repeated per card.",
-      "result": "Observed in five 1440x900 renders; staging Playwright passed 12 of 12 tests.",
+      "result": "Observed in six 1440x900 renders; staging Playwright passed 13 of 13 tests.",
       "status": "pass"
     },
     {
@@ -164,7 +166,7 @@
       "scenario_id": "sample-records-narrow",
       "method": "Inspect 390x844 renders and execute mobile overflow, action, locale, and reduced-motion checks.",
       "expected": "The same task and truth state remain understandable without horizontal scrolling or a large decorative hero.",
-      "result": "Observed in five mobile renders; all responsive checks passed.",
+      "result": "Observed in six mobile renders; all responsive checks passed.",
       "status": "pass"
     },
     {
@@ -172,7 +174,7 @@
       "scenario_id": "production-empty-and-pending",
       "method": "Build with PUBLIC_STAGING_FIXTURES unset and run production route tests.",
       "expected": "No sample identities or records appear; empty and not-published states remain explicit and actionable.",
-      "result": "Production community suite passed 58 of 58 tests.",
+      "result": "Production suite passed 80 of 80 tests.",
       "status": "pass"
     }
   ]

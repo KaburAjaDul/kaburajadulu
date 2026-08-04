@@ -108,8 +108,9 @@ blueprint. This keeps the family coherent without making every route identical.
 Visual consistency does not justify repeating a landing-style introduction on
 every route. The first viewport must expose the page's actual job:
 
-- `/community` keeps the orientation hero because the visitor still needs the
-  community model explained.
+- `/community` keeps a compact orientation treatment, then immediately exposes
+  a qualified community pulse, public program records, current activity state,
+  and opt-in attribution boundaries.
 - Catalogue pages expose inventory count, categories, certainty, and filters.
 - Operational pages expose cycle or schedule state before explanation.
 - Evidence pages expose readiness, approval, and metric-contract state.
@@ -130,7 +131,9 @@ Runtime compactness contract:
   explanatory modules; counts or status facts appear only when they help the
   page's primary task;
 - page-family colour is a thin status cue, not a full landing-page scene;
-- `/community` remains the only inner route with an orientation hero.
+- `/community` remains the only inner route with an orientation treatment, but
+  its header must not delay the first evidence module or behave like a landing
+  page.
 
 ## Page family designs
 
@@ -154,16 +157,31 @@ are established.
 
 ### 2. Community `/community`
 
-**Job:** orient a new member before they enter Discord.
+**Job:** show what the community can publicly prove, who has chosen attribution,
+and where a newcomer can participate next.
 
-- Hero: `Komunitas bukan cuma server`.
-- Three-part participation map: find a room, follow a routine, contribute back.
-- Public-channel expectations and safety copy without exposing channel names or
-  private moderation workflows.
-- Canonical Discord, X, and Instagram destinations.
-- `What happens after joining` checklist.
+1. Compact orientation header with Discord as the primary action and Programs as
+   the secondary action.
+2. A semantic three-value pulse. Staging uses the fictional periodised metrics;
+   production uses only the five published program records, two public
+   categories, and zero approved public events. Every value carries a
+   definition, method, source, period, and reviewed date.
+3. A flat five-record program ledger with category, certainty, public source,
+   internal detail, and the next unanswered question.
+4. An approved activity list when records exist; production uses an explicit
+   empty schedule state until a public projection is available.
+5. People appear only through an opt-in public attribution record with chosen
+   display name, role, cycle, and scoped contribution. Staging demonstrates the
+   contract with fictional profiles; production invents no identities.
+6. Discord, X, Instagram, and Volunteer remain compact source/action links rather
+   than repeated promotional cards.
 
-Expressive gesture: a route-map line connecting the three participation stages.
+No raw Discord member count, staff-only analytics, or legacy `500+ / 10+ / 50+`
+claim may appear without an approved denominator, period, method, and public
+source.
+
+Expressive gesture: restrained ledger numerals and circular text monograms. The
+records, not decorative cards, carry the hierarchy.
 
 ### 3. Programs `/programs`
 

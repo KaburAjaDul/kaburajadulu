@@ -94,6 +94,9 @@ const programPosterMedia = Array.isArray(ir.media)
 const programCollection = Array.isArray(ir.components)
   ? ir.components.find((component) => component.id === 'program_collection')
   : null;
+const communityOverview = Array.isArray(ir.components)
+  ? ir.components.find((component) => component.id === 'community_overview')
+  : null;
 const gksMedia = Array.isArray(ir.media)
   ? ir.media.find((media) => media.id === 'gks_third_party_media')
   : null;
@@ -116,6 +119,11 @@ const irChecks = [
   ['five approved local poster records', programPosterMedia.length === 5 && programPosterMedia.every((media) => media.type === 'image' && media.implementation_safe === true && typeof media.src === 'string')],
   ['four image-bearing programs', programCollection?.props?.image_program_count === 4],
   ['English + Mandarin gallery count=2', programCollection?.props?.gallery_image_count === 2],
+  ['Community content order', JSON.stringify(communityOverview?.props?.content_order) === JSON.stringify(['pulse', 'programs', 'activity', 'people', 'sources'])],
+  ['Community metric context', JSON.stringify(communityOverview?.props?.metric_context) === JSON.stringify(['definition', 'method', 'source', 'period', 'reviewed_date'])],
+  ['Community five-record ledger', communityOverview?.props?.program_record_count === 5],
+  ['Community staging people contract', communityOverview?.props?.staging_people_count === 3],
+  ['Community production people boundary', communityOverview?.props?.production_people_policy === 'opt_in_pending_no_profiles'],
   ['GKS third-party media forbidden', gksMedia?.type === 'none' && gksMedia?.implementation_safe === false],
 ];
 for (const [label, passed] of irChecks) if (!passed) fail(`IR missing ${label}`);
@@ -141,6 +149,7 @@ const runtime = new Map();
 for (const file of runtimeFiles) runtime.set(relative(distDir, file), await readFile(file, 'utf8'));
 const html = [...runtime.entries()].filter(([file]) => file.endsWith('.html'));
 const htmlText = html.map(([, content]) => content).join('\n');
+const communityHtml = runtime.get('community/index.html') ?? '';
 const programsHtml = runtime.get('programs/index.html') ?? '';
 const languageProgramsHtml = runtime.get('programs/category/language/index.html') ?? '';
 const careerProgramsHtml = runtime.get('programs/category/career/index.html') ?? '';
@@ -167,6 +176,29 @@ const programRuntimeChecks = [
   ['recoverable error route', errorProgramsHtml.includes('data-repository-state="error"') && errorProgramsHtml.includes('Coba lagi')],
 ];
 for (const [label, passed] of programRuntimeChecks) if (!passed) fail(`Programs runtime missing ${label}`);
+
+const communityRuntimeChecks = [
+  ['compact orientation header', communityHtml.includes('data-page-header="orientation"') && communityHtml.includes('kad-community-intro')],
+  ['ordered evidence regions', ['pulse', 'programs', 'activity', 'people', 'sources'].every((section) => communityHtml.includes(`data-community-section="${section}"`))],
+  ['semantic three-value pulse', (communityHtml.match(/data-community-metric=/g) ?? []).length === 3],
+  ['qualified pulse context', (communityHtml.match(/kad-community-metrics__context/g) ?? []).length === 3 && communityHtml.includes('Metode') && communityHtml.includes('Sumber') && communityHtml.includes('Ditinjau')],
+  ['five Program evidence records', (communityHtml.match(/data-program-record=/g) ?? []).length === 5],
+  ['no generic journey cards', !communityHtml.includes('kad-journey-card')],
+  ['no generic social cards', !communityHtml.includes('kad-card kad-source-link')],
+];
+if (stagingMode) {
+  communityRuntimeChecks.push(
+    ['three staged activity records', (communityHtml.match(/data-fixture-id="demo-event-/g) ?? []).length === 3],
+    ['three staged opt-in people records', (communityHtml.match(/data-attribution="opt-in-demo"/g) ?? []).length === 3],
+  );
+} else {
+  communityRuntimeChecks.push(
+    ['production opt-in policy', communityHtml.includes('Atribusi publik bersifat opt-in.')],
+    ['production published event count', communityHtml.includes('data-community-metric="published-event-count"') && communityHtml.includes('Agenda terbit')],
+    ['no staged people records', !communityHtml.includes('data-attribution="opt-in-demo"')],
+  );
+}
+for (const [label, passed] of communityRuntimeChecks) if (!passed) fail(`Community runtime missing ${label}`);
 
 const sourceMatches = [...new Set(canonicalProgramSources.filter((source) => htmlText.includes(source)))];
 if (sourceMatches.length !== canonicalProgramSources.length) {

@@ -108,13 +108,38 @@ test.describe('route-specific first viewport', () => {
     await expect(page.locator('[data-page-header="task"]')).toHaveCount(0);
   });
 
-  test('Community journey entry points are real internal links', async ({ page }) => {
+  test('Community leads with pulse, program proof, activity, and people', async ({ page }) => {
     await page.goto('/community/', { waitUntil: 'domcontentloaded' });
-    const cards = page.locator('.kad-journey-card');
-    await expect(cards).toHaveCount(3);
-    const hrefs = await cards.locator('a[href]').evaluateAll((anchors) => anchors.map((anchor) => anchor.getAttribute('href')));
-    expect(hrefs).toEqual(['/programs', '/events', '/volunteer']);
-    expect(hrefs.every((href): href is string => typeof href === 'string' && href.startsWith('/') && !href.startsWith('#'))).toBe(true);
+    await expect(page.locator('.kad-community-intro .kad-button--primary')).toHaveAttribute('href', /discord/);
+    await expect(page.locator('.kad-community-intro .kad-button--outline')).toHaveAttribute('href', '/programs');
+    await expect(page.locator('[data-community-section="pulse"] dl')).toBeVisible();
+    await expect(page.locator('[data-community-section="pulse"] dl > div')).toHaveCount(3);
+    await expect(page.locator('[data-community-section="pulse"] .kad-community-metrics__value')).toHaveText(['5', '2', '0']);
+    await expect(page.locator('[data-community-section="pulse"] .kad-community-metrics__context')).toHaveCount(3);
+    await expect(page.locator('[data-community-section="programs"] [data-program-record]')).toHaveCount(5);
+    await expect(page.locator('[data-community-section="activity"]')).toBeVisible();
+    await expect(page.locator('[data-community-section="people"]')).toBeVisible();
+    await expect(page.locator('.kad-journey-card, .kad-band, [data-community-section="social"]')).toHaveCount(0);
+    const headingOrder = await page.locator('[data-community-section] > .kad-section-heading h2').allTextContents();
+    expect(headingOrder.slice(0, 4)).toEqual([
+      'Tiga angka, lengkap dengan konteksnya.',
+      'Lima program dengan catatan publik.',
+      'Agenda dan status terbaru.',
+      'Orang di balik kerja komunitas.',
+    ]);
+  });
+
+  test('Community stays compact and ordered on desktop and mobile', async ({ page }) => {
+    for (const viewport of [{ width: 1280, height: 720 }, { width: 390, height: 844 }]) {
+      await page.setViewportSize(viewport);
+      await page.goto('/community/', { waitUntil: 'domcontentloaded' });
+      const header = page.locator('[data-page-header="orientation"]');
+      const box = await header.boundingBox();
+      expect(box?.height ?? Number.POSITIVE_INFINITY).toBeLessThanOrEqual(viewport.width === 1280 ? 400 : 600);
+      await expectNoHorizontalOverflow(page);
+      const sections = await page.locator('[data-community-section]').evaluateAll((items) => items.map((item) => item.getAttribute('data-community-section')));
+      expect(sections).toEqual(['pulse', 'programs', 'activity', 'people', 'sources']);
+    }
   });
 
   for (const [route, headerKind, marker] of SUBPAGE_HEADERS) {
@@ -440,12 +465,9 @@ test('Arabic routes preserve locale links and RTL composition', async ({ page })
   expect(internalLinks.filter((href) => !href.startsWith('#')).every((href) => href === '/ar/' || href.startsWith('/ar/'))).toBe(true);
 
   await page.goto('/ar/community/', { waitUntil: 'domcontentloaded' });
-  const firstChecklistItem = page.locator('.kad-check-list li').first();
-  await expect(firstChecklistItem).toBeVisible();
-  expect(await firstChecklistItem.evaluate((element) => ({
-    paddingInlineStart: getComputedStyle(element).paddingInlineStart,
-    marker: getComputedStyle(element, '::before').content,
-  }))).toEqual({ paddingInlineStart: '24px', marker: '"←"' });
+  await expect(page.locator('[data-page-header="orientation"]')).toBeVisible();
+  await expect(page.locator('[data-community-section="pulse"] dl')).toBeVisible();
+  await expect(page.locator('.kad-community-source-links a').first()).toBeVisible();
 });
 
 test('production excludes staging fixtures and keeps language fallback explicit', async ({ page }) => {
@@ -466,7 +488,7 @@ test('production excludes staging fixtures and keeps language fallback explicit'
   await expect(page.locator('html')).toHaveAttribute('lang', 'ja');
   await expect(page.locator('main')).toHaveAttribute('lang', 'en');
   await expect(page.getByText('This community surface is available in English while a full translation is prepared.')).toBeVisible();
-  await expect(page.getByRole('heading', { name: 'Community is more than a server.' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'People, programs, and work that keep KAD moving.' })).toBeVisible();
 
   await page.goto('/ja/', { waitUntil: 'domcontentloaded' });
   await expect(page.locator('html')).toHaveAttribute('lang', 'ja');
@@ -574,6 +596,7 @@ test.describe('responsive and motion safeguards', () => {
 test.describe('screenshot artifacts', () => {
   for (const [route, name] of [
     ['/', 'home'],
+    ['/community/', 'community'],
     ['/programs/', 'programs'],
     ['/programs/english-mandarin-weekly-clubs/', 'weekly-detail'],
     ['/support/', 'support'],

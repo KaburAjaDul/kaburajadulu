@@ -11,6 +11,19 @@ test('staging is noindex and visibly labels fictional data', async ({ page }) =>
   await expect(page.locator('.kad-demo-banner summary')).toHaveText('Pratinjau · data contoh');
 });
 
+test('community staging exposes qualified pulse, activity, and opt-in people', async ({ page }) => {
+  await page.goto('/community/', { waitUntil: 'domcontentloaded' });
+  await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', 'noindex, nofollow');
+  await expect(page.locator('[data-community-section="pulse"] [data-community-metric^="demo-metric-"]')).toHaveCount(3);
+  await expect(page.locator('[data-community-section="pulse"] .kad-community-metrics__value')).toHaveText(['12', '8', '3']);
+  await expect(page.locator('[data-community-section="pulse"] .kad-community-metrics__context')).toHaveCount(3);
+  await expect(page.locator('[data-community-section="programs"] [data-program-record]')).toHaveCount(5);
+  await expect(page.locator('[data-community-section="activity"] [data-fixture-id^="demo-event-"]')).toHaveCount(3);
+  await expect(page.locator('[data-community-section="people"] [data-attribution="opt-in-demo"]')).toHaveCount(3);
+  await expect(page.getByText('Nara (fiktif)', { exact: true })).toBeVisible();
+  await expect(page.getByText('Yang perlu dikonfirmasi', { exact: true }).first()).toBeVisible();
+});
+
 test('staging uses one compact page-level preview disclosure', async ({ page }) => {
   for (const viewport of [
     { width: 1280, height: 720, maxNoticeHeight: 48 },

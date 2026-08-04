@@ -29,7 +29,7 @@ the only route allowed an expressive orientation treatment.
 
 | Route | User job | First viewport must show | Required state/evidence | Expressive allowance |
 | --- | --- | --- | --- | --- |
-| `/community` | Understand how participation works | Orientation model, three participation steps, join action | Public expectations and safe external sources | One route-map gesture and warm field-note voice |
+| `/community` | Understand what KAD can publicly prove and where to participate | Compact orientation, qualified pulse, five program records, activity state, opt-in people boundary, join action | Five source-backed programs are public; people, events, contributions, and metrics are fictional in staging until an approved projection exists | Flat editorial ledger and text monograms |
 | `/programs` | Find a suitable activity | Catalogue count, category filter, certainty, source, next action | Loading, empty, stale, and error guidance | Editorial index accents only |
 | `/programs/{slug}` | Decide whether to follow one program | Record title, known/confirm split, availability, source, next action | Source revision/freshness and media fallback | CSS marker; no landing hero |
 | `/events` | Check the public schedule | Date spine, timezone, status, program, source revision | Empty first; future loading/upcoming/live/completed/stale/error | Calendar spine remains an information scaffold |
@@ -62,6 +62,8 @@ projection rules, and media hashes. These notes are not customer-facing copy.
 ## Unknowns and release blockers
 
 - Public event projection owner, allowlist, freshness window, and correction SLA.
+- Approved public member-count definition, denominator, period, method, and
+  source; legacy marketing totals remain excluded.
 - History source set, date corroboration, editorial owner, and revocation policy.
 - Impact metric definitions, denominator, method, period, and source owner.
 - Volunteer intake owner, open-work expiry, and current-cycle handover policy.
