@@ -6,15 +6,17 @@ interface Props {
 }
 
 const { locale = 'id' } = Astro.props;
-const label = locale === 'id' ? 'Data simulasi' : 'Demo data';
+const label = locale === 'id' ? 'Pratinjau · data contoh' : 'Preview · sample data';
 const detail = locale === 'id'
-  ? 'Konten ini dibuat khusus untuk uji staging dan bukan fakta tentang KAD.'
-  : 'This content is staged demo data and does not describe real KAD activity.';
+  ? 'Nama, angka, dan jadwal pada halaman ini bersifat fiktif dan tidak menggambarkan aktivitas KAD saat ini.'
+  : 'Names, numbers, and schedules on this page are fictional and do not describe current KAD activity.';
 ---
 
 {STAGING_FIXTURES_ENABLED && (
   <aside class="kad-demo-banner" data-fixture-id={PREVIEW_FIXTURE.id} data-fixture-state={PREVIEW_FIXTURE.state} data-fixture-version={STAGING_FIXTURE_VERSION} role="note">
-    <strong>{label}</strong>
-    <span>{detail}</span>
+    <details>
+      <summary>{label}</summary>
+      <p>{detail}</p>
+    </details>
   </aside>
 )}

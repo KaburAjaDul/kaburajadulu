@@ -9,6 +9,7 @@ export type CommunityPageKind =
   | 'event'
   | 'volunteer'
   | 'stories'
+  | 'story'
   | 'history'
   | 'impact'
   | 'support'
@@ -31,6 +32,7 @@ const COPY: Record<'id' | 'en', Record<CommunityPageKind, CommunityCopy>> = {
     event: { eyebrow: 'Rincian acara', title: 'Acara ini belum dipublikasikan.', description: 'Halaman acara baru dibuka setelah waktu, jalur ikut, sumber, dan catatan perubahannya lengkap.', actions: { discord: 'Tanyakan di Discord', support: 'Dukung KAD', back: 'Kembali ke agenda', detail: 'Baca rincian' }, states: { empty: 'Belum tersedia', pending: 'Sedang diperiksa', notPublished: 'Belum dipublikasikan', demo: 'Data simulasi' } },
     volunteer: { eyebrow: 'Siklus dan pembagian kerja', title: 'Cara kerja relawan', description: 'Lihat tahap siklus, cara pekerjaan dibagi, dan aturan atribusi kontribusi.', actions: { discord: 'Lihat cara mulai', support: 'Dukung KAD', back: 'Kembali', detail: 'Baca rincian' }, states: { empty: 'Belum tersedia', pending: 'Menunggu izin', notPublished: 'Belum dipublikasikan', demo: 'Data simulasi' } },
     stories: { eyebrow: 'Arsip komunitas', title: 'Cerita dan dokumentasi', description: 'Cerita tampil setelah isi, media, dan cara menyebut kontributor mendapat persetujuan.', actions: { discord: 'Bagikan bahan cerita', support: 'Dukung KAD', back: 'Kembali', detail: 'Baca rincian' }, states: { empty: 'Belum ada cerita terbit', pending: 'Menunggu persetujuan', notPublished: 'Belum dipublikasikan', demo: 'Data simulasi' } },
+    story: { eyebrow: 'Catatan komunitas', title: 'Cerita belum tersedia', description: 'Catatan publik hanya menampilkan bahan yang telah melewati pemeriksaan editorial dan privasi.', actions: { discord: 'Bagikan bahan cerita', support: 'Dukung KAD', back: 'Kembali ke cerita', detail: 'Baca cerita' }, states: { empty: 'Belum ada cerita terbit', pending: 'Menunggu persetujuan', notPublished: 'Belum dipublikasikan', demo: 'Data simulasi' } },
     history: { eyebrow: 'Sejarah komunitas', title: 'Sejarah yang bisa ditelusuri, bukan sekadar diingat.', description: 'Setiap tonggak membutuhkan tanggal, sumber, penanggung jawab, dan jalur koreksi sebelum masuk ke halaman publik.', actions: { discord: 'Kirim sumber', support: 'Dukung KAD', back: 'Kembali', detail: 'Baca rincian' }, states: { empty: 'Belum tersedia', pending: 'Sedang meninjau bukti', notPublished: 'Belum dipublikasikan', demo: 'Data simulasi' } },
     impact: { eyebrow: 'Dampak komunitas', title: 'Angka hanya berarti kalau cara menghitungnya jelas.', description: 'Setiap angka harus menyebut periode, definisi, sumber, dan kapan terakhir diperbarui.', actions: { discord: 'Tanyakan sumber', support: 'Lihat cara mendukung', back: 'Kembali', detail: 'Baca rincian' }, states: { empty: 'Belum tersedia', pending: 'Menunggu sumber', notPublished: 'Belum dipublikasikan', demo: 'Data simulasi' } },
     support: { eyebrow: 'Dukungan untuk KAD', title: 'Bantu satu pekerjaan selesai, lalu lihat hasilnya.', description: 'Halaman ini menjelaskan kebutuhan, batas penggunaan, dan bentuk laporan sebelum KAD menerima dukungan apa pun.', actions: { discord: 'Bicarakan bentuk dukungan', support: 'Dukung KAD', back: 'Kembali', detail: 'Baca rincian' }, states: { empty: 'Belum tersedia', pending: 'Belum siap menerima dana', notPublished: 'Belum dipublikasikan', demo: 'Data simulasi' } },
@@ -44,6 +46,7 @@ const COPY: Record<'id' | 'en', Record<CommunityPageKind, CommunityCopy>> = {
     event: { eyebrow: 'Event record', title: 'This event is not published.', description: 'The public record has not cleared source, time, registration, and recap review.', actions: { discord: 'Ask on Discord', support: 'Support KAD', back: 'Back to events', detail: 'View details' }, states: { empty: 'Not available yet', pending: 'Pending review', notPublished: 'Not published', demo: 'Demo data' } },
     volunteer: { eyebrow: 'Cycle and work structure', title: 'How volunteering works', description: 'See the cycle stages, how work is assigned, and how contribution attribution is handled.', actions: { discord: 'See how to start', support: 'Support KAD', back: 'Back', detail: 'Read details' }, states: { empty: 'Not available yet', pending: 'Permission required', notPublished: 'Not published', demo: 'Demo data' } },
     stories: { eyebrow: 'Community archive', title: 'Stories and documentation', description: 'Stories appear after the content, media, and contributor attribution have been approved.', actions: { discord: 'Share context', support: 'Support KAD', back: 'Back', detail: 'View details' }, states: { empty: 'No published stories yet', pending: 'Pending approval', notPublished: 'Not published', demo: 'Demo data' } },
+    story: { eyebrow: 'Community note', title: 'Story not available', description: 'Public notes show only material that has passed editorial and privacy review.', actions: { discord: 'Share story material', support: 'Support KAD', back: 'Back to stories', detail: 'Read story' }, states: { empty: 'No published stories yet', pending: 'Pending approval', notPublished: 'Not published', demo: 'Demo data' } },
     history: { eyebrow: 'Community history', title: 'History people can trace, not just remember.', description: 'Every milestone needs a date, source, owner, and correction path before it reaches the public timeline.', actions: { discord: 'Send a source', support: 'Support KAD', back: 'Back', detail: 'Read details' }, states: { empty: 'Not available yet', pending: 'Reviewing evidence', notPublished: 'Not published', demo: 'Demo data' } },
     impact: { eyebrow: 'Community impact', title: 'A number only matters when the counting method is clear.', description: 'Every metric must name its period, definition, source, and last update.', actions: { discord: 'Ask for the source', support: 'See how to support', back: 'Back', detail: 'Read details' }, states: { empty: 'Not available yet', pending: 'Source required', notPublished: 'Not published', demo: 'Demo data' } },
     support: { eyebrow: 'Support KAD', title: 'Help one piece of work get finished, then see the result.', description: 'This page explains the need, spending boundary, and reporting method before KAD accepts any support.', actions: { discord: 'Discuss a form of support', support: 'Support KAD', back: 'Back', detail: 'Read details' }, states: { empty: 'Not available yet', pending: 'Not ready to accept funds', notPublished: 'Not published', demo: 'Demo data' } },
@@ -301,6 +304,7 @@ export function pageTitle(kind: CommunityPageKind, item?: LocalizedProgramSource
     event: 'Acara belum dipublikasikan — KaburAjaDulu',
     volunteer: 'Relawan | KaburAjaDulu',
     stories: 'Cerita — KaburAjaDulu',
+    story: 'Cerita — KaburAjaDulu',
     history: 'Sejarah — KaburAjaDulu',
     impact: 'Dampak — KaburAjaDulu',
     support: 'Dukungan — KaburAjaDulu',
@@ -314,6 +318,7 @@ export function pageTitle(kind: CommunityPageKind, item?: LocalizedProgramSource
     event: 'Event record | KaburAjaDulu',
     volunteer: 'Volunteer | KaburAjaDulu',
     stories: 'Stories | KaburAjaDulu',
+    story: 'Story | KaburAjaDulu',
     history: 'History | KaburAjaDulu',
     impact: 'Impact | KaburAjaDulu',
     support: 'Support | KaburAjaDulu',

@@ -1,0 +1,13 @@
+---
+import CommunityPage from '@/components/community-system/CommunityPage.astro';
+import { type Locale } from '@/i18n/constants';
+import { STAGING_FIXTURES_ENABLED, STAGING_PUBLISHED_RECORDS } from '@/content/staging-fixtures';
+
+export function getStaticPaths() {
+  const slugs = ['not-published', ...(STAGING_FIXTURES_ENABLED ? STAGING_PUBLISHED_RECORDS.filter((record) => record.recordType === 'story' && record.slug).map((record) => record.slug as string) : [])];
+  return slugs.map((slug) => ({ params: { slug }, props: { locale: 'id' as Locale, currentPath: `/stories/${slug}` } }));
+}
+
+const locale = Astro.props.locale as Locale;
+---
+<CommunityPage kind="story" slug={Astro.params.slug} locale={locale} currentPath={Astro.props.currentPath} />

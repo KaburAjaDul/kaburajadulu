@@ -8,9 +8,23 @@ export const STAGING_FIXTURES_ENABLED = import.meta.env.PUBLIC_STAGING_FIXTURES 
 
 export const STAGING_FIXTURE_VERSION = '2026-08-03.kad-demo.1';
 
+/**
+ * The clock for every deterministic staging record. Keeping this explicit
+ * prevents a fixture from becoming live (or stale) based on the build host's
+ * wall clock.
+ */
+export const STAGING_SCENARIO = {
+  asOf: '2026-08-04T12:00:00+07:00',
+  environment: 'staging',
+  demo: true,
+} as const;
+
+export const STAGING_SCENARIO_CLOCK = STAGING_SCENARIO.asOf;
+
 import type { Locale } from '@/i18n/constants';
 
 export type FixtureState = 'upcoming' | 'live' | 'completed' | 'pending' | 'error' | 'not-published';
+export type EventLifecycleState = Extract<FixtureState, 'upcoming' | 'live' | 'completed'>;
 export type LocalizedText = Readonly<{ id: string; en: string }>;
 
 export function fixtureText(value: LocalizedText, locale: Locale | string): string {
@@ -49,7 +63,8 @@ export interface Event extends FixtureMeta {
   endsAt: string;
   timezone: 'Asia/Jakarta';
   format: 'online';
-  sourceLabel: 'Staging seed';
+  sourceLabel: LocalizedText;
+  method: LocalizedText;
 }
 
 export interface VolunteerProfile extends FixtureMeta {
@@ -72,7 +87,10 @@ export interface EvidenceMetric extends FixtureMeta {
   label: LocalizedText;
   value: string;
   period: LocalizedText;
+  updatedAt: string;
   definition: LocalizedText;
+  sourceLabel: LocalizedText;
+  method: LocalizedText;
 }
 
 export interface OrganizationUnit extends FixtureMeta {
@@ -85,19 +103,58 @@ export interface OrganizationUnit extends FixtureMeta {
 
 export interface AttributionConsent extends FixtureMeta {
   kind: 'attribution-consent';
-  subject: LocalizedText;
-  scope: LocalizedText;
+  subject?: LocalizedText;
+  scope?: LocalizedText;
   status: 'granted-for-demo' | 'anonymous-by-choice' | 'revoked-demo';
 }
 
 export interface PublishedRecord extends FixtureMeta {
   kind: 'published-record';
+  slug?: string;
   title: LocalizedText;
+  summary: LocalizedText;
+  body?: readonly LocalizedText[];
+  publishedDate: string;
+  sourceLabel: LocalizedText;
+  method: LocalizedText;
   recordType: 'event' | 'story' | 'credit';
+}
+
+export function deriveEventLifecycle(
+  event: Pick<Event, 'startsAt' | 'endsAt'>,
+  asOf: string = STAGING_SCENARIO.asOf,
+): EventLifecycleState {
+  const now = Date.parse(asOf);
+  const startsAt = Date.parse(event.startsAt);
+  const endsAt = Date.parse(event.endsAt);
+
+  if (now < startsAt) return 'upcoming';
+  if (now < endsAt) return 'live';
+  return 'completed';
+}
+
+export const eventLifecycle = deriveEventLifecycle;
+
+function deriveSessionLifecycle(
+  session: Pick<Session, 'startsAt' | 'durationMinutes'>,
+  asOf: string = STAGING_SCENARIO.asOf,
+): EventLifecycleState {
+  const startsAt = Date.parse(session.startsAt);
+  return deriveEventLifecycle(
+    {
+      startsAt: session.startsAt,
+      endsAt: new Date(startsAt + session.durationMinutes * 60_000).toISOString(),
+    },
+    asOf,
+  );
 }
 
 const revision = STAGING_FIXTURE_VERSION;
 const meta = <T extends FixtureMeta>(record: T): T => record;
+const eventFixture = <T extends Omit<Event, 'state'>>(record: T): Event => meta({
+  ...record,
+  state: deriveEventLifecycle(record),
+});
 
 export const PREVIEW_FIXTURE: PreviewFixture = meta({
   id: 'demo-preview-fixture-kad-2026',
@@ -127,7 +184,7 @@ export const STAGING_SESSIONS: readonly Session[] = [
   meta({
     id: 'demo-session-mandarin-transport-01',
     kind: 'session',
-    state: 'live',
+    state: 'completed',
     source: 'staging-seed',
     revision,
     demo: true,
@@ -141,10 +198,9 @@ export const STAGING_SESSIONS: readonly Session[] = [
 ];
 
 export const STAGING_EVENTS: readonly Event[] = [
-  meta({
+  eventFixture({
     id: 'demo-event-french-club-01',
     kind: 'event',
-    state: 'upcoming',
     source: 'staging-seed',
     revision,
     demo: true,
@@ -155,12 +211,12 @@ export const STAGING_EVENTS: readonly Event[] = [
     endsAt: '2026-08-08T17:00:00+07:00',
     timezone: 'Asia/Jakarta',
     format: 'online',
-    sourceLabel: 'Staging seed',
+    sourceLabel: { id: 'Catatan jadwal contoh', en: 'Sample schedule record' },
+    method: { id: 'Jadwal contoh untuk uji alur staging.', en: 'Fictional schedule used to test the staging flow.' },
   }),
-  meta({
+  eventFixture({
     id: 'demo-event-mandarin-transport-01',
     kind: 'event',
-    state: 'live',
     source: 'staging-seed',
     revision,
     demo: true,
@@ -171,12 +227,12 @@ export const STAGING_EVENTS: readonly Event[] = [
     endsAt: '2026-08-03T19:45:00+07:00',
     timezone: 'Asia/Jakarta',
     format: 'online',
-    sourceLabel: 'Staging seed',
+    sourceLabel: { id: 'Catatan jadwal contoh', en: 'Sample schedule record' },
+    method: { id: 'Jadwal contoh untuk uji alur staging.', en: 'Fictional schedule used to test the staging flow.' },
   }),
-  meta({
+  eventFixture({
     id: 'demo-event-english-weekly-01',
     kind: 'event',
-    state: 'completed',
     source: 'staging-seed',
     revision,
     demo: true,
@@ -187,7 +243,8 @@ export const STAGING_EVENTS: readonly Event[] = [
     endsAt: '2026-07-25T20:30:00+07:00',
     timezone: 'Asia/Jakarta',
     format: 'online',
-    sourceLabel: 'Staging seed',
+    sourceLabel: { id: 'Catatan jadwal contoh', en: 'Sample schedule record' },
+    method: { id: 'Jadwal contoh untuk uji alur staging.', en: 'Fictional schedule used to test the staging flow.' },
   }),
 ];
 
@@ -210,22 +267,29 @@ export const STAGING_CONTRIBUTIONS: readonly Contribution[] = [
 ];
 
 export const STAGING_METRICS: readonly EvidenceMetric[] = [
-  meta({ id: 'demo-metric-sessions-2026-08', kind: 'evidence-metric', state: 'completed', source: 'staging-seed', revision, demo: true, label: { id: 'Sesi terdokumentasi', en: 'Documented sessions' }, value: '12', period: { id: 'Juli 2026', en: 'July 2026' }, definition: { id: 'Rekaman sesi dengan ringkasan yang ditandai selesai.', en: 'Session records with a recap marked complete.' } }),
-  meta({ id: 'demo-metric-contributors-2026-08', kind: 'evidence-metric', state: 'live', source: 'staging-seed', revision, demo: true, label: { id: 'Kontributor aktif', en: 'Active contributors' }, value: '8', period: { id: 'Siklus contoh 03 · 2026', en: 'Sample cycle 03 · 2026' }, definition: { id: 'Profil contoh dengan kontribusi pada siklus berjalan.', en: 'Sample profiles with work in the current cycle.' } }),
-  meta({ id: 'demo-metric-programs-2026-08', kind: 'evidence-metric', state: 'upcoming', source: 'staging-seed', revision, demo: true, label: { id: 'Program dengan langkah berikutnya', en: 'Programs with a next step' }, value: '3', period: { id: 'Agustus 2026', en: 'August 2026' }, definition: { id: 'Program contoh dengan sesi berikutnya yang disimulasikan.', en: 'Sample programs with a simulated next session.' } }),
+  meta({ id: 'demo-metric-sessions-2026-08', kind: 'evidence-metric', state: 'completed', source: 'staging-seed', revision, demo: true, label: { id: 'Sesi terdokumentasi', en: 'Documented sessions' }, value: '12', period: { id: 'Juli 2026', en: 'July 2026' }, updatedAt: '2026-08-03', definition: { id: 'Rekaman sesi dengan ringkasan yang ditandai selesai.', en: 'Session records with a recap marked complete.' }, sourceLabel: { id: 'Dataset pratinjau', en: 'Preview dataset' }, method: { id: 'Hitung rekaman contoh berstatus selesai.', en: 'Count fictional records marked complete.' } }),
+  meta({ id: 'demo-metric-contributors-2026-08', kind: 'evidence-metric', state: 'live', source: 'staging-seed', revision, demo: true, label: { id: 'Kontributor aktif', en: 'Active contributors' }, value: '8', period: { id: 'Siklus contoh 03 · 2026', en: 'Sample cycle 03 · 2026' }, updatedAt: '2026-08-03', definition: { id: 'Profil contoh dengan kontribusi pada siklus berjalan.', en: 'Sample profiles with work in the current cycle.' }, sourceLabel: { id: 'Dataset pratinjau', en: 'Preview dataset' }, method: { id: 'Hitung profil contoh dengan kontribusi pada siklus.', en: 'Count fictional profiles with a cycle contribution.' } }),
+  meta({ id: 'demo-metric-programs-2026-08', kind: 'evidence-metric', state: 'upcoming', source: 'staging-seed', revision, demo: true, label: { id: 'Program dengan langkah berikutnya', en: 'Programs with a next step' }, value: '3', period: { id: 'Agustus 2026', en: 'August 2026' }, updatedAt: '2026-08-03', definition: { id: 'Program contoh dengan sesi berikutnya yang disimulasikan.', en: 'Sample programs with a simulated next session.' }, sourceLabel: { id: 'Dataset pratinjau', en: 'Preview dataset' }, method: { id: 'Hitung program contoh dengan sesi berikutnya.', en: 'Count fictional programs with a next session.' } }),
 ];
 
 export const STAGING_ATTRIBUTION: readonly AttributionConsent[] = [
   meta({ id: 'demo-consent-nara-01', kind: 'attribution-consent', state: 'completed', source: 'staging-seed', revision, demo: true, subject: { id: 'Nara (fiktif)', en: 'Nara (fictional)' }, scope: { id: 'Nama dan kontribusi simulasi', en: 'Simulated name and contribution' }, status: 'granted-for-demo' }),
   meta({ id: 'demo-consent-anonymous-01', kind: 'attribution-consent', state: 'live', source: 'staging-seed', revision, demo: true, subject: { id: 'Relawan Anonim 1', en: 'Anonymous Volunteer 1' }, scope: { id: 'Kontribusi simulasi tanpa nama', en: 'Simulated contribution without a name' }, status: 'anonymous-by-choice' }),
-  meta({ id: 'demo-consent-revoked-01', kind: 'attribution-consent', state: 'completed', source: 'staging-seed', revision, demo: true, subject: { id: 'Identitas demo ditarik', en: 'Withdrawn demo identity' }, scope: { id: 'Tidak boleh ditampilkan', en: 'Must not be displayed' }, status: 'revoked-demo' }),
+  meta({ id: 'demo-consent-revoked-01', kind: 'attribution-consent', state: 'completed', source: 'staging-seed', revision, demo: true, status: 'revoked-demo' }),
 ];
 
 export const STAGING_PUBLISHED_RECORDS: readonly PublishedRecord[] = [
-  meta({ id: 'demo-record-story-01', kind: 'published-record', state: 'completed', source: 'staging-seed', revision, demo: true, title: { id: 'Catatan belajar dari satu siklus', en: 'Learning notes from one cycle' }, recordType: 'story' }),
-  meta({ id: 'demo-record-credit-01', kind: 'published-record', state: 'completed', source: 'staging-seed', revision, demo: true, title: { id: 'Kredit kontribusi siklus contoh 03', en: 'Sample cycle 03 contribution credit' }, recordType: 'credit' }),
+  meta({ id: 'demo-record-story-01', slug: 'catatan-belajar-satu-siklus', kind: 'published-record', state: 'completed', source: 'staging-seed', revision, demo: true, title: { id: 'Catatan belajar dari satu siklus', en: 'Learning notes from one cycle' }, summary: { id: 'Ringkasan fiktif tentang pelajaran yang bisa dibawa ke siklus berikutnya.', en: 'A fictional recap of lessons to carry into the next cycle.' }, body: [{ id: 'Siklus ini dimulai dari satu kebutuhan kecil: membuat langkah awal program lebih mudah dipahami.', en: 'This cycle began with one small need: making a program’s first step easier to understand.' }, { id: 'Relawan membagi pekerjaan menjadi lingkup yang dapat diselesaikan, mencatat keputusan, lalu menyerahkan konteksnya kepada siklus berikutnya.', en: 'Volunteers divided the work into finishable scopes, recorded decisions, and handed the context to the next cycle.' }, { id: 'Catatan ini menunjukkan bentuk dokumentasi publik yang ringkas tanpa membuka percakapan atau identitas privat.', en: 'This note demonstrates concise public documentation without exposing private conversations or identities.' }], publishedDate: '2026-08-02', sourceLabel: { id: 'Catatan editorial contoh', en: 'Sample editorial record' }, method: { id: 'Disusun sebagai contoh ulasan editorial.', en: 'Prepared as an editorial review example.' }, recordType: 'story' }),
+  meta({ id: 'demo-record-credit-01', kind: 'published-record', state: 'completed', source: 'staging-seed', revision, demo: true, title: { id: 'Kredit kontribusi siklus contoh 03', en: 'Sample cycle 03 contribution credit' }, summary: { id: 'Kredit fiktif yang menunjukkan cara kontribusi dicatat dengan aman.', en: 'A fictional credit showing how contributions can be recorded safely.' }, publishedDate: '2026-08-03', sourceLabel: { id: 'Catatan kredit contoh', en: 'Sample credit record' }, method: { id: 'Dibuat untuk meninjau tampilan kredit publik.', en: 'Created to review the public credit presentation.' }, recordType: 'credit' }),
 ];
 
-export const activeStagingEvents = (): readonly Event[] => STAGING_FIXTURES_ENABLED ? STAGING_EVENTS : [];
-export const stagingEventById = (id: string): Event | undefined => STAGING_FIXTURES_ENABLED ? STAGING_EVENTS.find((event) => event.id === id) : undefined;
-export const stagingSessionByProgramId = (programId: string): Session | undefined => STAGING_FIXTURES_ENABLED ? STAGING_SESSIONS.find((session) => session.programId === programId) : undefined;
+const deriveSessionState = (session: Session): Session => ({ ...session, state: deriveSessionLifecycle(session) });
+const deriveEventState = (event: Event): Event => ({ ...event, state: deriveEventLifecycle(event) });
+
+export const STAGING_SESSIONS_WITH_CLOCK: readonly Session[] = STAGING_SESSIONS.map(deriveSessionState);
+export const STAGING_EVENTS_WITH_CLOCK: readonly Event[] = STAGING_EVENTS.map(deriveEventState);
+
+export const activeStagingEvents = (): readonly Event[] => STAGING_FIXTURES_ENABLED ? STAGING_EVENTS_WITH_CLOCK : [];
+export const stagingEventById = (id: string): Event | undefined => STAGING_FIXTURES_ENABLED ? STAGING_EVENTS_WITH_CLOCK.find((event) => event.id === id) : undefined;
+export const stagingSessionByProgramId = (programId: string): Session | undefined => STAGING_FIXTURES_ENABLED ? STAGING_SESSIONS_WITH_CLOCK.find((session) => session.programId === programId) : undefined;
+export const stagingStoryBySlug = (slug: string): PublishedRecord | undefined => STAGING_FIXTURES_ENABLED ? STAGING_PUBLISHED_RECORDS.find((record) => record.recordType === 'story' && record.slug === slug) : undefined;

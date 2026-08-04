@@ -42,21 +42,21 @@ const DESIGN_PREVIEWS = [
   ['community-atlas', 'Community Atlas'],
 ] as const;
 
-const TASK_HEADERS = [
-  ['/events/', 'operational', 'Agenda tampil', '0'],
-  ['/volunteer/', 'operational', 'Satu siklus', '3 bulan'],
-  ['/stories/', 'evidence', 'Cerita tampil', '0'],
-  ['/about/history/', 'evidence', 'Status', 'Tinjauan bukti'],
-  ['/community/impact/', 'evidence', 'Metrik tampil', '0'],
-  ['/support/', 'proposal', 'Pembayaran aktif', '0'],
-  ['/community/credits/', 'evidence', 'Kontribusi tampil', '0'],
-  ['/events/not-published/', 'record', 'Status', 'Belum dipublikasikan'],
+const SUBPAGE_HEADERS = [
+  ['/events/', 'schedule', 'dalam jadwal publik'],
+  ['/volunteer/', 'volunteer-cycle', 'Siklus 3 bulan'],
+  ['/stories/', 'story-index', 'rekaman cerita terbit'],
+  ['/about/history/', 'history-review', 'Tinjauan bukti'],
+  ['/community/impact/', 'impact-ledger', 'rekaman metrik terbit'],
+  ['/support/', 'support-readiness', 'Belum menerima pembayaran'],
+  ['/community/credits/', 'contribution-ledger', 'Anonim secara bawaan'],
+  ['/events/not-published/', 'event-record', 'Acara ini belum dipublikasikan.'],
 ] as const;
 
 const INFORMATION_FIRST_ROUTES = [
-  ['/events/', 'operational'],
-  ['/volunteer/', 'operational'],
-  ['/stories/', 'evidence'],
+  ['/events/', 'schedule'],
+  ['/volunteer/', 'volunteer-cycle'],
+  ['/stories/', 'story-index'],
 ] as const;
 
 async function expectNoHorizontalOverflow(page: Page) {
@@ -108,21 +108,28 @@ test.describe('route-specific first viewport', () => {
     await expect(page.locator('[data-page-header="task"]')).toHaveCount(0);
   });
 
-  for (const [route, variant, label, value] of TASK_HEADERS) {
-    test(`${route} exposes ${label} in a compact ${variant} header`, async ({ page }) => {
+  test('Community journey entry points are real internal links', async ({ page }) => {
+    await page.goto('/community/', { waitUntil: 'domcontentloaded' });
+    const cards = page.locator('.kad-journey-card');
+    await expect(cards).toHaveCount(3);
+    const hrefs = await cards.locator('a[href]').evaluateAll((anchors) => anchors.map((anchor) => anchor.getAttribute('href')));
+    expect(hrefs).toEqual(['/programs', '/events', '/volunteer']);
+    expect(hrefs.every((href): href is string => typeof href === 'string' && href.startsWith('/') && !href.startsWith('#'))).toBe(true);
+  });
+
+  for (const [route, headerKind, marker] of SUBPAGE_HEADERS) {
+    test(`${route} exposes a page-specific ${headerKind} header`, async ({ page }) => {
       await page.setViewportSize({ width: 1280, height: 720 });
       await page.goto(route, { waitUntil: 'domcontentloaded' });
 
-      const header = page.locator(`[data-page-header="task"][data-header-variant="${variant}"]`);
+      const header = page.locator(`[data-page-header="${headerKind}"]`);
       await expect(header).toHaveCount(1);
       await expect(page.locator('[data-page-header="orientation"]')).toHaveCount(0);
-      await expect(header.locator('.kad-task-header__stats > div')).toHaveCount(3);
-
-      const stat = header.locator('.kad-task-header__stats > div').filter({ hasText: label });
-      await expect(stat).toContainText(value);
-      const statBox = await header.locator('.kad-task-header__stats').boundingBox();
-      expect(statBox, 'status summary must be laid out in the first viewport').not.toBeNull();
-      expect((statBox?.y ?? 721) + (statBox?.height ?? 0)).toBeLessThanOrEqual(720);
+      await expect(page.locator('[data-page-header="task"]')).toHaveCount(0);
+      await expect(header).toContainText(marker);
+      const headerBox = await header.boundingBox();
+      expect(headerBox, 'page-specific header must be laid out in the first viewport').not.toBeNull();
+      expect((headerBox?.y ?? 721) + (headerBox?.height ?? 0)).toBeLessThanOrEqual(720);
       await expectNoHorizontalOverflow(page);
     });
   }
@@ -153,7 +160,7 @@ test.describe('route-specific first viewport', () => {
   });
 
   test.describe('information-first task headers', () => {
-    for (const [route, variant] of INFORMATION_FIRST_ROUTES) {
+    for (const [route, headerKind] of INFORMATION_FIRST_ROUTES) {
       test(`${route} is compact, useful, and contained on desktop and mobile`, async ({ page }) => {
         for (const viewport of [
           { width: 1280, height: 720, maxHeaderHeight: 300, maxTitleSize: 48 },
@@ -162,35 +169,31 @@ test.describe('route-specific first viewport', () => {
           await page.setViewportSize({ width: viewport.width, height: viewport.height });
           await page.goto(route, { waitUntil: 'domcontentloaded' });
 
-          const header = page.locator(`[data-page-header="task"][data-header-variant="${variant}"]`);
+          const header = page.locator(`[data-page-header="${headerKind}"]`);
           await expect(header).toHaveCount(1);
-          await expect(header).toHaveAttribute('data-header-density', 'compact');
           await expect(header.locator('h1')).toBeVisible();
 
           const metrics = await header.evaluate((element) => {
             const title = element.querySelector('h1');
-            const stats = element.querySelector('.kad-task-header__stats');
-            const action = element.querySelector('.kad-task-header__actions a, .kad-task-header__actions button');
+            const summary = element.querySelector('.kad-subpage-intro__aside');
             const rect = element.getBoundingClientRect();
             const titleStyle = title ? getComputedStyle(title) : null;
-            const statsRect = stats?.getBoundingClientRect() ?? null;
-            const actionRect = action?.getBoundingClientRect() ?? null;
             return {
               headerHeight: rect.height,
               titleSize: titleStyle ? Number.parseFloat(titleStyle.fontSize) : 0,
-              statsBottom: statsRect ? statsRect.bottom : 0,
-              actionBottom: actionRect ? actionRect.bottom : 0,
-              statsCount: stats?.querySelectorAll(':scope > div').length ?? 0,
-              actionCount: element.querySelectorAll('.kad-task-header__actions a, .kad-task-header__actions button').length,
+              summaryBottom: summary?.getBoundingClientRect().bottom ?? 0,
+              summaryCount: summary ? 1 : 0,
             };
           });
 
           expect(metrics.headerHeight, `${route} header should stay compact at ${viewport.width}px`).toBeLessThanOrEqual(viewport.maxHeaderHeight);
           expect(metrics.titleSize, `${route} title should not use hero scale at ${viewport.width}px`).toBeLessThanOrEqual(viewport.maxTitleSize);
-          expect(metrics.statsCount, `${route} header should expose its information summary`).toBe(3);
-          expect(metrics.actionCount, `${route} header should expose a useful next action`).toBeGreaterThan(0);
-          expect(metrics.statsBottom, `${route} stats should be visible near the first viewport`).toBeLessThanOrEqual(viewport.height + 16);
-          expect(metrics.actionBottom, `${route} action should be visible near the first viewport`).toBeLessThanOrEqual(viewport.height + 16);
+          expect(metrics.summaryCount, `${route} header should expose its information summary`).toBe(1);
+          expect(metrics.summaryBottom, `${route} summary should be visible near the first viewport`).toBeLessThanOrEqual(viewport.height + 16);
+          const firstAction = page.locator('main a.kad-button').first();
+          await expect(firstAction).toBeVisible();
+          const actionBox = await firstAction.boundingBox();
+          expect(actionBox ? actionBox.y + actionBox.height : Number.POSITIVE_INFINITY, `${route} should expose a useful next action near the first viewport`).toBeLessThanOrEqual(viewport.height + 16);
           await expectNoHorizontalOverflow(page);
         }
       });
@@ -371,6 +374,25 @@ test('program documentation keeps a descriptive fallback when local posters fail
   await expect(records.locator('[data-program-availability]')).toHaveCount(5);
 });
 
+test('program detail puts Discord confirmation before documentation on mobile', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/programs/english-mandarin-weekly-clubs/', { waitUntil: 'domcontentloaded' });
+
+  const confirmation = page.locator('.kad-program-detail-intro__action[href*="discord"]').filter({ hasText: /Konfirmasi di Discord|Confirm on Discord/i });
+  await expect(confirmation).toHaveCount(1);
+  await expect(confirmation).toBeVisible();
+  const confirmationBox = await confirmation.boundingBox();
+  expect(confirmationBox?.y ?? Number.POSITIVE_INFINITY, 'Discord confirmation should appear in the first mobile viewport').toBeLessThan(900);
+
+  await expect(page.locator('.kad-program-documentation')).toHaveCount(1);
+  const precedesDocumentation = await page.evaluate(() => {
+    const action = document.querySelector('.kad-program-detail-intro__action[href*="discord"]');
+    const documentation = document.querySelector('.kad-program-documentation');
+    return action !== null && documentation !== null && Boolean(action.compareDocumentPosition(documentation) & Node.DOCUMENT_POSITION_FOLLOWING);
+  });
+  expect(precedesDocumentation, 'Discord confirmation must precede documentation in DOM order').toBe(true);
+});
+
 test('events begin with an honest zero-count empty state', async ({ page }) => {
   await page.goto('/events/', { waitUntil: 'domcontentloaded' });
   await expect(page.locator('[data-event-count="0"]')).toBeVisible();
@@ -382,7 +404,7 @@ test('events begin with an honest zero-count empty state', async ({ page }) => {
 test('readiness states stay explicit for history, support, credits, and unpublished events', async ({ page }) => {
   const states = [
     ['/about/history/', 'Tinjauan bukti'],
-    ['/support/', 'Belum siap'],
+    ['/support/', 'Belum menerima pembayaran'],
     ['/community/credits/', 'Anonim secara bawaan'],
     ['/events/not-published/', 'Belum dipublikasikan'],
   ] as const;
@@ -427,10 +449,12 @@ test('Arabic routes preserve locale links and RTL composition', async ({ page })
 });
 
 test('production excludes staging fixtures and keeps language fallback explicit', async ({ page }) => {
-  await page.goto('/events/', { waitUntil: 'domcontentloaded' });
-  await expect(page.locator('main')).toHaveAttribute('data-fixtures', 'disabled');
-  await expect(page.locator('[data-fixture-id]')).toHaveCount(0);
-  await expect(page.getByText('Data simulasi', { exact: true })).toHaveCount(0);
+  for (const route of ['/community/', '/events/', '/programs/', '/volunteer/', '/stories/', '/about/history/', '/community/impact/', '/community/credits/', '/support/']) {
+    await page.goto(route, { waitUntil: 'domcontentloaded' });
+    await expect(page.locator('main')).toHaveAttribute('data-fixtures', 'disabled');
+    await expect(page.locator('[data-fixture-id], [data-fixture-revision]')).toHaveCount(0);
+    await expect(page.locator('main')).not.toContainText(/Data simulasi|Demo data|pratinjau|preview records|preview schedule/i);
+  }
 
   await page.goto('/en/programs/', { waitUntil: 'domcontentloaded' });
   await expect(page.locator('main')).toHaveAttribute('lang', 'en');
@@ -494,6 +518,30 @@ test.describe('responsive and motion safeguards', () => {
     await expectNoHorizontalOverflow(page);
   });
 
+  test('representative page families stay within the viewport on desktop and mobile', async ({ page }) => {
+    const routes = [
+      '/',
+      '/community/',
+      '/programs/',
+      '/programs/english-mandarin-weekly-clubs/',
+      '/events/',
+      '/events/not-published/',
+      '/volunteer/',
+      '/stories/',
+      '/about/history/',
+      '/community/impact/',
+      '/support/',
+      '/community/credits/',
+    ];
+    for (const viewport of [{ width: 1280, height: 720 }, { width: 390, height: 844 }]) {
+      await page.setViewportSize(viewport);
+      for (const route of routes) {
+        await page.goto(route, { waitUntil: 'domcontentloaded' });
+        await expectNoHorizontalOverflow(page);
+      }
+    }
+  });
+
   test('the 200% zoom-equivalent viewport remains readable without two-dimensional scrolling', async ({ page }) => {
     await page.setViewportSize({ width: 640, height: 720 });
     await page.goto('/support/', { waitUntil: 'domcontentloaded' });
@@ -505,7 +553,7 @@ test.describe('responsive and motion safeguards', () => {
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.goto('/volunteer/', { waitUntil: 'domcontentloaded' });
     const motion = await page.locator('body').evaluate(() => {
-      const sample = document.querySelector('.kad-card');
+      const sample = document.querySelector('.kad-process-list li');
       if (!sample) return null;
       const style = getComputedStyle(sample);
       return { transitionDuration: style.transitionDuration, animationDuration: style.animationDuration };

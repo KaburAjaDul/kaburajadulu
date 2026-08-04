@@ -68,6 +68,7 @@ const freshnessLabels = {
               <p class="kad-eyebrow">{program.category}</p>
               <h1 id="program-title">{program.title}</h1>
               <p class="kad-program-detail-intro__summary">{program.summary}</p>
+              <a class="kad-button kad-button--primary kad-program-detail-intro__action" href={DISCORD_URL} target="_blank" rel="noopener noreferrer">{isIndonesian ? 'Konfirmasi di Discord' : 'Confirm on Discord'}</a>
             </div>
             <dl class="kad-program-record-meta">
               <div>
@@ -88,6 +89,25 @@ const freshnessLabels = {
               </div>
             </dl>
           </header>
+
+          <section class="kad-program-evidence" aria-label={isIndonesian ? 'Status informasi program' : 'Program information status'}>
+            <article>
+              <p class="kad-eyebrow">{isIndonesian ? 'Dari sumber publik' : 'From the public source'}</p>
+              <h2>{isIndonesian ? 'Yang sudah diketahui' : 'What is known'}</h2>
+              <ul class="kad-check-list">
+                {program.known.map((fact) => <li>{fact}</li>)}
+              </ul>
+              {publicSource?.url && <a class="kad-source-link" href={publicSource.url} target="_blank" rel="noopener noreferrer">{publicSource.label} <span aria-hidden="true">↗</span></a>}
+            </article>
+            <article>
+              <p class="kad-eyebrow">{isIndonesian ? 'Sebelum ikut' : 'Before joining'}</p>
+              <h2>{isIndonesian ? 'Yang perlu dikonfirmasi' : 'What to confirm'}</h2>
+              <ul class="kad-check-list">
+                {program.needsConfirmation.map((item) => <li>{item}</li>)}
+              </ul>
+              <p class="kad-program-confirmation-note">{isIndonesian ? 'Gunakan tombol konfirmasi di atas untuk menanyakan status terbaru.' : 'Use the confirmation action above to ask for the latest status.'}</p>
+            </article>
+          </section>
 
           {program.media.length > 0 && (
             <section class="kad-program-documentation" aria-labelledby="program-documentation-title">
@@ -111,25 +131,6 @@ const freshnessLabels = {
               </div>
             </section>
           )}
-
-          <section class="kad-program-evidence" aria-label={isIndonesian ? 'Status informasi program' : 'Program information status'}>
-            <article>
-              <p class="kad-eyebrow">{isIndonesian ? 'Dari sumber publik' : 'From the public source'}</p>
-              <h2>{isIndonesian ? 'Yang sudah diketahui' : 'What is known'}</h2>
-              <ul class="kad-check-list">
-                {program.known.map((fact) => <li>{fact}</li>)}
-              </ul>
-              {publicSource?.url && <a class="kad-source-link" href={publicSource.url} target="_blank" rel="noopener noreferrer">{publicSource.label} <span aria-hidden="true">↗</span></a>}
-            </article>
-            <article>
-              <p class="kad-eyebrow">{isIndonesian ? 'Sebelum ikut' : 'Before joining'}</p>
-              <h2>{isIndonesian ? 'Yang perlu dikonfirmasi' : 'What to confirm'}</h2>
-              <ul class="kad-check-list">
-                {program.needsConfirmation.map((item) => <li>{item}</li>)}
-              </ul>
-              <a class="kad-button kad-button--primary" href={DISCORD_URL} target="_blank" rel="noopener noreferrer">{isIndonesian ? 'Konfirmasi di Discord' : 'Confirm on Discord'}</a>
-            </article>
-          </section>
         </>
       ) : (
         <section class="kad-program-missing">

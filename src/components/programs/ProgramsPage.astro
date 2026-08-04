@@ -63,7 +63,6 @@ const statusLabels = {
         <div>
           <p class="kad-eyebrow">{isIndonesian ? 'Direktori program' : 'Program directory'}</p>
           <h1 id="programs-page-title">{isIndonesian ? 'Program komunitas' : 'Community programs'}</h1>
-          <p>{description}</p>
         </div>
         <p class="kad-index-intro__record" data-program-count={String(programs.length)}>
           <strong>{programs.length} {isIndonesian ? 'catatan program' : 'program records'}</strong>
@@ -74,7 +73,7 @@ const statusLabels = {
       <section id="catalogue" class="kad-program-index" aria-labelledby="program-catalogue-title" data-program-catalogue>
         <div class="kad-program-index__toolbar">
           <div>
-            <h2 id="program-catalogue-title">{isIndonesian ? 'Pilih berdasarkan kebutuhanmu' : 'Choose by what you need'}</h2>
+            <h2 id="program-catalogue-title">{isIndonesian ? 'Catatan program' : 'Program records'}</h2>
             <p data-program-result-count aria-live="polite">{countLabel}</p>
           </div>
           <nav class="kad-program-filters" aria-label={isIndonesian ? 'Saring program' : 'Filter programs'}>

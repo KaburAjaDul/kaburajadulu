@@ -203,7 +203,7 @@ if (stagingMode) {
   if (!htmlText.includes('data-fixture-id="demo-preview-fixture-kad-2026"')) fail('staging fixture banner marker is missing');
   if (!htmlText.includes('data-fixture-state="upcoming"')) fail('staging event state marker is missing');
   if (!fixtureIdPattern.test(htmlText)) fail('staging fixture IDs are missing');
-  if (!htmlText.includes('Data simulasi') && !htmlText.includes('Demo data')) fail('staging demo label is missing');
+  if (!htmlText.includes('Pratinjau · data contoh') && !htmlText.includes('Preview · sample data')) fail('staging preview disclosure is missing');
   const indexablePages = html
     .filter(([, content]) => !/<meta\s+name=["']robots["']\s+content=["']noindex, nofollow["']/i.test(content))
     .map(([file]) => file);
@@ -213,7 +213,7 @@ if (stagingMode) {
   if (/Data simulasi|Demo data/.test(htmlText)) fail('demo labels leaked into production runtime');
   if (!htmlText.includes('data-event-count="0"')) fail('production empty event count is missing');
   if (!htmlText.includes('data-event-state="empty"')) fail('production empty event state is missing');
-  for (const marker of ['Tinjauan bukti', 'Belum siap', 'Anonim secara bawaan', 'Belum dipublikasikan']) {
+  for (const marker of ['Tinjauan bukti', 'Belum menerima pembayaran', 'Anonim secara bawaan', 'Belum dipublikasikan']) {
     if (!htmlText.includes(marker)) fail(`production readiness marker missing: ${marker}`);
   }
 }

@@ -1,10 +1,10 @@
 # KAD public website page system
 
-Status: legacy page-family context, superseded for Programs by
-`docs/public-content-system/interface-ir.json` and
-`docs/public-content-system/public-content-contract.md`. This document does not approve private Discord
-evidence, disputed history, personal attribution, social-media image reuse, or
-donation collection.
+Status: route-family contract for the agreed redesign. Programs also has a
+deeper public-content contract in `docs/public-content-system/`; this document
+defines the cross-route hierarchy and visual boundary. Nothing here approves
+private Discord evidence, disputed history, personal attribution, social-media
+image reuse, or donation collection.
 
 ## Product intent
 
@@ -56,6 +56,12 @@ states and reject fixture IDs, demo labels, and private identifiers. Staging
 fixture event IDs are generated as static paths only in staging builds.
 Volunteer staging also demonstrates fictional program-based teams and explicit
 handoffs; it never represents the current KAD organization chart.
+
+The staging notice is quiet page metadata. It is a small, text-only status near
+the page introduction (`Data simulasi — hanya untuk review`) with no takeover
+of the hero, no modal, no campaign treatment, and no primary-action styling.
+It appears only when the staging boundary is active and never turns a fixture
+into a production claim.
 
 ## Evidence deconstruction
 
@@ -178,7 +184,8 @@ Expressive gesture: a route-map line connecting the three participation stages.
 - Unknown capacity, recurrence, registration, and archive status are never
   silently converted into `active`.
 
-Expressive gesture: colour-coded index tabs with a source/status rail.
+Expressive gesture: a restrained colour cue on the index and source/status rail;
+filters and result links remain ordinary URL-addressable controls.
 
 ### 4. Program detail `/programs/{slug}`
 
@@ -206,6 +213,8 @@ than copied social artwork.
 - Stale and error states remain textual and distinguishable without colour.
 
 Expressive gesture: a calendar spine that remains useful as an empty scaffold.
+The schedule list owns date, timezone, status, program, source revision, and
+freshness; it does not collapse event detail into a promotional card.
 
 ### 6. Event detail `/events/{id}`
 
@@ -220,7 +229,9 @@ Expressive gesture: a calendar spine that remains useful as an empty scaffold.
   all other IDs remain a normal static 404 until the approved event projection
   owns route generation.
 
-Expressive gesture: document tabs and a clear revision stamp.
+Expressive gesture: document tabs and a clear revision stamp. The record header
+comes first; registration, recap, resources, and calendar export are secondary
+panels. A revoked/tombstoned record remains a neutral withdrawal state.
 
 ### 7. Volunteer `/volunteer`
 
@@ -228,7 +239,9 @@ Expressive gesture: document tabs and a clear revision stamp.
 
 - Anonymous three-month cycle model: intake, program work, handover.
 - Program-based teams and explicit work distribution.
-- Public volunteer intake remains easy to find.
+- Public volunteer intake remains easy to find and is the first actionable path.
+- The current cycle and open work are visible before explanatory narrative;
+  closed or expired opportunities remain labelled rather than silently removed.
 - Attribution is anonymous by default and labelled as a later opt-in feature.
 - No volunteer names or private operational metrics.
 
@@ -242,6 +255,9 @@ Expressive gesture: an operational cycle loop with handover at the seam.
   after editorial approval.
 - History initially renders an evidence-review state and a public correction
   invitation.
+- Story records lead with readable title, excerpt/body, published date, topic,
+  source, revision/freshness, and editorial state; metadata is not hidden behind
+  decorative cards.
 - The final timeline requires dated corroboration, metric definitions, editorial
   ownership, attribution approval, and a correction/revocation path.
 
@@ -258,6 +274,8 @@ claims are approved; the placeholder is a visible evidence checklist.
 - Social reach, Discord membership, role counts, attendance, and volunteer hours
   remain separate measures.
 - Every published figure needs period, source, denominator, and freshness.
+- The metric method (definition, inclusion/exclusion rule, and calculation
+  owner) appears beside any future figure; a pending method blocks the total.
 
 Expressive gesture: an impact ledger rather than a generic dashboard.
 
@@ -268,6 +286,9 @@ Expressive gesture: an impact ledger rather than a generic dashboard.
 - Program continuity, documentation infrastructure, volunteer tooling, and
   safety/moderation are the initial support areas.
 - `How support is governed` precedes any financial action.
+- Governance owner, proposed scope, reporting cadence, accounting boundary, and
+  readiness status precede any ask. Until those are ready, the payment action is
+  unavailable and a contact path is the only next step.
 - Contact/community action is available; payment collection is unavailable.
 - Future donation capability requires owner, reporting cadence, refund policy,
   accounting boundary, and public use-of-funds reporting.
@@ -280,11 +301,26 @@ Expressive gesture: a transparent allocation blueprint with `proposed`, not
 **Job:** attribute work without forcing public identity.
 
 - Initial state explains anonymous-by-default credit.
-- Future cards support chosen display name, role, program, cycle, scope, expiry,
-  and revoked state.
+- Future ledger entries support chosen display name, role, program, cycle, scope,
+  expiry, and opt-in state. A revoked entry stays as a neutral tombstone with no
+  blame language or private identifier.
 - Public credits never expose Discord IDs or private profiles.
 
 Expressive gesture: a contribution ledger with visible consent state.
+
+## Product and developer copy boundary
+
+Product copy describes the visitor's job, current state, consequence, and next
+safe action. It may use `Data simulasi`, `Konfirmasi di Discord`, `Belum
+dipublikasikan`, `Atribusi dicabut`, and `Dukungan belum siap dikumpulkan`.
+
+Developer-only notes include `PUBLIC_STAGING_FIXTURES`, DTO names, projection
+and revision rules, media hashes, validator commands, route IDs, and browser
+assertion details. Keep these in this document, the Interface IR, fixtures, or a
+developer-only overlay; never render them as product headings, labels, or help.
+
+The full evidence inventory, route contract, and unknown list live in
+`docs/interface/full-page-evidence-deconstruction.md`.
 
 ### Existing blog routes
 
@@ -358,6 +394,16 @@ The executable contract must prove:
 - GKS preparation remains a text-only fallback with no program image;
 - 0 public events render in the initial state;
 - event, history, impact, support, and credits show explicit readiness states;
+- staging mode exposes only quiet page metadata and never changes the route's
+  primary task or action hierarchy;
+- Programs exposes catalogue/filter/detail contracts, Events separates
+  schedule/detail hierarchy, Volunteer exposes intake/current cycle/open work,
+  Stories exposes readable record metadata, History exposes traceable evidence,
+  Impact exposes metric provenance/method, Credits exposes opt-in ledger entries
+  and neutral revoked tombstones, and Support exposes governance/readiness before
+  any ask;
+- product copy contains no fixture flags, implementation labels, private IDs, or
+  unsupported proof, while developer notes remain out of rendered UI;
 - all internal routes preserve the locale prefix;
 - no private manifest IDs, private Discord labels, social CDN/private media
   URLs, or third-party GKS media appear in `dist`;
