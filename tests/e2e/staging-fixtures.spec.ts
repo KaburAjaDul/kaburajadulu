@@ -26,10 +26,11 @@ test('event schedule exposes simulated live, upcoming, completed, and detail sta
   await expect(page.locator('[data-state-panel="not-published"]')).toBeVisible();
 });
 
-test('programs expose deterministic next-session modules', async ({ page }) => {
+test('programs keep the catalogue focused instead of adding a staging assistant module', async ({ page }) => {
   await page.goto('/programs/', { waitUntil: 'domcontentloaded' });
-  await expect(page.locator('.kad-session-preview[data-fixture-id]')).toHaveCount(2);
-  await expect(page.getByRole('heading', { name: 'Lihat cara modul jadwal berikutnya bekerja.' })).toBeVisible();
+  await expect(page.locator('[data-page-family="programs"]')).toBeVisible();
+  await expect(page.locator('.kad-session-preview')).toHaveCount(0);
+  await expect(page.getByRole('heading', { name: 'Lihat cara modul jadwal berikutnya bekerja.' })).toHaveCount(0);
 });
 
 test('volunteer staging shows fictional structure and opt-in profiles', async ({ page }) => {

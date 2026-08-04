@@ -1,14 +1,16 @@
 ---
-import CommunityPage from '@/components/community-system/CommunityPage.astro';
-import { PROGRAMS } from '@/content/community-site';
+import ProgramDetailPage from '@/components/programs/ProgramDetailPage.astro';
+import { publicContentRepository } from '@/content/public-content';
 import { type Locale } from '@/i18n/constants';
 
-export function getStaticPaths() {
+export async function getStaticPaths() {
   const locale: Locale = 'id';
-  return PROGRAMS.map((program) => ({ params: { slug: program.slug }, props: { locale, currentPath: `/programs/${program.slug}` } }));
+  const result = await publicContentRepository.listPrograms({ locale });
+  return result.records.map((program) => ({ params: { slug: program.slug }, props: { locale, currentPath: `/programs/${program.slug}` } }));
 }
 
 const { slug } = Astro.params;
 const locale = Astro.props.locale as Locale;
+const program = slug ? await publicContentRepository.getProgram({ locale, slug }) : undefined;
 ---
-<CommunityPage kind="program" slug={slug} locale={locale} currentPath={Astro.props.currentPath} />
+<ProgramDetailPage program={program} locale={locale} currentPath={Astro.props.currentPath} />

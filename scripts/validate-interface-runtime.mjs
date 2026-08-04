@@ -6,7 +6,9 @@ import { fileURLToPath } from 'node:url';
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const distDir = join(root, 'dist');
 const irPath = join(root, 'docs/interface/kad-community-interface.ir.json');
+const publicContentIrPath = join(root, 'docs/public-content-system/interface-ir.json');
 const programFixturePath = join(root, 'src/content/community-site.ts');
+const publicContentPath = join(root, 'src/content/public-content.ts');
 const stagingFixturePath = join(root, 'src/content/staging-fixtures.ts');
 const stagingMode = process.env.PUBLIC_STAGING_FIXTURES === 'true';
 
@@ -67,16 +69,20 @@ function fail(message) {
   process.exitCode = 1;
 }
 
-const [irRaw, programFixture, stagingFixture, distStat] = await Promise.all([
+const [irRaw, publicContentIrRaw, programFixture, publicContentSource, stagingFixture, distStat] = await Promise.all([
   readFile(irPath, 'utf8'),
+  readFile(publicContentIrPath, 'utf8'),
   readFile(programFixturePath, 'utf8'),
+  readFile(publicContentPath, 'utf8'),
   readFile(stagingFixturePath, 'utf8'),
   stat(distDir).catch(() => null),
 ]);
 
 let ir;
+let publicContentIr;
 try {
   ir = JSON.parse(irRaw);
+  publicContentIr = JSON.parse(publicContentIrRaw);
 } catch (error) {
   fail(`invalid IR JSON: ${error instanceof Error ? error.message : String(error)}`);
   process.exit(1);
@@ -114,17 +120,53 @@ const irChecks = [
 ];
 for (const [label, passed] of irChecks) if (!passed) fail(`IR missing ${label}`);
 
+const publicContentChecks = [
+  ['kind=interface-ir', publicContentIr.kind === 'interface-ir'],
+  ['schema_version=1.0', publicContentIr.schema_version === '1.0'],
+  ['category filter component', publicContentIr.components?.some((component) => component.id === 'category_filter')],
+  ['program list component', publicContentIr.components?.some((component) => component.id === 'program_list')],
+  ['program detail component', publicContentIr.components?.some((component) => component.id === 'program_detail')],
+  ['needs-confirmation initial state', publicContentIr.states?.some((state) => state.id === 'program_status' && state.initial === 'needs-confirmation')],
+  ['repository interface', publicContentSource.includes('interface PublicContentRepository')],
+  ['public DTO schema version', publicContentSource.includes('schemaVersion: 1')],
+  ['public provenance field', publicContentSource.includes('publicProvenance')],
+  ['repository result lifecycle', publicContentSource.includes("RepositoryState = 'loading' | 'ready' | 'empty' | 'stale' | 'error'")],
+  ['public projection excludes Discord fields', !/discord(?:Id|_id|Message|Channel)|consent(?:Id|_id)|authority(?:Id|_id)/.test(publicContentSource)],
+];
+for (const [label, passed] of publicContentChecks) if (!passed) fail(`public content contract missing ${label}`);
+
 const files = await walk(distDir);
 const runtimeFiles = files.filter((file) => /\.(?:html|js|css|json)$/i.test(file));
 const runtime = new Map();
 for (const file of runtimeFiles) runtime.set(relative(distDir, file), await readFile(file, 'utf8'));
 const html = [...runtime.entries()].filter(([file]) => file.endsWith('.html'));
 const htmlText = html.map(([, content]) => content).join('\n');
+const programsHtml = runtime.get('programs/index.html') ?? '';
+const languageProgramsHtml = runtime.get('programs/category/language/index.html') ?? '';
+const careerProgramsHtml = runtime.get('programs/category/career/index.html') ?? '';
+const weeklyDetailHtml = runtime.get('programs/english-mandarin-weekly-clubs/index.html') ?? '';
+const staleProgramsHtml = runtime.get('design-preview/programs/stale/index.html') ?? '';
+const errorProgramsHtml = runtime.get('design-preview/programs/error/index.html') ?? '';
 
 for (const route of requiredRoutes) {
   const file = route === '/' ? 'index.html' : `${route.replace(/^\//, '').replace(/\/$/, '')}/index.html`;
   if (!runtime.has(file)) fail(`required route missing from dist: ${route} (${file})`);
 }
+
+const programRuntimeChecks = [
+  ['Programs page family', programsHtml.includes('data-page-family="programs"')],
+  ['five public Program records', (programsHtml.match(/<li data-program-record/g) ?? []).length === 5],
+  ['five needs-confirmation labels', (programsHtml.match(/data-program-availability="needs_confirmation"/g) ?? []).length === 5],
+  ['three URL category filters', (programsHtml.match(/data-program-filter="/g) ?? []).length === 3],
+  ['language category route', (languageProgramsHtml.match(/<li data-program-record/g) ?? []).length === 3],
+  ['career category route', (careerProgramsHtml.match(/<li data-program-record/g) ?? []).length === 2],
+  ['no repeated task header', !programsHtml.includes('data-page-header="task"')],
+  ['Program detail family', weeklyDetailHtml.includes('data-page-family="program-detail"')],
+  ['Program detail known/confirmation split', weeklyDetailHtml.includes('Yang sudah diketahui') && weeklyDetailHtml.includes('Yang perlu dikonfirmasi')],
+  ['stale lifecycle route', staleProgramsHtml.includes('data-repository-state="stale"') && staleProgramsHtml.includes('data-freshness="stale"')],
+  ['recoverable error route', errorProgramsHtml.includes('data-repository-state="error"') && errorProgramsHtml.includes('Coba lagi')],
+];
+for (const [label, passed] of programRuntimeChecks) if (!passed) fail(`Programs runtime missing ${label}`);
 
 const sourceMatches = [...new Set(canonicalProgramSources.filter((source) => htmlText.includes(source)))];
 if (sourceMatches.length !== canonicalProgramSources.length) {

@@ -43,7 +43,6 @@ const DESIGN_PREVIEWS = [
 ] as const;
 
 const TASK_HEADERS = [
-  ['/programs/', 'catalogue', 'Program publik', '5'],
   ['/events/', 'operational', 'Agenda tampil', '0'],
   ['/volunteer/', 'operational', 'Satu siklus', '3 bulan'],
   ['/stories/', 'evidence', 'Cerita tampil', '0'],
@@ -51,12 +50,10 @@ const TASK_HEADERS = [
   ['/community/impact/', 'evidence', 'Metrik tampil', '0'],
   ['/support/', 'proposal', 'Pembayaran aktif', '0'],
   ['/community/credits/', 'evidence', 'Kontribusi tampil', '0'],
-  ['/programs/french-club-trial/', 'record', 'Poster publik', '1'],
   ['/events/not-published/', 'record', 'Status', 'Belum dipublikasikan'],
 ] as const;
 
 const INFORMATION_FIRST_ROUTES = [
-  ['/programs/', 'catalogue'],
   ['/events/', 'operational'],
   ['/volunteer/', 'operational'],
   ['/stories/', 'evidence'],
@@ -133,10 +130,26 @@ test.describe('route-specific first viewport', () => {
   test('Programs exposes real category controls at the start of the catalogue', async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 720 });
     await page.goto('/programs/', { waitUntil: 'domcontentloaded' });
-    const filters = page.locator('.kad-filter-row--content');
+    const filters = page.locator('.kad-program-filters');
     await expect(filters.getByRole('link')).toHaveCount(3);
     const box = await filters.boundingBox();
     expect((box?.y ?? 721) + (box?.height ?? 0)).toBeLessThanOrEqual(720);
+  });
+
+  test('Programs catalogue and detail keep task-scale headings', async ({ page }) => {
+    for (const route of ['/programs/', '/programs/english-mandarin-weekly-clubs/']) {
+      for (const viewport of [
+        { width: 1280, height: 720, maxTitleSize: 48 },
+        { width: 390, height: 844, maxTitleSize: 43 },
+      ]) {
+        await page.setViewportSize({ width: viewport.width, height: viewport.height });
+        await page.goto(route, { waitUntil: 'domcontentloaded' });
+        const title = page.locator('main h1');
+        const titleSize = await title.evaluate((element) => Number.parseFloat(getComputedStyle(element).fontSize));
+        expect(titleSize, `${route} should use task-scale type at ${viewport.width}px`).toBeLessThanOrEqual(viewport.maxTitleSize);
+        await expectNoHorizontalOverflow(page);
+      }
+    }
   });
 
   test.describe('information-first task headers', () => {
@@ -215,22 +228,20 @@ test.describe('staging landing direction review', () => {
   });
 });
 
-test('program catalogue renders five source-backed cards with explicit status', async ({ page }) => {
+test('program catalogue uses an information-first index backed by public records', async ({ page }) => {
   await page.goto('/programs/', { waitUntil: 'domcontentloaded' });
 
-  const cards = page.locator('.kad-program-card');
-  await expect(cards).toHaveCount(5);
-  const categoryAnchorIds = await cards.evaluateAll((elements) =>
-    elements.map((element) => element.id).filter(Boolean),
-  );
-  expect(new Set(categoryAnchorIds).size).toBe(categoryAnchorIds.length);
-  expect(categoryAnchorIds.sort()).toEqual(['career', 'language']);
-  await expect(cards.locator('.kad-status')).toHaveCount(5);
-  expect(await cards.locator('.kad-status').allTextContents()).toEqual(
-    new Array(5).fill('Konfirmasi di Discord'),
+  await expect(page.locator('[data-page-family="programs"]')).toBeVisible();
+  await expect(page.locator('[data-page-header="task"]')).toHaveCount(0);
+  await expect(page.locator('[data-program-count="5"]')).toBeVisible();
+  const records = page.locator('[data-program-record]');
+  await expect(records).toHaveCount(5);
+  await expect(records.locator('[data-program-availability="needs_confirmation"]')).toHaveCount(5);
+  expect(await records.locator('[data-program-availability="needs_confirmation"]').allTextContents()).toEqual(
+    new Array(5).fill('Konfirmasi terbaru diperlukan'),
   );
 
-  const links = cards.locator(`a[href^="https://x.com/KADSocialHub/status/"]`);
+  const links = records.locator(`a[href^="https://x.com/KADSocialHub/status/"]`);
   await expect(links).toHaveCount(5);
   expect(await links.evaluateAll((anchors) => anchors.map((anchor) => (anchor as HTMLAnchorElement).href))).toEqual(
     expect.arrayContaining(PROGRAM_SOURCES),
@@ -242,8 +253,8 @@ test('program catalogue renders five source-backed cards with explicit status', 
 test('program posters use meaningful local media with loading metadata and dimensions', async ({ page }) => {
   await page.goto('/programs/', { waitUntil: 'networkidle' });
 
-  const cards = page.locator('.kad-program-card');
-  const posterImages = cards.locator('img');
+  const records = page.locator('[data-program-record]');
+  const posterImages = records.locator('img');
   await expect(posterImages).toHaveCount(4);
 
   const posterMetadata = await posterImages.evaluateAll((images) => images.map((image) => {
@@ -274,15 +285,60 @@ test('program posters use meaningful local media with loading metadata and dimen
   expect(weeklyEnglish?.alt).toContain('English Study Club');
 });
 
+test('category filters are URL-addressable and update the visible result count', async ({ page }) => {
+  await page.goto('/programs/category/language/#catalogue', { waitUntil: 'domcontentloaded' });
+  await expect(page.locator('[data-program-filter="language"]')).toHaveAttribute('aria-current', 'page');
+  await expect(page.locator('[data-program-record]')).toHaveCount(3);
+  await expect(page.locator('[data-program-result-count]')).toContainText('3 program');
+
+  await page.locator('[data-program-filter="career"]').click();
+  await expect(page).toHaveURL(/\/programs\/category\/career\/?#catalogue$/);
+  await expect(page.locator('[data-program-record]')).toHaveCount(2);
+  await expect(page.locator('[data-program-result-count]')).toContainText('2 program');
+});
+
+test('category filtering remains functional without JavaScript', async ({ browser }) => {
+  const context = await browser.newContext({ javaScriptEnabled: false });
+  const page = await context.newPage();
+  await page.goto('/programs/category/language/#catalogue', { waitUntil: 'domcontentloaded' });
+  await expect(page.locator('[data-program-record]')).toHaveCount(3);
+  await expect(page.locator('[data-program-filter="language"]')).toHaveAttribute('aria-current', 'page');
+  const careerFilter = page.locator('[data-program-filter="career"]');
+  await careerFilter.focus();
+  await careerFilter.press('Enter');
+  await expect(page).toHaveURL(/\/programs\/category\/career\/?#catalogue$/);
+  await expect(page.locator('[data-program-record]')).toHaveCount(2);
+  await context.close();
+});
+
+test('Programs lifecycle previews expose loading, empty, stale, and recoverable error states', async ({ page }) => {
+  const states = ['loading', 'empty', 'stale', 'error'] as const;
+  for (const state of states) {
+    await page.goto(`/design-preview/programs/${state}/`, { waitUntil: 'domcontentloaded' });
+    await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', 'noindex, nofollow');
+    await expect(page.locator('main')).toHaveAttribute('data-repository-state', state);
+  }
+
+  await page.goto('/design-preview/programs/stale/', { waitUntil: 'domcontentloaded' });
+  await expect(page.locator('[data-freshness="stale"]').first()).toBeVisible();
+  await expect(page.locator('[data-program-record]')).toHaveCount(5);
+
+  await page.goto('/design-preview/programs/error/', { waitUntil: 'domcontentloaded' });
+  await expect(page.locator('[data-state-panel="error"]')).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Coba lagi' })).toHaveAttribute('href', '/design-preview/programs/error');
+});
+
 test('GKS remains a text-only fallback and English + Mandarin detail has two posters', async ({ page }) => {
   await page.goto('/programs/', { waitUntil: 'domcontentloaded' });
-  const gksCard = page.locator('.kad-program-card').filter({ hasText: 'GKS preparation' });
+  const gksCard = page.locator('[data-program-record]').filter({ hasText: 'GKS preparation' });
   await expect(gksCard).toHaveCount(1);
   await expect(gksCard.locator('img')).toHaveCount(0);
   await expect(gksCard.locator('.kad-source-link')).toHaveCount(1);
-  await expect(gksCard.locator('.kad-status')).toContainText('Konfirmasi di Discord');
+  await expect(gksCard.locator('[data-program-availability]')).toContainText('Konfirmasi terbaru diperlukan');
 
   await page.goto('/programs/english-mandarin-weekly-clubs/', { waitUntil: 'networkidle' });
+  await expect(page.locator('[data-page-family="program-detail"]')).toBeVisible();
+  await expect(page.locator('[data-page-header="task"]')).toHaveCount(0);
   const gallery = page.locator('.kad-program-gallery');
   await expect(gallery).toHaveCount(1);
   const galleryImages = gallery.locator('img');
@@ -308,11 +364,11 @@ test('program documentation keeps a descriptive fallback when local posters fail
   await page.route('**/images/programs/*.webp', (route) => route.abort());
   await page.goto('/programs/', { waitUntil: 'networkidle' });
 
-  const cards = page.locator('.kad-program-card');
-  await expect(cards).toHaveCount(5);
-  await expect(cards.locator('.kad-media-fallback:visible')).toHaveCount(4);
-  await expect(cards.locator('.kad-source-link')).toHaveCount(5);
-  await expect(cards.locator('.kad-status')).toHaveCount(5);
+  const records = page.locator('[data-program-record]');
+  await expect(records).toHaveCount(5);
+  await expect(records.locator('.kad-media-fallback:visible')).toHaveCount(4);
+  await expect(records.locator('.kad-source-link')).toHaveCount(5);
+  await expect(records.locator('[data-program-availability]')).toHaveCount(5);
 });
 
 test('events begin with an honest zero-count empty state', async ({ page }) => {
@@ -380,7 +436,7 @@ test('production excludes staging fixtures and keeps language fallback explicit'
   await expect(page.locator('main')).toHaveAttribute('lang', 'en');
   await expect(page.getByRole('heading', { name: 'Community programs' })).toBeVisible();
   await expect(page.getByText('Sumber publik di X', { exact: true })).toHaveCount(0);
-  await expect(page.locator('.kad-program-card').first()).toContainText('Public source on X');
+  await expect(page.locator('[data-program-record]').first()).toContainText('Public source on X');
 
   await page.goto('/ja/community/', { waitUntil: 'domcontentloaded' });
   await expect(page.locator('html')).toHaveAttribute('lang', 'ja');

@@ -1,7 +1,8 @@
 # KAD public website page system
 
-Status: design contract for the clean redesign branch. This document defines
-the page experience before implementation. It does not approve private Discord
+Status: legacy page-family context, superseded for Programs by
+`docs/public-content-system/interface-ir.json` and
+`docs/public-content-system/public-content-contract.md`. This document does not approve private Discord
 evidence, disputed history, personal attribution, social-media image reuse, or
 donation collection.
 
@@ -84,7 +85,9 @@ corporate SaaS dashboard or a generic dark community template.
 - Caveat is decorative: annotations, arrows, and short labels only.
 - Page max width is 1240px; readable prose max width is 720px.
 - Cards use 20–32px radii. Interactive controls remain pill-shaped.
-- Section spacing is 72px mobile and 112px desktop.
+- Section spacing follows the page task: compact operational and catalogue
+  surfaces use denser 32–72px intervals; expressive landing sections may use
+  72–112px intervals.
 - Shadows indicate a clickable or floating layer, never simple grouping.
 
 ### Composition
@@ -117,8 +120,9 @@ Runtime compactness contract:
   and `36px`;
 - desktop header padding stays between `28px` and `36px`; mobile uses
   `24px 16px 20px`;
-- title, task summary, three status facts, primary action, and route-specific
-  controls appear before decorative or explanatory modules;
+- title, task summary, and route-specific controls appear before decorative or
+  explanatory modules; counts or status facts appear only when they help the
+  page's primary task;
 - page-family colour is a thin status cue, not a full landing-page scene;
 - `/community` remains the only inner route with an orientation hero.
 
@@ -159,8 +163,9 @@ Expressive gesture: a route-map line connecting the three participation stages.
 
 **Job:** help someone find a recurring learning or career activity.
 
-- Filter chips are real URL anchors, not client-only decorative tabs.
-- Program cards expose category, source, current certainty, and the next action.
+- Category filters are ordinary, URL-addressable links rather than decorative tabs.
+- Program records use an editorial index with category, source, current
+  certainty, and the next action; they are not forced into a repeated card grid.
 - Initial source-backed set: French trial, Mandarin Transport, Apple Developer
   Academy session, English + Mandarin weekly clubs, and GKS preparation.
 - Five approved local posters are required: French trial, Mandarin Transport,
