@@ -1,18 +1,19 @@
 ---
-import { PREVIEW_FIXTURE, STAGING_FIXTURES_ENABLED, STAGING_FIXTURE_VERSION } from '@/content/staging-fixtures';
+import { PREVIEW_FIXTURE, STAGING_FIXTURE_VERSION, stagingFixturesEnabled } from '@/content/staging-fixtures';
 
 interface Props {
   locale?: string;
 }
 
 const { locale = 'id' } = Astro.props;
+const fixturesEnabled = stagingFixturesEnabled();
 const label = locale === 'id' ? 'Pratinjau · data contoh' : 'Preview · sample data';
 const detail = locale === 'id'
   ? 'Nama, angka, dan jadwal pada halaman ini bersifat fiktif dan tidak menggambarkan aktivitas KAD saat ini.'
   : 'Names, numbers, and schedules on this page are fictional and do not describe current KAD activity.';
 ---
 
-{STAGING_FIXTURES_ENABLED && (
+{fixturesEnabled && (
   <aside class="kad-demo-banner" data-fixture-id={PREVIEW_FIXTURE.id} data-fixture-state={PREVIEW_FIXTURE.state} data-fixture-version={STAGING_FIXTURE_VERSION} role="note">
     <details>
       <summary>{label}</summary>

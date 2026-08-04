@@ -1,89 +1,77 @@
 # KAD full-page evidence deconstruction
 
-This document is the route-family contract for the agreed redesign. It records
-what is observed in the current site, what is inferred for the redesign, and
-what remains unknown. It is an evidence boundary, not a claim that private
-Discord operations are public or that staging fixtures are real activity.
+This is the evidence ledger for the current information-system slice. It keeps
+observations, inferences, and unknowns separate so a future Discord/KAD-Agent
+projection can replace fixtures without changing the page jobs.
 
-## Audience and success condition
+## Evidence table
 
-The audience is a person deciding whether to join, attend, help, read, verify,
-or support KaburAjaDulu. A successful page lets that person identify the route's
-job, current certainty, and next safe action in the first viewport. Community is
-the only route allowed an expressive orientation treatment.
-
-## Evidence inventory
-
-| ID | Source | Status | Use | Boundary |
+| Evidence | Status | Observation | Transferable rule | Implementation boundary |
 | --- | --- | --- | --- | --- |
-| E-01 | `src/components/community-system/CommunityPage.astro` | observed | Existing shared composition and route data | Do not force one visual template onto every page family |
-| E-02 | `src/components/community-system/TaskHeader.astro` | observed | Compact title, summary, status facts, and action pattern | Status facts are route-specific, not a universal metric row |
-| E-03 | `src/content/community-site.ts` | observed | Five public program records, source links, certainty, and local media | Keep known facts and confirmation questions separate |
-| E-04 | `src/content/staging-fixtures.ts` | observed | Deterministic preview lifecycle and demo boundary | Never expose fixture IDs or demo claims in production |
-| E-05 | `docs/public-content-system/public-content-contract.md` | inferred | Public record envelope, revision, freshness, provenance, and tombstones | A future API must publish sanitized records only |
-| E-06 | User information-first review, 2026-08-04 | observed | Inner pages lead with task information and actions | Decorative hierarchy cannot outrank the route job |
-| E-07 | Existing production screenshots and styles | observed | White paper, cobalt actions, rounded media, playful annotation | Preserve visual character without reusing comparison-only captures |
-| E-08 | Private Discord/KAD-Agent operational evidence | unknown for publication | Explains why events, history, impact, and attribution need approval | No private IDs, messages, counts, names, or media cross the boundary |
+| `docs/superpowers/specs/2026-08-04-kad-community-information-system-design.md` | observed | The approved model is Program → optional Series → Session; Agenda combines Sessions and standalone Events; volunteer work is represented by a consent-led Contribution Ledger. | Name the domain relationship before choosing a card or route. | The Astro content adapter must expose these relationships directly. |
+| `src/components/community-system/CommunityOverviewPage.astro` | observed | Community renders five ordered regions: current, programs, agenda, people, sources. | Orientation is useful when it is ordered around decisions, not a second catalogue. | Runtime checks must compare `data-community-section` sequence, not just heading copy. |
+| `src/components/programs/ProgramsPage.astro` and `ProgramDetailPage.astro` | observed | Program directory and detail surfaces expose structure, status, Series/Sessions, metrics, contributors, and evidence. | Catalogue rows answer “what is this?”; detail answers “how does it work?” | Do not fabricate a repository or replace optional Series with a forced card. |
+| `src/components/community-system/AgendaPage.astro` | observed | Agenda rows expose kind, lifecycle, date/time, timezone, revision/freshness, detail link, and safe Discord action. | Scheduled information needs an explicit time/status/join path trio. | `/events` remains the compatibility route while the public label is Agenda. |
+| `src/components/community-system/VolunteerDirectoryPage.astro` | observed | The index exposes Cycle, four Positions, seven Divisions, openings, people, and consent boundary. | Organization structure precedes people names and avoids a leaderboard. | Staging selectors prove counts; production may render a policy placeholder. |
+| `src/components/community-system/VolunteerDetailPage.astro` | observed | A profile shows visibility, assignments, Program-grouped contributions, responsibility, evidence, review state, and future verification copy. | Individual pages show attributed work, not Program-wide success. | No identity claim or secret verification token enters public output without opt-in/owner action. |
+| `src/components/community-system/StoriesPage.astro` | observed | Stories carry a body, date, publication state, and related record links. | Documentation adds context but does not replace live Agenda or the ledger. | Story links must remain ordinary anchors and production-safe. |
+| `src/content/staging-fixtures.ts` | observed | Staging is deterministic, marked `demo: true`, and selected only when `PUBLIC_STAGING_FIXTURES=true`. | Fictional records can exercise hierarchy when their boundary is obvious. | Every generated staging page is noindex; selectors must never be emitted in production. |
+| `src/content/public-content.ts` | observed | Production DTOs retain source, revision, freshness, review, and media safety fields. | Unknown publication state is data, not a missing UI detail. | Render Evidence Placeholder/pending/empty states instead of invented facts. |
+| `docs/adr/0003-project-discord-events-through-kad-agent.md` | observed | The future live path is private authority → reviewed public projection; the website does not scrape Discord. | Integrations should preserve a public contract and an explicit authority boundary. | This release validates the projection shape only; bot, D1, R2, and auth are out of scope. |
+| `tests/e2e/community-design.spec.ts` and `tests/e2e/staging-fixtures.spec.ts` | observed | Browser gates exercise route semantics, responsive states, localization, and fixture leakage. | Static output checks must be paired with real browser interaction. | Runtime guard reports build-level mismatches; Playwright remains the behavior gate. |
+| Prior Field Notes visual reference | inferred | The landing page can use a stronger visual treatment, but inner routes need density and information first. | Reserve visual drama for orientation; use compact task headers for records. | Inner-page contracts cap heading size and forbid universal hero fragments. |
+| Private Discord channels and screenshots | unknown | Private operations may contain useful event/role context, but they are not public evidence. | Treat private material as context only and replace it with safe public labels. | No private channel URL, message ID, media CDN URL, or consent authority field may enter the build. |
 
-## Route-family contract
+## Capability traceability
 
-| Route | User job | First viewport must show | Required state/evidence | Expressive allowance |
-| --- | --- | --- | --- | --- |
-| `/community` | Understand what KAD can publicly prove and where to participate | Compact orientation, qualified pulse, five program records, activity state, opt-in people boundary, join action | Five source-backed programs are public; people, events, contributions, and metrics are fictional in staging until an approved projection exists | Flat editorial ledger and text monograms |
-| `/programs` | Find a suitable activity | Catalogue count, category filter, certainty, source, next action | Loading, empty, stale, and error guidance | Editorial index accents only |
-| `/programs/{slug}` | Decide whether to follow one program | Record title, known/confirm split, availability, source, next action | Source revision/freshness and media fallback | CSS marker; no landing hero |
-| `/events` | Check the public schedule | Date spine, timezone, status, program, source revision | Empty first; future loading/upcoming/live/completed/stale/error | Calendar spine remains an information scaffold |
-| `/events/{id}` | Read one approved event record | Time/status, summary, registration, revision, corrections | `not-published` and pending remain explicit; tombstones win | Document tabs only after record metadata |
-| `/volunteer` | Find how to help now | Intake path, current cycle, open work, handover expectation | Anonymous-by-default attribution and explicit cycle state | Operational cycle loop |
-| `/stories` | Read an approved community record | Title, excerpt, published date, topic, source, editorial state | Readable body, freshness, correction/withdrawal path | Editorial rhythm, not campaign proof |
-| `/about/history` | Assess whether a historical claim is ready | Evidence-review status, sources, owner, correction invitation | Pending/approved/revoked claim state | Timeline stays hidden until corroborated |
-| `/community/impact` | Understand what a metric means | Metric definition, period, denominator, method, source, freshness | Pending contract before totals; stale/error are distinct | Ledger, never an unexplained dashboard |
-| `/community/credits` | Inspect contribution attribution | Opt-in scope, display name, role, cycle, expiry, status | Revoked entries render as neutral tombstones; no private IDs | Contribution ledger |
-| `/support` | Evaluate support readiness | Governance, proposed scope, owner, reporting cadence, readiness | Ask is unavailable until finance and use-of-funds policy are ready | Allocation blueprint labelled `proposed` |
+| Capability | Runtime primitive | Executable check |
+| --- | --- | --- |
+| Route navigation | Native `<a>` links and Astro routes | Playwright route smoke; runtime route inventory |
+| Community order | `data-community-section` sequence | Runtime exact-order assertion and staging/production e2e |
+| Optional Series | `data-program-series` plus direct-session markers | Program staging e2e and runtime count check |
+| Agenda union | `data-agenda-kind`, `data-agenda-state`, join anchors | Agenda e2e and runtime kind/join counts |
+| Volunteer organization | `data-volunteer-cycle`, position/division/opening selectors | Volunteer e2e and runtime count check |
+| Consent-ledger boundary | `data-visibility`, profile/ledger selectors, future-verification copy | Privacy e2e and forbidden-field scan |
+| Publication readiness | `data-evidence-placeholder`, state markers, source fields | Production runtime guard and placeholder assertions |
+| Staging boundary | `data-fixtures`, demo markers, robots metadata | Fixture leakage scan and noindex assertion |
+| Responsive recomposition | CSS media rules, stable DOM order | 1280×720 and 390×844 screenshots/overflow checks |
+| Reduced motion | `prefers-reduced-motion` CSS behavior | Playwright reduced-motion run |
 
-The staging notice is quiet page metadata: a small text status adjacent to the
-page introduction, never a hero, modal, promotional banner, or primary action.
-It may explain that deterministic records are fictional and noindex, but it
-must not compete with the route's task.
+## Route/state coverage
 
-## Product/developer boundary
+The required scenarios are contextual, not generic labels:
 
-Product copy names the user's task, state, consequence, and recovery path. It
-may say `Data simulasi`, `Konfirmasi di Discord`, `Belum dipublikasikan`,
-`Atribusi dicabut`, or `Dukungan belum siap dikumpulkan`. It must not mention
-component names, fixture flags, route implementation, screenshot review, or
-database topology.
+| Scenario | Route/state | Viewport | Expected reading path |
+| --- | --- | --- | --- |
+| `community-production-empty` | `/community`, fixtures disabled | 1280×720 and 390×844 | KAD saat ini → placeholder/current → Programs → Agenda → people boundary → sources |
+| `community-staging-qualified` | `/community`, fixtures enabled | 1280×720 and 390×844 | fictional notice → three metrics → five Programs → 4 Agenda preview items → profiles/stubs |
+| `programs-production` | `/programs`, verified catalogue boundary | 1280×720 | compact header → five public records → filter/source actions |
+| `program-japanese-staging` | `/programs/japanese-study-club`, fixture | 1280×720 and 390×844 | purpose → three Series → Sessions → four metrics → contributors/evidence |
+| `program-english-staging` | `/programs/english-study-club`, fixture | 390×844 | purpose → direct Sessions (no Series) → metrics/evidence |
+| `agenda-production-empty` | `/events`, fixtures disabled | 1280×720 and 390×844 | Agenda header → empty state → safe Discord confirmation |
+| `agenda-staging-mixed` | `/events`, fixture | 1280×720 and 390×844 | dated rows → three Sessions + one Event → status/time/join |
+| `agenda-detail-staging` | `/events/{id}`, fixture | 390×844 | kind/status → time/timezone → relationship → revision → join |
+| `volunteer-staging-directory` | `/volunteer`, fixture | 1280×720 and 390×844 | Cycle → positions → divisions → openings → people → consent |
+| `volunteer-profile-staging` | `/volunteer/{slug}`, fixture | 390×844 | visibility → assignments → Program-grouped ledger → review/evidence → future link boundary |
+| `stories-production-empty` | `/stories`, fixtures disabled | 1280×720 and 390×844 | documentation header → empty/publication gate |
+| `stories-staging-detail` | `/stories/{slug}`, fixture | 390×844 | story body → date/review → related records → source/back link |
 
-Developer copy belongs in this document, the Interface IR, test fixtures, or an
-explicit developer-only overlay. Examples include `PUBLIC_STAGING_FIXTURES`,
-DTO/revision terminology, canonical validator commands, private-to-public
-projection rules, and media hashes. These notes are not customer-facing copy.
+## Unknowns kept open
 
-## Unknowns and release blockers
+- The live Agenda projection, freshness rules, and Discord event mapping are
+  not yet implemented. The current adapter deliberately renders only fixture
+  records or an honest empty state.
+- Program metrics and contribution evidence are manually attested in this
+  release. Automated attendance, social, repository, voice, and observability
+  integrations require separate approval.
+- Public identity consent and future recruiter verification are modelled as
+  boundaries, not as authentication or token flows.
+- Production history, public milestone numbers, and volunteer identities remain
+  unpublished until source and consent review is complete.
 
-- Public event projection owner, allowlist, freshness window, and correction SLA.
-- Approved public member-count definition, denominator, period, method, and
-  source; legacy marketing totals remain excluded.
-- History source set, date corroboration, editorial owner, and revocation policy.
-- Impact metric definitions, denominator, method, period, and source owner.
-- Volunteer intake owner, open-work expiry, and current-cycle handover policy.
-- Credits consent scope, display-name policy, expiry, and withdrawal handling.
-- Support finance owner, accounting boundary, reporting cadence, refund policy,
-  and use-of-funds publication path.
+## Review boundary
 
-Until these are answered, the relevant route must remain in an explicit pending,
-empty, stale, or unavailable state. Unknowns must not be converted into counts,
-availability, identity, impact, history, or a financial ask.
-
-## Evaluation evidence
-
-The Interface IR at `docs/interface/kad-community-interface.ir.json` carries the
-machine-readable route criteria and provenance. The canonical validator is:
-
-```bash
-python3 /Users/hamardikan-mac/.codex/skills/engineer-interfaces/scripts/validate_interface.py \
-  docs/interface/kad-community-interface.ir.json
-```
-
-Route screenshots, browser assertions, and runtime traces may prove rendering;
-they do not promote unknown claims or private evidence into product truth.
+The IR and hierarchy report are contract artifacts. They may be updated when a
+rendered route proves a mismatch, but they must not be relaxed to make a failing
+runtime check look green. Human screenshot review remains required for the
+represented desktop and mobile viewports.

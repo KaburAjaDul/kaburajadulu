@@ -1,0 +1,119 @@
+---
+import type { Locale } from '@/i18n/constants';
+import { DISCORD_URL, INSTAGRAM_URL, PROGRAMS, X_URL, localizedProgram } from '@/content/community-site';
+import {
+  activeStagingContributions,
+  activeStagingAttribution,
+  activeStagingMetrics,
+  activeStagingPrograms,
+  activeStagingContributorStubs,
+  activeStagingVolunteers,
+  fixtureText,
+  listStagingAgenda,
+  publicContributorProjection,
+  stagingFixturesEnabled,
+} from '@/content/staging-fixtures';
+import { PRODUCTION_COMMUNITY_METRICS, communityText } from '@/content/community-information-content';
+import '@/styles/community-information.css';
+
+interface Props { locale: Locale; href: (path: string) => string; }
+const { locale, href } = Astro.props;
+const isEnglish = locale !== 'id';
+const fixturesEnabled = stagingFixturesEnabled();
+const agenda = listStagingAgenda();
+const stagingPrograms = activeStagingPrograms();
+const publicOptInIds = new Set(activeStagingAttribution().filter((consent) => consent.status === 'granted-for-demo' && consent.subject).map((consent) => consent.subject!.id));
+const publicPeople = activeStagingVolunteers().map((profile) => ({ profile, optedIn: publicOptInIds.has(profile.displayName.id), projection: publicContributorProjection(profile.id) }));
+const metrics = fixturesEnabled
+  ? activeStagingMetrics().map((metric) => ({
+      id: metric.id,
+      label: fixtureText(metric.label, locale),
+      value: metric.value,
+      period: fixtureText(metric.period, locale),
+      definition: fixtureText(metric.definition, locale),
+      source: fixtureText(metric.sourceLabel, locale),
+      method: fixtureText(metric.method, locale),
+      reviewedAt: metric.updatedAt,
+      reviewState: fixtureText(metric.state === 'completed' ? { id: 'Ditinjau', en: 'Reviewed' } : { id: 'Pratinjau', en: 'Preview' }, locale),
+    }))
+  : PRODUCTION_COMMUNITY_METRICS.map((metric) => ({ ...metric, label: communityText(metric.label, locale), value: metric.value, period: communityText(metric.period, locale), definition: communityText(metric.definition, locale), source: communityText(metric.source, locale), method: communityText(metric.method, locale), reviewedAt: metric.reviewedAt, reviewState: communityText(metric.reviewState, locale) }));
+const formatDateTime = (value: string) => new Intl.DateTimeFormat(isEnglish ? 'en-GB' : 'id-ID', { dateStyle: 'medium', timeStyle: 'short', timeZone: 'Asia/Jakarta' }).format(new Date(value));
+const formatDate = (value: string | null) => value ? new Intl.DateTimeFormat(isEnglish ? 'en-GB' : 'id-ID', { dateStyle: 'medium', timeZone: 'Asia/Jakarta' }).format(new Date(`${value}T12:00:00+07:00`)) : (isEnglish ? 'Not reviewed' : 'Belum ditinjau');
+const statusLabel = (state: string) => ({ upcoming: isEnglish ? 'Upcoming' : 'Akan datang', live: isEnglish ? 'Live' : 'Berlangsung', completed: isEnglish ? 'Completed' : 'Selesai', pending: isEnglish ? 'Pending' : 'Menunggu' }[state] ?? (isEnglish ? 'Needs review' : 'Perlu ditinjau'));
+const displayedPrograms = fixturesEnabled
+  ? stagingPrograms.map((program) => ({ slug: program.slug, title: fixtureText(program.title, locale), summary: fixtureText(program.purpose, locale), category: isEnglish ? 'Program record' : 'Rekaman program', sourceUrl: null }))
+  : PROGRAMS.map((program) => { const item = localizedProgram(locale, program); return { slug: item.slug, title: item.title, summary: item.summary, category: item.category, sourceUrl: item.sourceUrl }; });
+---
+
+<div class="kad-community-information" data-community-surface="overview">
+  <header class="kad-community-information__header" data-page-header="orientation" aria-labelledby="community-title">
+    <div>
+      <p class="kad-community-information__eyebrow">{isEnglish ? 'KaburAjaDulu · community index' : 'KaburAjaDulu · indeks komunitas'}</p>
+      <h1 id="community-title">{isEnglish ? 'A clear view of KAD today.' : 'KAD saat ini, terlihat jelas.'}</h1>
+      <p>{isEnglish ? 'Programs, the next agenda, and the people who choose to make their work visible.' : 'Program, agenda terdekat, dan orang-orang yang memilih untuk menampilkan kerja mereka.'}</p>
+    </div>
+    <p class="kad-community-information__header-note">{fixturesEnabled ? (isEnglish ? 'Staging preview: all names, dates, and metrics are fictional.' : 'Pratinjau staging: semua nama, tanggal, dan metrik bersifat fiktif.') : (isEnglish ? 'Public records appear with their source and publication status.' : 'Rekaman publik tampil bersama sumber dan status publikasinya.')}</p>
+  </header>
+
+  <section class="kad-community-information__section" data-community-section="current" aria-labelledby="community-current-title">
+    <div class="kad-community-information__section-heading">
+      <div><p class="kad-community-information__eyebrow">01 · {isEnglish ? 'Current' : 'Saat ini'}</p><h2 id="community-current-title">{isEnglish ? 'KAD saat ini' : 'KAD saat ini'}</h2></div>
+      <p>{isEnglish ? 'A short read of what is recorded, what is next, and what still needs evidence.' : 'Ringkasan tentang apa yang tercatat, apa yang akan datang, dan apa yang masih membutuhkan bukti.'}</p>
+    </div>
+    <dl class="kad-community-information__metrics">
+      {metrics.map((metric) => <div class="kad-community-information__metric" data-community-metric={metric.id}>
+        <dt>{metric.label}</dt><dd class="kad-community-information__metric-value">{metric.value}</dd>
+        <dd class="kad-community-information__metric-detail"><span><strong>{isEnglish ? 'Period' : 'Periode'}:</strong> {metric.period}</span><span><strong>{isEnglish ? 'Definition' : 'Definisi'}:</strong> {metric.definition}</span><span><strong>{isEnglish ? 'Method' : 'Metode'}:</strong> {metric.method}</span><span><strong>{isEnglish ? 'Source' : 'Sumber'}:</strong> {metric.source}</span><span><strong>{isEnglish ? 'Review' : 'Tinjauan'}:</strong> {metric.reviewState}</span><span><strong>{isEnglish ? 'Reviewed' : 'Ditinjau'}:</strong> {formatDate(metric.reviewedAt)}</span></dd>
+      </div>)}
+    </dl>
+  </section>
+
+  <section class="kad-community-information__section" data-community-section="programs" aria-labelledby="community-programs-title">
+    <div class="kad-community-information__section-heading">
+      <div><p class="kad-community-information__eyebrow">02 · {isEnglish ? 'Programs' : 'Program'}</p><h2 id="community-programs-title">{isEnglish ? 'Programs are the durable work.' : 'Program adalah kerja yang berkelanjutan.'}</h2></div>
+      <p>{isEnglish ? 'Each record can grow into series and sessions without turning a schedule into a program.' : 'Setiap rekaman dapat berkembang menjadi rangkaian dan sesi tanpa mencampur jadwal dengan program.'} <a href={href('/programs')}>{isEnglish ? 'Open catalogue' : 'Buka katalog'} →</a></p>
+    </div>
+    <ol class="kad-community-information__records">
+      {displayedPrograms.map((program, index) => {
+        const { title, summary, category } = program;
+        return <li class="kad-community-information__record" data-program-record={program.slug}>
+          <span class="kad-community-information__record-number">{String(index + 1).padStart(2, '0')}</span>
+          <div><span class="kad-community-information__eyebrow">{category}</span><h3><a href={href(`/programs/${program.slug}`)}>{title}</a></h3><p>{summary}</p></div>
+          <div class="kad-community-information__record-meta"><span class="kad-community-information__status">{fixturesEnabled ? (isEnglish ? 'Preview' : 'Pratinjau') : (isEnglish ? 'Source-backed' : 'Berbasis sumber')}</span>{!fixturesEnabled && program.sourceUrl && <a href={program.sourceUrl} target="_blank" rel="noopener noreferrer">{isEnglish ? 'Source' : 'Sumber'} ↗</a>}</div>
+        </li>;
+      })}
+    </ol>
+  </section>
+
+  <section class="kad-community-information__section" data-community-section="agenda" aria-labelledby="community-agenda-title">
+    <div class="kad-community-information__section-heading">
+      <div><p class="kad-community-information__eyebrow">03 · {isEnglish ? 'Agenda' : 'Agenda'}</p><h2 id="community-agenda-title">{isEnglish ? 'Next steps, not a promise.' : 'Langkah berikutnya, bukan janji.'}</h2></div>
+      <p>{isEnglish ? 'Agenda combines sessions and one-off events. Confirm the latest joining path in Discord.' : 'Agenda menggabungkan sesi dan acara satu kali. Konfirmasi jalur ikut terbaru di Discord.'} <a href={href('/events')}>{isEnglish ? 'Open agenda' : 'Buka agenda'} →</a></p>
+    </div>
+    {fixturesEnabled ? <ol class="kad-community-information__agenda" data-agenda-state="preview">{agenda.map((item) => {
+      const isSession = item.kind === 'session';
+      return <li class="kad-community-information__agenda-item" data-agenda-kind={item.kind} data-fixture-id={item.id}><div><span class="kad-community-information__eyebrow">{isSession ? (isEnglish ? 'Session' : 'Session') : (isEnglish ? 'Event' : 'Event')}</span><h3><a href={href(`/events/${item.id}`)}>{fixtureText(item.title, locale)}</a></h3><p>{isSession ? (isEnglish ? 'Part of a continuing Program.' : 'Bagian dari Program yang berkelanjutan.') : (isEnglish ? 'A standalone collaboration.' : 'Kolaborasi satu kali yang berdiri sendiri.')}</p><div class="kad-community-information__agenda-actions"><span class="kad-community-information__status" data-agenda-status={item.state}>{statusLabel(item.state)}</span><a data-discord-join-path href={DISCORD_URL} target="_blank" rel="noopener noreferrer">{isEnglish ? 'Join Discord' : 'Gabung Discord'} ↗</a></div></div><time datetime={item.startsAt}>{formatDateTime(item.startsAt)}</time></li>;
+    })}</ol> : <div class="kad-community-information__agenda" data-agenda-state="empty"><div class="kad-community-information__empty" data-state="empty"><strong>{isEnglish ? 'Evidence Placeholder' : 'Evidence Placeholder'}</strong><p>{isEnglish ? 'No public agenda is ready until date, joining path, and source have been reviewed.' : 'Belum ada agenda publik sampai tanggal, jalur ikut, dan sumbernya ditinjau.'}</p><a href={DISCORD_URL} target="_blank" rel="noopener noreferrer">{isEnglish ? 'Ask on Discord' : 'Tanyakan di Discord'} ↗</a></div></div>}
+  </section>
+
+  <section class="kad-community-information__section" data-community-section="people" aria-labelledby="community-people-title">
+    <div class="kad-community-information__section-heading">
+      <div><p class="kad-community-information__eyebrow">04 · {isEnglish ? 'People' : 'Orang'}</p><h2 id="community-people-title">{isEnglish ? 'People can show work without giving up privacy.' : 'Orang dapat menunjukkan kerja tanpa kehilangan privasi.'}</h2></div>
+      <p>{isEnglish ? 'Public attribution is opt-in. The ledger keeps a contribution trail even when a name stays hidden.' : 'Atribusi publik bersifat opt-in. Buku kontribusi tetap menyimpan jejak kerja meski nama disembunyikan.'} <a href={href('/volunteer')}>{isEnglish ? 'Meet the volunteer structure' : 'Lihat struktur relawan'} →</a></p>
+    </div>
+    {fixturesEnabled ? <div class="kad-community-information__people">{publicPeople.map(({ profile, optedIn, projection }) => { const contribution = activeStagingContributions().find((item) => item.attributions.some((attribution) => attribution.volunteerId === profile.id)); const name = optedIn ? fixtureText(profile.displayName, locale) : (isEnglish ? 'Anonymous contributor' : 'Kontributor anonim'); const role = optedIn ? fixtureText(profile.role, locale) : (isEnglish ? 'Identity not shared' : 'Identitas tidak ditampilkan'); return <article class:list={['kad-community-information__person', !optedIn && 'kad-community-information__person--anonymous']} data-attribution={optedIn ? 'opt-in-demo' : 'anonymous-stub'} data-fixture-id={profile.id}><div class="kad-community-information__avatar" aria-hidden="true">{optedIn ? name.slice(0, 1) : '?'}</div><h3>{name}</h3><p>{role}</p><p>{projection?.contributionCount ?? 0} {isEnglish ? 'contributions recorded' : 'kontribusi tercatat'}{contribution ? ` · ${fixtureText(contribution.area, locale)}` : ''}</p></article>; })}{activeStagingContributorStubs().map((stub) => <article class="kad-community-information__person kad-community-information__person--anonymous" data-attribution="anonymous-stub" data-fixture-id={stub.id}><div class="kad-community-information__avatar" aria-hidden="true">?</div><h3>{isEnglish ? 'Anonymous contributor' : 'Kontributor anonim'}</h3><p>{isEnglish ? 'Contribution kept without a public identity.' : 'Kontribusi disimpan tanpa identitas publik.'}</p></article>)}</div> : <div class="kad-community-information__boundary"><strong>{isEnglish ? 'Public attribution is opt-in.' : 'Atribusi publik bersifat opt-in.'}</strong>{isEnglish ? ' Names and identifying details will appear only when consent and contribution scope are recorded.' : ' Nama dan rincian identitas hanya akan tampil setelah izin dan lingkup kontribusi tercatat.'}</div>}
+  </section>
+
+  <section class="kad-community-information__section" data-community-section="sources" aria-labelledby="community-sources-title">
+    <div class="kad-community-information__section-heading">
+      <div><p class="kad-community-information__eyebrow">05 · {isEnglish ? 'Sources' : 'Sumber'}</p><h2 id="community-sources-title">{isEnglish ? 'Verify, join, or follow.' : 'Periksa, ikut, atau ikuti.'}</h2></div>
+      <p>{isEnglish ? 'Public channels are the handoff points. They are not a substitute for a reviewed record.' : 'Kanal publik adalah titik serah terima, bukan pengganti rekaman yang sudah ditinjau.'}</p>
+    </div>
+    <nav class="kad-community-information__sources" aria-label={isEnglish ? 'Public community sources' : 'Sumber publik komunitas'}>
+      <a class="kad-community-information__source" href={DISCORD_URL} target="_blank" rel="noopener noreferrer"><strong>Discord ↗</strong><span>{isEnglish ? 'Join and confirm the next session.' : 'Ikut dan konfirmasi sesi berikutnya.'}</span></a>
+      <a class="kad-community-information__source" href={X_URL} target="_blank" rel="noopener noreferrer"><strong>X / KADSocialHub ↗</strong><span>{isEnglish ? 'Public announcements.' : 'Pengumuman publik.'}</span></a>
+      <a class="kad-community-information__source" href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer"><strong>Instagram ↗</strong><span>{isEnglish ? 'Visual documentation.' : 'Dokumentasi visual.'}</span></a>
+      <a class="kad-community-information__source" href={href('/stories')}><strong>{isEnglish ? 'Stories' : 'Cerita'} →</strong><span>{isEnglish ? 'Documentation with context and references.' : 'Dokumentasi dengan konteks dan referensi.'}</span></a>
+    </nav>
+  </section>
+</div>

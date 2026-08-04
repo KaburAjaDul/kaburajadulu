@@ -1,429 +1,157 @@
-# KAD public website page system
-
-Status: route-family contract for the agreed redesign. Programs also has a
-deeper public-content contract in `docs/public-content-system/`; this document
-defines the cross-route hierarchy and visual boundary. Nothing here approves
-private Discord evidence, disputed history, personal attribution, social-media
-image reuse, or donation collection.
-
-## Product intent
-
-The website should feel like an open front door to a real Indonesian global
-community: optimistic enough to invite participation, practical enough to help
-someone choose a next step, and accountable enough for volunteers, partners,
-and supporters to understand what is active and what is still being verified.
-
-The design retains the strongest parts of the current homepage:
-
-- white space and high-contrast Plus Jakarta Sans typography;
-- cobalt blue as the primary action and emphasis color;
-- soft, highly rounded cards with purposeful shadows;
-- the destination photo collage and Caveat handwritten accent;
-- concise copy and one obvious Discord action.
-
-The redesign adds structure, not a replacement personality. It does not reuse
-PR20's global dark-paper shell, global body overrides, or unsourced editorial
-cards.
-
-## Staging review boundary
-
-The staging candidate keeps the complete page family in one build. Three
-`/design-preview/{direction}/` routes compare only the post-destination landing
-rhythm: Field Notes, Community Bulletin, and Community Atlas. They reuse the
-real navigation and source-backed content, are marked `noindex, nofollow`, and
-link into the same Programs, Events, Volunteer, History, Impact, Support, and
-Credits placeholders. Field Notes remains the recommended production candidate.
-
-The production homepage does not expose the comparison selector. It receives
-the Field Notes composition directly, while the review routes remain temporary
-branch infrastructure until a direction is approved.
-
-### Language and fixture policy
-
-Indonesian (`id`) is the source voice for community copy. English (`en`) is the
-supported fallback for community and shell surfaces until full translations
-exist. Other locale routes intentionally render the English fallback and show
-an explicit translation notice. A content surface does not mix Indonesian and
-English prose. Arabic keeps the existing `dir="rtl"` wrapper semantics.
-
-Staging may opt into deterministic, fictional records with
-`PUBLIC_STAGING_FIXTURES=true`. The fixture system uses `DemoBanner`,
-`StatusBadge`, `SessionPreview`, `EventScheduleCard`, `VolunteerProfileCard`,
-`MetricCard`, and `StatePanel` across upcoming, live, completed, pending, empty, error, and
-not-published states. Every fixture has a stable ID, state, source, revision,
-and `demo: true` marker. Production builds render honest empty or pending
-states and reject fixture IDs, demo labels, and private identifiers. Staging
-fixture event IDs are generated as static paths only in staging builds.
-Volunteer staging also demonstrates fictional program-based teams and explicit
-handoffs; it never represents the current KAD organization chart.
-
-The staging notice is quiet page metadata. It is a small, text-only status near
-the page introduction (`Data simulasi — hanya untuk review`) with no takeover
-of the hero, no modal, no campaign treatment, and no primary-action styling.
-It appears only when the staging boundary is active and never turns a fixture
-into a production claim.
-
-## Evidence deconstruction
-
-| Evidence | Status | Observation | Transferable rule | Implementation boundary |
-| --- | --- | --- | --- | --- |
-| Production desktop and mobile screenshots | Observed | Spacious white page, large direct headline, cobalt actions, playful destination collage, rounded cards | Keep the visual DNA and increase information density gradually below the hero | Screenshots are comparison-only and never bundled |
-| `src/styles/global.css`, `Layout.astro`, current home components | Observed | Plus Jakarta Sans, Caveat, `#0055ff`, pill buttons, 32px media radii | Promote these primitives into named tokens and shared components | Preserve existing destination interaction and locale routing |
-| Public KADSocialHub source links and approved KADSocialHub posters | Observed | Five program candidates have canonical public posts; five repository-owned WebP poster copies were approved for publication on 2026-08-02, with four programs represented and two weekly-club posters in one detail gallery | Every real program card links to its canonical source, keeps meaningful per-poster alt text, and says when availability must be confirmed | Local poster paths only; do not hotlink or redistribute social CDN media |
-| Discord events and reports | Unknown for publication | Operational evidence exists privately, but no approved public event feed exists | Design complete empty, stale, error, and future published states | No private IDs, messages, links, counts, or media in the website or public evidence docs |
-| History, growth, volunteer leadership | Unknown for publication | The desired narrative exists, but dated corroboration and editorial approval are incomplete | Give history a useful evidence-review state before any public timeline claims | No names, growth numbers, disputes, or testimony in runtime fixtures |
-| Public support and donation goal | Inferred | Partners need programs, impact, governance, and use-of-funds before a financial ask is credible | Make `/support` an accountability proposal first | No payment or donation collection until finance ownership and policy exist |
-
-## Design language
-
-### Character
-
-**Optimistic field guide.** The system combines the clarity of an editorial
-guide with the warmth of a community noticeboard. It should never resemble a
-corporate SaaS dashboard or a generic dark community template.
-
-### Tokens
-
-- Paper `#ffffff`; ink `#111318`; cobalt `#0055ff`.
-- Supporting fields: sky `#edf4ff`, sun `#ffbd3e`, mint `#dff7eb`.
-- Secondary text `#687081`; rules `#dfe4ec`.
-- Display typography uses Plus Jakarta Sans at a fluid 42–72px range.
-- Caveat is decorative: annotations, arrows, and short labels only.
-- Page max width is 1240px; readable prose max width is 720px.
-- Cards use 20–32px radii. Interactive controls remain pill-shaped.
-- Section spacing follows the page task: compact operational and catalogue
-  surfaces use denser 32–72px intervals; expressive landing sections may use
-  72–112px intervals.
-- Shadows indicate a clickable or floating layer, never simple grouping.
-
-### Composition
-
-Pages share a masthead, an editorial page intro, modular content rails, a
-cross-link band, and an expanded footer. Each page gets one expressive gesture:
-a collage, step rail, calendar spine, timeline, contribution ledger, or support
-blueprint. This keeps the family coherent without making every route identical.
-
-### Above-the-fold hierarchy
-
-Visual consistency does not justify repeating a landing-style introduction on
-every route. The first viewport must expose the page's actual job:
-
-- `/community` keeps a compact orientation treatment, then immediately exposes
-  a qualified community pulse, public program records, current activity state,
-  and opt-in attribution boundaries.
-- Catalogue pages expose inventory count, categories, certainty, and filters.
-- Operational pages expose cycle or schedule state before explanation.
-- Evidence pages expose readiness, approval, and metric-contract state.
-- Proposal pages expose collection/governance readiness and proposed scope.
-- Detail pages use record headers with category, source/media state, identifier,
-  and next action.
-
-All non-Community page headers are compact task headers. Their role is
-information scent and control access, not visual spectacle.
-
-Runtime compactness contract:
-
-- desktop H1 stays between `32px` and `48px`; mobile stays between `32px`
-  and `36px`;
-- desktop header padding stays between `28px` and `36px`; mobile uses
-  `24px 16px 20px`;
-- title, task summary, and route-specific controls appear before decorative or
-  explanatory modules; counts or status facts appear only when they help the
-  page's primary task;
-- page-family colour is a thin status cue, not a full landing-page scene;
-- `/community` remains the only inner route with an orientation treatment, but
-  its header must not delay the first evidence module or behave like a landing
-  page.
-
-## Page family designs
-
-### 1. Home `/`
-
-**Job:** explain KAD in ten seconds and move a newcomer toward a real activity.
-
-1. Existing-style hero with Discord primary action and programs secondary action.
-   The hero gains two decorative field-note fragments: a dithered repository-owned
-   city crop and a yellow KAD curiosity stamp. Their motion is non-essential and
-   removed under reduced-motion preferences.
-2. Destination collage retained as the visual signature.
-3. Field Notes three-step journal: ask, find a rhythm, leave useful context.
-4. Five approved public program posters form one lead note and a four-poster rail.
-5. Event preview in an honest empty state until the public projection exists.
-6. Community story teaser labelled as editorial work in progress.
-7. Volunteer and support split CTA.
-
-No community-size or impact number is shown until the denominator and approval
-are established.
-
-### 2. Community `/community`
-
-**Job:** show what the community can publicly prove, who has chosen attribution,
-and where a newcomer can participate next.
-
-1. Compact orientation header with Discord as the primary action and Programs as
-   the secondary action.
-2. A semantic three-value pulse. Staging uses the fictional periodised metrics;
-   production uses only the five published program records, two public
-   categories, and zero approved public events. Every value carries a
-   definition, method, source, period, and reviewed date.
-3. A flat five-record program ledger with category, certainty, public source,
-   internal detail, and the next unanswered question.
-4. An approved activity list when records exist; production uses an explicit
-   empty schedule state until a public projection is available.
-5. People appear only through an opt-in public attribution record with chosen
-   display name, role, cycle, and scoped contribution. Staging demonstrates the
-   contract with fictional profiles; production invents no identities.
-6. Discord, X, Instagram, and Volunteer remain compact source/action links rather
-   than repeated promotional cards.
-
-No raw Discord member count, staff-only analytics, or legacy `500+ / 10+ / 50+`
-claim may appear without an approved denominator, period, method, and public
-source.
-
-Expressive gesture: restrained ledger numerals and circular text monograms. The
-records, not decorative cards, carry the hierarchy.
-
-### 3. Programs `/programs`
-
-**Job:** help someone find a recurring learning or career activity.
-
-- Category filters are ordinary, URL-addressable links rather than decorative tabs.
-- Program records use an editorial index with category, source, current
-  certainty, and the next action; they are not forced into a repeated card grid.
-- Initial source-backed set: French trial, Mandarin Transport, Apple Developer
-  Academy session, English + Mandarin weekly clubs, and GKS preparation.
-- Five approved local posters are required: French trial, Mandarin Transport,
-  Apple Developer Academy, English weekly club, and Mandarin weekly club. The
-  local copies preserve canonical public X origin URLs, publication timestamps,
-  dimensions, hashes, approval date, meaningful alt text, and a text fallback.
-- Four programs render local poster media. GKS preparation is intentionally
-  text-only: no third-party GKS artwork, screenshots, or social media media may
-  be copied, hotlinked, or redistributed.
-- Unknown capacity, recurrence, registration, and archive status are never
-  silently converted into `active`.
-
-Expressive gesture: a restrained colour cue on the index and source/status rail;
-filters and result links remain ordinary URL-addressable controls.
-
-### 4. Program detail `/programs/{slug}`
-
-**Job:** turn interest into a confident next action.
-
-- Program promise and source-backed facts.
-- `Yang sudah diketahui` versus `Konfirmasi di Discord` columns.
-- Routine/session format only when a source proves it.
-- Canonical source link and Discord action.
-- Related programs.
-- The English + Mandarin weekly-clubs detail page renders exactly two local
-  posters as a gallery; each image has meaningful alt text and a text caption.
-
-Expressive gesture: a large typographic program marker, created in CSS rather
-than copied social artwork.
-
-### 5. Events `/events`
-
-**Job:** show the reliable public schedule.
-
-- Empty state is the initial and truthful state.
-- The state explains that schedules are currently confirmed in Discord.
-- Future list design supports date spine, timezone, status, program, and source
-  revision without changing the page composition.
-- Stale and error states remain textual and distinguishable without colour.
-
-Expressive gesture: a calendar spine that remains useful as an empty scaffold.
-The schedule list owns date, timezone, status, program, source revision, and
-freshness; it does not collapse event detail into a promotional card.
-
-### 6. Event detail `/events/{id}`
-
-**Job:** provide one approved public record and its documentation.
-
-- Production remains in a reserved state; no fake event is rendered there.
-- Isolated `noindex` staging may render visibly labelled fictional events to
-  exercise lifecycle and detail states.
-- Future regions: status/time, summary, registration, approved recap/resources,
-  calendar export, source revision, and corrections.
-- The static prototype publishes explicit `not-published` and `pending` fixtures;
-  all other IDs remain a normal static 404 until the approved event projection
-  owns route generation.
-
-Expressive gesture: document tabs and a clear revision stamp. The record header
-comes first; registration, recap, resources, and calendar export are secondary
-panels. A revoked/tombstoned record remains a neutral withdrawal state.
-
-### 7. Volunteer `/volunteer`
-
-**Job:** explain how work enters, moves through, and leaves a volunteer cycle.
-
-- Anonymous three-month cycle model: intake, program work, handover.
-- Program-based teams and explicit work distribution.
-- Public volunteer intake remains easy to find and is the first actionable path.
-- The current cycle and open work are visible before explanatory narrative;
-  closed or expired opportunities remain labelled rather than silently removed.
-- Attribution is anonymous by default and labelled as a later opt-in feature.
-- No volunteer names or private operational metrics.
-
-Expressive gesture: an operational cycle loop with handover at the seam.
-
-### 8. Stories and history `/stories`, `/about/history`
-
-**Job:** preserve institutional memory without publishing contested material.
-
-- Stories index may expose public source records such as Cerita Aja Dulu only
-  after editorial approval.
-- History initially renders an evidence-review state and a public correction
-  invitation.
-- Story records lead with readable title, excerpt/body, published date, topic,
-  source, revision/freshness, and editorial state; metadata is not hidden behind
-  decorative cards.
-- The final timeline requires dated corroboration, metric definitions, editorial
-  ownership, attribution approval, and a correction/revocation path.
-
-Expressive gesture: a horizontal growth timeline that remains hidden until the
-claims are approved; the placeholder is a visible evidence checklist.
-
-### 9. Impact `/community/impact`
-
-**Job:** show what programs accomplish, with traceable definitions.
-
-- Initial state explains the metric contract instead of showing invented totals.
-- Future metrics are grouped into activities, participation, outputs, and
-  volunteer contribution.
-- Social reach, Discord membership, role counts, attendance, and volunteer hours
-  remain separate measures.
-- Every published figure needs period, source, denominator, and freshness.
-- The metric method (definition, inclusion/exclusion rule, and calculation
-  owner) appears beside any future figure; a pending method blocks the total.
-
-Expressive gesture: an impact ledger rather than a generic dashboard.
-
-### 10. Support `/support`
-
-**Job:** help a prospective partner understand what support would enable.
-
-- Program continuity, documentation infrastructure, volunteer tooling, and
-  safety/moderation are the initial support areas.
-- `How support is governed` precedes any financial action.
-- Governance owner, proposed scope, reporting cadence, accounting boundary, and
-  readiness status precede any ask. Until those are ready, the payment action is
-  unavailable and a contact path is the only next step.
-- Contact/community action is available; payment collection is unavailable.
-- Future donation capability requires owner, reporting cadence, refund policy,
-  accounting boundary, and public use-of-funds reporting.
-
-Expressive gesture: a transparent allocation blueprint with `proposed`, not
-`funded`, labels.
-
-### 11. Credits `/community/credits`
-
-**Job:** attribute work without forcing public identity.
-
-- Initial state explains anonymous-by-default credit.
-- Future ledger entries support chosen display name, role, program, cycle, scope,
-  expiry, and opt-in state. A revoked entry stays as a neutral tombstone with no
-  blame language or private identifier.
-- Public credits never expose Discord IDs or private profiles.
-
-Expressive gesture: a contribution ledger with visible consent state.
-
-## Product and developer copy boundary
-
-Product copy describes the visitor's job, current state, consequence, and next
-safe action. It may use `Data simulasi`, `Konfirmasi di Discord`, `Belum
-dipublikasikan`, `Atribusi dicabut`, and `Dukungan belum siap dikumpulkan`.
-
-Developer-only notes include `PUBLIC_STAGING_FIXTURES`, DTO names, projection
-and revision rules, media hashes, validator commands, route IDs, and browser
-assertion details. Keep these in this document, the Interface IR, fixtures, or a
-developer-only overlay; never render them as product headings, labels, or help.
-
-The full evidence inventory, route contract, and unknown list live in
-`docs/interface/full-page-evidence-deconstruction.md`.
-
-### Existing blog routes
-
-The current blog remains part of the ecosystem but is not populated on `main`.
-The redesign fixes navigation/SEO composition without inventing posts. A blog
-index becomes a later content slice after real entries exist.
-
-## Shared component system
-
-| Component | Purpose | Required states |
-| --- | --- | --- |
-| Masthead | Brand, four grouped destinations, locale, Discord | desktop, mobile closed/open, RTL |
-| Page intro | Eyebrow, H1, summary, dominant action | compact, feature |
-| Source chip | Canonical source and freshness/status | public source, approval pending |
-| Program card | Program promise and next action | confirm in Discord, recurring confirmed, archived, gated |
-| Event state | Public schedule status | empty, loading, published, stale, error |
-| Journey rail | Discover → participate → contribute | desktop rail, mobile stack |
-| Evidence panel | Explain missing approval/data | pending, approved, revoked |
-| Cross-link band | Connect page families | default, high-emphasis |
-| Expanded footer | Route index, social sources, Discord | LTR, RTL |
-
-## Responsive and accessibility contract
-
-- Test at 1280×720 and 390×844; inspect full-page screenshots at 1440px and
-  390px widths.
-- At 200% zoom, content remains readable without two-dimensional scrolling.
-- The mobile menu is a disclosure controlled by one button. Escape closes it
-  and restores focus to the trigger.
-- A skip link is first in the focus order. Focus rings use cobalt plus a white
-  offset and remain visible on coloured surfaces.
-- Heading levels describe the document, not the card size.
-- Status and certainty are always text; colour and icons only reinforce them.
-- Arabic uses logical properties and RTL-aware composition, not duplicated
-  markup.
-- Motion is finite opacity/transform feedback. Reduced motion removes reveals,
-  autoplay, and decorative transform changes.
-
-## Runtime and content boundary
-
-- Astro remains static. Shared page data is a checked TypeScript fixture.
-- Public source links are implementation-safe. The five approved local poster
-  paths under `/images/programs/` are implementation-safe; social CDN/private
-  media and third-party GKS media are forbidden. Every poster keeps its
-  canonical public X origin URL as provenance rather than as a runtime image
-  source.
-- If a local poster fails to load, the program title, source link, availability
-  status, and descriptive fallback remain visible. The GKS card always remains
-  text-only.
-- Dated program posters are documentation only and never become Open Graph or
-  Twitter preview images; social previews keep the neutral site artwork.
-- Production event data stays at an empty state until the D1/R2 projection PR;
-  isolated `noindex` staging may use visibly labelled fictional fixtures.
-- Private Discord evidence never enters the public repo, bundle, rendered HTML,
-  metadata, screenshots, or test fixtures.
-- Page copy is Indonesian-first in this prototype. Existing locale navigation,
-  `lang`, `dir`, and route generation remain functional; approved translations
-  are a separate content task.
-
-## Acceptance trace
-
-The executable contract must prove:
-
-- 10 page families are represented in navigation/design data;
-- 5 public program cards render with canonical source links;
-- exactly 5 approved local poster paths render across 4 programs, with
-  meaningful alt text, controlled local `src`, eager/lazy loading metadata, and
-  intrinsic dimensions;
-- every built poster hash matches the approved content fixture, and an aborted
-  poster request exposes a descriptive fallback without hiding source/status;
-- the English + Mandarin detail gallery contains exactly 2 posters;
-- GKS preparation remains a text-only fallback with no program image;
-- 0 public events render in the initial state;
-- event, history, impact, support, and credits show explicit readiness states;
-- staging mode exposes only quiet page metadata and never changes the route's
-  primary task or action hierarchy;
-- Programs exposes catalogue/filter/detail contracts, Events separates
-  schedule/detail hierarchy, Volunteer exposes intake/current cycle/open work,
-  Stories exposes readable record metadata, History exposes traceable evidence,
-  Impact exposes metric provenance/method, Credits exposes opt-in ledger entries
-  and neutral revoked tombstones, and Support exposes governance/readiness before
-  any ask;
-- product copy contains no fixture flags, implementation labels, private IDs, or
-  unsupported proof, while developer notes remain out of rendered UI;
-- all internal routes preserve the locale prefix;
-- no private manifest IDs, private Discord labels, social CDN/private media
-  URLs, or third-party GKS media appear in `dist`;
-- mobile menu, Escape focus restoration, keyboard traversal, RTL, reduced
-  motion, overflow, SEO, build, and screenshots pass.
+# KAD community page system
+
+This document is the content and hierarchy companion to
+`kad-community-interface.ir.json`. It describes the public contract, not a
+future backend. The current release is a fixture-backed staging prototype with
+an evidence-safe production build.
+
+## Route jobs and information order
+
+| Route | Visitor job | First useful information | Required states and actions |
+| --- | --- | --- | --- |
+| `/community` | Orient quickly | `KAD saat ini`, then programs, agenda, people, sources | Five ordered sections; Discord and internal links; production placeholders where evidence is absent |
+| `/programs` | Choose a continuing offering | Program purpose, status, structure, and next known Session | Five records; URL filters; source/readiness state |
+| `/programs/{slug}` | Understand one Program | Purpose → Series or direct Sessions → metrics → contributors → documentation → provenance | Optional Series; four Program metric slots; no fabricated repository |
+| `/events` | See what will happen | Agenda rows grouped by date with status, time, and join action | Union of Sessions and Events; production empty state; staging 3 Sessions + 1 Event |
+| `/events/{id}` | Confirm one scheduled item | Kind, status, time, timezone, Program/Series relationship, revision, join path | Textual lifecycle; safe Discord action; no private Discord identifiers |
+| `/volunteer` | Decide whether and how to contribute | Current Cycle, positions, divisions, openings, people | 3-month Cycle; 4 Positions; 7 Divisions; 3 openings; consent boundary |
+| `/volunteer/{slug}` | Review one contributor’s work | Identity visibility → assignments → contributions grouped by Program | Anonymous stub or opt-in identity; evidence/review state; no impact score/ranking |
+| `/stories` | Read documented context | Story title, date, summary, state, related records | Documentation index; stories never replace Agenda or the ledger |
+| `/stories/{slug}` | Read one documented record | Body, review/date, related Program/Session/Event/contributor links | Source, consent, and editorial state remain visible |
+
+The home route may retain a large visual hero. The nine information routes use a
+compact task header. The first viewport must answer “what is this page and what
+can I do next?” before secondary narrative or decorative media.
+
+## Community section contract
+
+`/community` renders exactly five `data-community-section` regions in this
+order:
+
+1. `current`: three qualified metrics. Every metric carries period, definition,
+   method, source, review state, and reviewed date. Production uses an Evidence
+   Placeholder when a number is not approved. Staging values are deterministic,
+   fictional, and explicitly labelled.
+2. `programs`: the five Program records and their next known step. The list links
+   to the catalogue; it does not duplicate the full Program detail view.
+3. `agenda`: a preview of the next Sessions and standalone Events. The index
+   links to `/events`; joining always uses the safe public Discord invite.
+4. `people`: opt-in public profiles plus anonymous contributor stubs. The public
+   surface never exposes private IDs, raw Discord links, or consent authority
+   fields.
+5. `sources`: Discord, KADSocialHub, Instagram, and Stories handoffs. A source
+   link is not itself proof of a claim.
+
+## Domain display rules
+
+### Program, Series, Session
+
+`Program` is a continuing offering. A Program may have zero or more `Series`.
+Each Series may contain Sessions. A Program without a Series renders direct
+Sessions. Japanese Study Club demonstrates three Series in staging (N5, N4–N3,
+N2–N1); English Study Club demonstrates direct Sessions. Tech/Coding Club is a
+sharing Program: a repository or project link appears only when an actual
+artifact has passed review.
+
+### Agenda
+
+Agenda is a view over two kinds of scheduled records:
+
+- `session`: a scheduled Session, with a required Program and optional Series;
+- `event`: a bounded standalone collaboration, with no required Program.
+
+Every row has start/end time, timezone, lifecycle text (`Akan datang`,
+`Berlangsung`, `Selesai`), revision/freshness, a detail link, and one safe
+Discord confirmation/join path. Discord Scheduled Events are a join path only;
+the domain record remains the reviewed public projection.
+
+### Volunteer organization
+
+The current organization map is ordered by responsibility:
+
+1. Advisor — non-executive context and guidance;
+2. Community Manager — executive head across the volunteer organization;
+3. Admin / Division Lead — accountable lead for one division;
+4. Individual Volunteer — bounded contribution within a Program or division.
+
+Divisions are Study Club, Tech/Coding Club, Event, Design, Content,
+Partnership, and Data. A Volunteer Cycle is a three-month reorganization
+horizon. Recruitment can remain continuous while the Cycle is open. The index
+shows openings as bounded scopes rather than promising a role.
+
+### Contribution Ledger
+
+There is one organization Contribution Ledger. A profile page is a derived view
+grouped by Program. Each entry may show responsibility, period, evidence, and
+review state (`Dilaporkan`, `Bukti terlampir`, `Terverifikasi`, `Dikoreksi`, or
+`Dicabut`). Program metrics describe the Program; a contributor page must not
+convert them into a personal impact score or ranking.
+
+Public attribution is opt-in. Every internal contributor may have an anonymous
+stub with safe aggregate counts. Named profile details require explicit
+consent. Owner-generated expiring and revocable recruiter links are a future
+capability and must not be simulated in this release.
+
+## Production and staging boundary
+
+Production (`PUBLIC_STAGING_FIXTURES` unset):
+
+- contains only approved public records and local approved media;
+- excludes fixture IDs, fictional people, demo copy, private Discord fields,
+  and raw Discord channel/message URLs;
+- renders `Evidence Placeholder`, pending, empty, or not-published states when
+  evidence is not ready;
+- has no indexable fixture profile or story pages.
+
+Staging (`PUBLIC_STAGING_FIXTURES=true`):
+
+- uses deterministic records marked `data-fixtures="enabled"` and a quiet
+  `Pratinjau · data contoh` disclosure;
+- includes the mixed Agenda fixture (three Sessions and one standalone Event),
+  five Programs, optional Series, four Positions, seven Divisions, three
+  openings, opt-in profiles, and anonymous stubs;
+- is `noindex, nofollow` on every generated page;
+- never carries private Discord IDs, private media, or secret verification links.
+
+The future live path is KAD-Agent/Discord bot → reviewed public projection →
+Astro repository. The website does not scrape Discord or read the private bot
+database. Program metrics and contributions remain manually attested in the
+first live iteration.
+
+## Responsive, interaction, and content rules
+
+- Use Indonesian as the source language and complete English equivalents on
+  supported English routes. Do not mix Indonesian product copy into an English
+  surface.
+- Use ordinary anchors for internal navigation, detail pages, filters, and
+  source handoffs. Preserve browser back/forward behavior.
+- At 390px, multi-column facts and records become one column without changing
+  semantic or focus order. At 1280px, keep line length and metadata scannable.
+- Status is always textual; color is supplemental. Keep visible keyboard focus,
+  skip link, and a stable destination after mobile menu dismissal.
+- Motion is finite and optional. Reduced motion removes transitions while
+  preserving state, content, and focus.
+- Do not add universal inner-page heroes, generic feature-card grids,
+  decorative assistant notes, or unsupported metrics.
+
+## Runtime selector contract
+
+The runtime guard uses stable selectors rather than copy-only matching:
+
+- `data-page-family` identifies catalogue/detail page families;
+- `data-community-section` identifies the five Community regions;
+- `data-program-record`, `data-program-series`, `data-program-metric`, and
+  `data-program-session` prove Program structure;
+- `data-agenda-kind`, `data-agenda-state`, and `data-discord-join-path` prove
+  Agenda union and safe joining;
+- `data-volunteer-cycle`, `data-volunteer-position`,
+  `data-volunteer-division`, and `data-volunteer-opening` prove organization
+  counts;
+- `data-volunteer-profile`, `data-contribution-group`, and
+  `data-verification-future` prove consent-ledger boundaries;
+- `data-evidence-placeholder`, `data-fixtures`, and the robots meta tag prove
+  publication readiness and staging isolation.
+
+The validator is intentionally strict about route presence, count contracts,
+forbidden private fields, and fixture leakage. It is not a substitute for
+Playwright interaction or human screenshot review.

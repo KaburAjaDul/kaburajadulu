@@ -1,13 +1,15 @@
 ---
 import Layout from '@/layouts/Layout.astro';
 import type { Locale } from '@/i18n/constants';
-import { DISCORD_URL, INSTAGRAM_URL, PROGRAMS, X_URL, localizedPath, pageTitle, programBySlug, communityCopy, localizedProgram } from '@/content/community-site';
-import { STAGING_FIXTURES_ENABLED, activeStagingEvents, fixtureText, stagingEventById, stagingSessionByProgramId, stagingStoryBySlug, STAGING_ATTRIBUTION, STAGING_CONTRIBUTIONS, STAGING_METRICS, STAGING_PUBLISHED_RECORDS, STAGING_TEAMS, STAGING_VOLUNTEERS } from '@/content/staging-fixtures';
+import { DISCORD_URL, PROGRAMS, localizedPath, pageTitle, programBySlug, communityCopy, localizedProgram } from '@/content/community-site';
+import { activeStagingAttribution, activeStagingContributions, activeStagingMetrics, activeStagingTeams, activeStagingVolunteers, fixtureText, stagingFixturesEnabled, stagingSessionByProgramId, stagingStoryBySlug } from '@/content/staging-fixtures';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import TaskHeader from '@/components/community-system/TaskHeader.astro';
 import DemoBanner from '@/components/community-system/DemoBanner.astro';
-import EventScheduleCard from '@/components/community-system/EventScheduleCard.astro';
+import AgendaPage from '@/components/community-system/AgendaPage.astro';
+import CommunityOverviewPage from '@/components/community-system/CommunityOverviewPage.astro';
+import StoriesPage from '@/components/community-system/StoriesPage.astro';
 import VolunteerProfileCard from '@/components/community-system/VolunteerProfileCard.astro';
 import MetricCard from '@/components/community-system/MetricCard.astro';
 import StatePanel from '@/components/community-system/StatePanel.astro';
@@ -18,18 +20,14 @@ import '@/styles/global.css';
 
 interface Props { kind: import('@/content/community-site').CommunityPageKind; locale: Locale; currentPath: string; slug?: string; id?: string; }
 const { kind, locale, currentPath, slug, id } = Astro.props;
+const fixturesEnabled = stagingFixturesEnabled();
 const program = slug ? programBySlug(slug) : undefined;
 const localized = program ? localizedProgram(locale, program) : undefined;
 const copy = communityCopy(locale, kind);
 const description = copy.description;
 const href = (path: string): string => localizedPath(locale, path);
-const stagingEvents = activeStagingEvents();
-const event = id ? stagingEventById(id) : undefined;
-const eventProgram = event ? programBySlug(event.programId) : undefined;
 const story = kind === 'story' && slug ? stagingStoryBySlug(slug) : undefined;
-const title = kind === 'event' && event
-  ? `${fixtureText(event.title, locale)} — KaburAjaDulu`
-  : kind === 'story' && story
+const title = kind === 'story' && story
     ? `${fixtureText(story.title, locale)} — KaburAjaDulu`
     : pageTitle(kind, localized ?? program, locale);
 const isEnglish = locale !== 'id';
@@ -37,92 +35,17 @@ const fallbackText = !['id', 'en'].includes(locale)
   ? 'This community surface is available in English while a full translation is prepared.'
   : null;
 const contentLanguage = locale === 'id' ? 'id' : 'en';
-const communityCategories = new Set(PROGRAMS.map((item) => item.category));
-const communityMetrics = STAGING_FIXTURES_ENABLED
-  ? STAGING_METRICS.map((metric) => ({
-      id: metric.id,
-      value: metric.value,
-      label: fixtureText(metric.label, locale),
-      period: fixtureText(metric.period, locale),
-      source: fixtureText(metric.sourceLabel, locale),
-      definition: fixtureText(metric.definition, locale),
-      method: fixtureText(metric.method, locale),
-      updated: new Intl.DateTimeFormat(isEnglish ? 'en-GB' : 'id-ID', { dateStyle: 'medium', timeZone: 'Asia/Jakarta' }).format(new Date(`${metric.updatedAt}T12:00:00+07:00`)),
-    }))
-  : [
-      {
-        id: 'published-program-record-count',
-        value: String(PROGRAMS.length),
-        label: isEnglish ? 'Program records' : 'Rekaman program',
-        period: isEnglish ? 'Public catalogue' : 'Katalog publik',
-        source: isEnglish ? 'Published programme index' : 'Indeks program terbit',
-        definition: isEnglish ? 'Program rows with a published public record.' : 'Baris program dengan catatan publik yang sudah terbit.',
-        method: isEnglish ? 'Count published rows in the programme index.' : 'Menghitung baris terbit dalam indeks program.',
-        updated: isEnglish ? '2 Aug 2026' : '2 Agu 2026',
-      },
-      {
-        id: 'published-program-category-count',
-        value: String(communityCategories.size),
-        label: isEnglish ? 'Categories' : 'Kategori',
-        period: isEnglish ? 'Public catalogue' : 'Katalog publik',
-        source: isEnglish ? 'Published programme index' : 'Indeks program terbit',
-        definition: isEnglish ? 'Distinct categories represented by published programme records.' : 'Kategori berbeda yang terwakili dalam rekaman program terbit.',
-        method: isEnglish ? 'Count distinct category labels in the programme index.' : 'Menghitung label kategori yang berbeda dalam indeks program.',
-        updated: isEnglish ? '2 Aug 2026' : '2 Agu 2026',
-      },
-      {
-        id: 'published-event-count',
-        value: '0',
-        label: isEnglish ? 'Published events' : 'Agenda terbit',
-        period: isEnglish ? 'Public schedule' : 'Agenda publik',
-        source: isEnglish ? 'Published schedule index' : 'Indeks agenda terbit',
-        definition: isEnglish ? 'Events with an approved time and public joining path.' : 'Agenda dengan waktu dan jalur ikut publik yang sudah disetujui.',
-        method: isEnglish ? 'Count approved records in the public schedule.' : 'Menghitung rekaman yang disetujui dalam agenda publik.',
-        updated: isEnglish ? '4 Aug 2026' : '4 Agu 2026',
-      },
-    ];
 ---
 
-<Layout title={title} description={description} canonical={`https://kaburajadulu.com${currentPath}`} locale={locale} currentPath={currentPath} robots={STAGING_FIXTURES_ENABLED ? 'noindex, nofollow' : undefined}>
+<Layout title={title} description={description} canonical={`https://kaburajadulu.com${currentPath}`} locale={locale} currentPath={currentPath} robots={fixturesEnabled ? 'noindex, nofollow' : undefined}>
   <Navbar client:only="react" locale={locale} currentPath={currentPath} />
-  <main id="main-content" class="kad-page" lang={contentLanguage} data-requested-locale={locale} data-fixtures={STAGING_FIXTURES_ENABLED ? 'enabled' : 'disabled'}>
+  <main id="main-content" class="kad-page" lang={contentLanguage} data-requested-locale={locale} data-fixtures={fixturesEnabled ? 'enabled' : 'disabled'}>
     <div class="kad-container">
       {fallbackText && <p class="kad-translation-notice" lang="en" role="status">{fallbackText}</p>}
       <DemoBanner locale={locale} />
 
-      {kind === 'community' && (
-        <>
-          <header class="kad-page-hero kad-community-intro" aria-labelledby="page-title" data-page-header="orientation">
-            <div class="kad-community-intro__copy"><p class="kad-eyebrow">{copy.eyebrow}</p><h1 id="page-title">{copy.title}</h1><p class="kad-lede">{copy.description}</p><div class="kad-page-hero__actions"><a class="kad-button kad-button--primary" href={DISCORD_URL} target="_blank" rel="noopener noreferrer">{copy.actions.discord}</a><a class="kad-button kad-button--outline" href={href('/programs')}>{isEnglish ? 'View programs' : 'Lihat program'}</a></div></div>
-            <p class="kad-community-intro__note">{isEnglish ? 'Every number, date, and name below follows its publication status.' : 'Setiap angka, tanggal, dan nama di bawah mengikuti status publikasinya.'}</p>
-          </header>
-
-          <section class="kad-section kad-community-section" aria-labelledby="community-pulse-title" data-community-section="pulse">
-            <div class="kad-section-heading kad-section-heading--compact"><div><p class="kad-kicker">01 · {isEnglish ? 'Community pulse' : 'Denyut komunitas'}</p><h2 id="community-pulse-title">{isEnglish ? 'Three numbers, with their context.' : 'Tiga angka, lengkap dengan konteksnya.'}</h2></div><p class="kad-note">{STAGING_FIXTURES_ENABLED ? (isEnglish ? 'Fictional values for this staging review.' : 'Nilai fiktif untuk peninjauan staging ini.') : (isEnglish ? 'Only published records are counted here.' : 'Hanya rekaman yang sudah terbit yang dihitung di sini.')}</p></div>
-            <dl class="kad-community-metrics">{communityMetrics.map((metric) => <div data-community-metric={metric.id}><dt>{metric.label}</dt><dd class="kad-community-metrics__value">{metric.value}</dd><dd class="kad-community-metrics__context"><span>{metric.period}</span><span>{metric.definition}</span><span>{isEnglish ? 'Method' : 'Metode'}: {metric.method}</span><span>{isEnglish ? 'Source' : 'Sumber'}: {metric.source} · {isEnglish ? 'Reviewed' : 'Ditinjau'} {metric.updated}</span></dd></div>)}</dl>
-          </section>
-
-          <section class="kad-section kad-community-section" aria-labelledby="program-proof-title" data-community-section="programs">
-            <div class="kad-section-heading kad-section-heading--compact"><div><p class="kad-kicker">02 · {isEnglish ? 'Program records' : 'Rekaman program'}</p><h2 id="program-proof-title">{isEnglish ? 'Five programs with public records.' : 'Lima program dengan catatan publik.'}</h2></div><a class="kad-text-link" href={href('/programs')}>{isEnglish ? 'Open full catalogue' : 'Buka katalog lengkap'} →</a></div>
-            <ol class="kad-community-program-ledger">{PROGRAMS.map((source) => { const item = localizedProgram(locale, source); return <li data-program-record={item.slug}><div class="kad-community-program__index" aria-hidden="true">{String(PROGRAMS.indexOf(source) + 1).padStart(2, '0')}</div><div class="kad-community-program__main"><div class="kad-card-top"><span class="kad-pill kad-pill-soft">{item.category}</span><span class="kad-status" data-program-availability="needs_confirmation">{isEnglish ? 'Needs confirmation' : 'Konfirmasi terbaru diperlukan'}</span></div><h3><a href={href(`/programs/${item.slug}`)}>{item.title}</a></h3><p>{item.summary}</p><div class="kad-community-program__meta"><span><strong>{isEnglish ? 'Source' : 'Sumber'}</strong> <a href={item.sourceUrl} target="_blank" rel="noopener noreferrer">{item.sourceLabel} ↗</a></span><span><strong>{isEnglish ? 'Need to confirm' : 'Yang perlu dikonfirmasi'}</strong> {item.confirm[0]}</span></div></div></li>; })}</ol>
-          </section>
-
-          <section class="kad-section kad-community-section" aria-labelledby="community-activity-title" data-community-section="activity">
-            <div class="kad-section-heading kad-section-heading--compact"><div><p class="kad-kicker">03 · {isEnglish ? 'Current activity' : 'Aktivitas saat ini'}</p><h2 id="community-activity-title">{isEnglish ? 'Schedule and latest status.' : 'Agenda dan status terbaru.'}</h2></div><a class="kad-text-link" href={href('/events')}>{isEnglish ? 'Open schedule' : 'Buka agenda'} →</a></div>
-            {STAGING_FIXTURES_ENABLED ? <ol class="kad-community-activity-list">{stagingEvents.map((item) => <li data-fixture-id={item.id} data-fixture-state={item.state}><StatusBadge state={item.state} locale={locale} /><div><h3><a href={href(`/events/${item.id}`)}>{fixtureText(item.title, locale)}</a></h3><p>{fixtureText(item.summary, locale)}</p></div><time datetime={item.startsAt}>{new Intl.DateTimeFormat(isEnglish ? 'en-GB' : 'id-ID', { dateStyle: 'medium', timeStyle: 'short', timeZone: item.timezone }).format(new Date(item.startsAt))}</time></li>)}</ol> : <StatePanel state="empty" locale={locale} statusLabel={isEnglish ? 'No published schedule' : 'Belum ada agenda publik'} title={isEnglish ? 'There is no public schedule to list yet.' : 'Belum ada agenda publik untuk ditampilkan.'} description={isEnglish ? 'Confirm dates, joining paths, and the latest revision in Discord.' : 'Konfirmasikan tanggal, jalur ikut, dan revisi terbaru melalui Discord.'}><a class="kad-button kad-button--outline" href={DISCORD_URL} target="_blank" rel="noopener noreferrer">{copy.actions.discord}</a></StatePanel>}
-          </section>
-
-          <section class="kad-section kad-community-section" aria-labelledby="community-people-title" data-community-section="people">
-            <div class="kad-section-heading kad-section-heading--compact"><div><p class="kad-kicker">04 · {isEnglish ? 'People and contribution' : 'Orang dan kontribusi'}</p><h2 id="community-people-title">{isEnglish ? 'People behind the community work.' : 'Orang di balik kerja komunitas.'}</h2></div><p class="kad-note">{STAGING_FIXTURES_ENABLED ? (isEnglish ? 'Fictional opt-in profiles show the shape of a future attribution record.' : 'Profil fiktif dengan izin opt-in menunjukkan bentuk rekaman atribusi di masa depan.') : (isEnglish ? 'Names appear only after an explicit opt-in; no public profiles are published yet.' : 'Nama hanya tampil setelah opt-in yang jelas; belum ada profil publik yang diterbitkan.')}</p></div>
-            {STAGING_FIXTURES_ENABLED ? <div class="kad-community-people">{STAGING_VOLUNTEERS.map((profile) => { const contribution = STAGING_CONTRIBUTIONS.find((item) => item.contributor.id === profile.displayName.id); return <article data-fixture-id={profile.id} data-attribution="opt-in-demo"><div class="kad-community-avatar" aria-hidden="true">{profile.displayName.id.slice(0, 1)}</div><div><h3>{fixtureText(profile.displayName, locale)}</h3><p>{fixtureText(profile.role, locale)} · {fixtureText(profile.cycle, locale)}</p>{contribution && <small><strong>{fixtureText(contribution.area, locale)}</strong> — {fixtureText(contribution.summary, locale)}</small>}</div></article>; })}</div> : <div class="kad-community-attribution-policy"><strong>{isEnglish ? 'Public attribution is opt-in.' : 'Atribusi publik bersifat opt-in.'}</strong><span>{isEnglish ? 'The public ledger will remain pending until consent and contribution scope are recorded.' : 'Buku publik tetap menunggu sampai izin dan lingkup kontribusi tercatat.'}</span></div>}
-          </section>
-
-          <section class="kad-section kad-community-section kad-community-section--sources" aria-labelledby="community-sources-title" data-community-section="sources">
-            <div class="kad-section-heading kad-section-heading--compact"><div><p class="kad-kicker">05 · {isEnglish ? 'Participate and verify' : 'Ikut dan periksa'}</p><h2 id="community-sources-title">{isEnglish ? 'Choose your next step.' : 'Pilih langkah berikutnya.'}</h2></div></div>
-            <nav class="kad-community-source-links" aria-label={isEnglish ? 'Public community sources' : 'Sumber publik komunitas'}><a href={X_URL} target="_blank" rel="noopener noreferrer"><strong>X</strong><span>@KADSocialHub · {isEnglish ? 'announcements' : 'pengumuman'}</span></a><a href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer"><strong>Instagram</strong><span>@kadsocialhub · {isEnglish ? 'visual records' : 'rekaman visual'}</span></a><a href={DISCORD_URL} target="_blank" rel="noopener noreferrer"><strong>Discord</strong><span>{isEnglish ? 'join and confirm' : 'ikut dan konfirmasi'}</span></a><a href={href('/volunteer')}><strong>{isEnglish ? 'Volunteer' : 'Relawan'}</strong><span>{isEnglish ? 'see current scope' : 'lihat lingkup kerja'}</span></a></nav>
-          </section>
-        </>
-      )}
+      {kind === 'community' && <CommunityOverviewPage locale={locale} href={href} />}
+      {(kind === 'stories' || kind === 'story') && <StoriesPage locale={locale} href={href} slug={kind === 'story' ? slug : undefined} />}
 
       {kind === 'programs' && (
         <>
@@ -130,7 +53,7 @@ const communityMetrics = STAGING_FIXTURES_ENABLED
             <a slot="actions" class="kad-button kad-button--primary" href={DISCORD_URL} target="_blank" rel="noopener noreferrer">{copy.actions.discord}</a>
           </TaskHeader>
           <section class="kad-section" aria-labelledby="programs-title"><nav class="kad-filter-row kad-filter-row--content" aria-label={isEnglish ? 'Jump to program categories' : 'Lompat ke kategori program'}><a class="kad-pill" href="#all">{isEnglish ? 'All programs' : 'Semua program'}</a><a class="kad-pill" href="#language">{isEnglish ? 'Language clubs' : 'Klub bahasa'}</a><a class="kad-pill" href="#career">{isEnglish ? 'Education and career' : 'Pendidikan & karier'}</a></nav><div id="all" class="kad-grid kad-grid--two">{PROGRAMS.map((source, index) => { const item = localizedProgram(locale, source); const cover = item.media[0]; const categoryId = source.category === 'Klub bahasa' ? 'language' : 'career'; const firstInCategory = PROGRAMS.findIndex((candidate) => candidate.category === source.category) === index; return <article class="kad-card kad-program-card" id={firstInCategory ? categoryId : undefined} data-program-id={item.slug}>{cover ? <a class="kad-program-card__media" href={href(`/programs/${item.slug}`)}><img data-program-poster src={cover.src} alt={cover.alt} width={cover.width} height={cover.height} loading={index === 0 ? 'eager' : 'lazy'} decoding="async" /><p class="kad-media-fallback" hidden>{isEnglish ? 'Poster failed to load. Open the public source.' : 'Poster gagal dimuat. Buka sumber publik.'}</p></a> : null}<div class="kad-card-top"><span class="kad-pill kad-pill-soft">{item.category}</span><span class="kad-status">{isEnglish ? 'Confirm on Discord' : 'Konfirmasi di Discord'}</span></div><h2><a href={href(`/programs/${item.slug}`)}>{item.title}</a></h2><p>{item.summary}</p><div class="kad-card-actions"><a class="kad-source-link" href={item.sourceUrl} target="_blank" rel="noopener noreferrer">{item.sourceLabel} ↗</a><a class="kad-text-link" href={href(`/programs/${item.slug}`)}>{copy.actions.detail}</a></div></article>; })}</div><p id="programs-title" class="kad-note">{isEnglish ? 'Posters document public announcements. They are not proof of an active schedule.' : 'Poster mendokumentasikan pengumuman publik, bukan bukti jadwal yang masih aktif.'}</p></section>
-          {STAGING_FIXTURES_ENABLED && <section class="kad-section" aria-labelledby="sample-sessions-title"><div class="kad-section-heading"><div><p class="kad-kicker">{copy.states.demo}</p><h2 id="sample-sessions-title">{isEnglish ? 'See how a next-session module would work.' : 'Lihat cara modul jadwal berikutnya bekerja.'}</h2></div><p class="kad-note">{isEnglish ? 'These dates are fictional and exist only to review the staging experience.' : 'Tanggal ini fiktif dan hanya dipakai untuk menilai pengalaman staging.'}</p></div><div class="kad-grid kad-grid--two">{PROGRAMS.map((item) => stagingSessionByProgramId(item.slug)).filter((session) => session !== undefined).map((session) => <SessionPreview session={session} locale={locale} programHref={href(`/programs/${session.programId}`)} />)}</div></section>}
+          {fixturesEnabled && <section class="kad-section" aria-labelledby="sample-sessions-title"><div class="kad-section-heading"><div><p class="kad-kicker">{copy.states.demo}</p><h2 id="sample-sessions-title">{isEnglish ? 'See how a next-session module would work.' : 'Lihat cara modul jadwal berikutnya bekerja.'}</h2></div><p class="kad-note">{isEnglish ? 'These dates are fictional and exist only to review the staging experience.' : 'Tanggal ini fiktif dan hanya dipakai untuk menilai pengalaman staging.'}</p></div><div class="kad-grid kad-grid--two">{PROGRAMS.map((item) => stagingSessionByProgramId(item.slug)).filter((session) => session !== undefined).map((session) => <SessionPreview session={session} locale={locale} programHref={href(`/programs/${session.programId}`)} />)}</div></section>}
         </>
       )}
 
@@ -142,58 +65,24 @@ const communityMetrics = STAGING_FIXTURES_ENABLED
         </>
       )}
 
-      {kind === 'events' && (
-        <>
-          <header class="kad-subpage-intro kad-subpage-intro--events" aria-labelledby="page-title" data-page-header="schedule">
-            <div><p class="kad-eyebrow">{copy.eyebrow}</p><h1 id="page-title">{copy.title}</h1><p>{copy.description}</p></div>
-            <div class="kad-subpage-intro__aside"><strong>{stagingEvents.length} {isEnglish ? 'events' : 'agenda'}</strong><span>{STAGING_FIXTURES_ENABLED ? (isEnglish ? 'on this preview schedule' : 'dalam jadwal pratinjau ini') : (isEnglish ? 'on the published schedule' : 'dalam jadwal publik')}</span><a class="kad-button kad-button--primary" href={DISCORD_URL} target="_blank" rel="noopener noreferrer">{copy.actions.discord}</a></div>
-          </header>
-          <section class="kad-operational-section" aria-labelledby="event-state-title">
-            <div class="kad-section-heading kad-section-heading--compact"><div><p class="kad-kicker">{isEnglish ? 'Schedule' : 'Jadwal'}</p><h2 id="event-state-title">{isEnglish ? 'Choose an event by time and status.' : 'Pilih kegiatan berdasarkan waktu dan status.'}</h2></div><p class="kad-note">{isEnglish ? 'Times are shown in Jakarta time. Confirm the latest joining path in Discord.' : 'Waktu ditampilkan dalam WIB. Konfirmasikan jalur ikut terbaru di Discord.'}</p></div>
-            {STAGING_FIXTURES_ENABLED
-              ? <ol class="kad-event-list">{stagingEvents.map((item) => <li><EventScheduleCard event={item} locale={locale} href={href(`/events/${item.id}`)} /></li>)}</ol>
-              : <div data-event-count="0" data-event-state="empty"><StatePanel state="empty" id="event-state-empty" locale={locale} statusLabel={isEnglish ? '0 public events' : '0 agenda publik'} title={isEnglish ? 'No public schedule is available yet.' : 'Belum ada agenda publik.'} description={isEnglish ? 'Schedules stay off this page until their time, joining path, and latest revision are approved.' : 'Agenda tidak ditampilkan sampai waktu, jalur ikut, dan revisi terbarunya disetujui.'}><a class="kad-button kad-button--outline" href={DISCORD_URL} target="_blank" rel="noopener noreferrer">{copy.actions.discord}</a></StatePanel></div>}
-          </section>
-        </>
-      )}
-
-      {kind === 'event' && (event ? <>
-        <nav class="kad-breadcrumb" aria-label={isEnglish ? 'Breadcrumb' : 'Jejak halaman'}><a href={href('/events')}>{isEnglish ? 'Events' : 'Agenda'}</a><span aria-hidden="true">/</span><span aria-current="page">{fixtureText(event.title, locale)}</span></nav>
-        <header class="kad-record-intro" aria-labelledby="page-title" data-page-header="event-record" data-fixture-id={event.id} data-fixture-state={event.state}>
-          <div><StatusBadge state={event.state} locale={locale} /><p class="kad-eyebrow">{copy.eyebrow}</p><h1 id="page-title">{fixtureText(event.title, locale)}</h1><p>{fixtureText(event.summary, locale)}</p></div>
-          <dl class="kad-record-facts">
-            <div><dt>{isEnglish ? 'When' : 'Waktu'}</dt><dd>{new Intl.DateTimeFormat(isEnglish ? 'en-US' : 'id-ID', { dateStyle: 'full', timeStyle: 'short', timeZone: event.timezone }).format(new Date(event.startsAt))}</dd></div>
-            <div><dt>{isEnglish ? 'Duration' : 'Durasi'}</dt><dd>{Math.round((new Date(event.endsAt).getTime() - new Date(event.startsAt).getTime()) / 60000)} {isEnglish ? 'minutes' : 'menit'}</dd></div>
-            <div><dt>{isEnglish ? 'Format' : 'Format'}</dt><dd>{isEnglish ? 'Online' : 'Daring'}</dd></div>
-            {eventProgram && <div><dt>{isEnglish ? 'Program' : 'Program'}</dt><dd><a href={href(`/programs/${eventProgram.slug}`)}>{eventProgram.title}</a></dd></div>}
-          </dl>
-        </header>
-        <section class="kad-record-actions" aria-labelledby="event-next-title"><div><p class="kad-kicker">{isEnglish ? 'Joining information' : 'Informasi keikutsertaan'}</p><h2 id="event-next-title">{isEnglish ? 'Confirm the latest room and capacity.' : 'Konfirmasikan ruang dan kapasitas terbaru.'}</h2><p>{isEnglish ? 'The public schedule explains when the event happens. Discord remains the current place to confirm access.' : 'Agenda publik menjelaskan kapan kegiatan berlangsung. Akses terbaru tetap dikonfirmasi melalui Discord.'}</p></div><div class="kad-actions"><a class="kad-button kad-button--primary" href={DISCORD_URL} target="_blank" rel="noopener noreferrer">{isEnglish ? 'Confirm on Discord' : 'Konfirmasi di Discord'}</a><a class="kad-button kad-button--outline" href={href('/events')}>{copy.actions.back}</a></div></section>
-      </> : <>
-        <header class="kad-subpage-intro kad-subpage-intro--record" aria-labelledby="page-title" data-page-header="event-record"><div><p class="kad-eyebrow">{copy.eyebrow}</p><h1 id="page-title">{id === 'pending' ? (isEnglish ? 'This event is under review.' : 'Acara ini sedang diperiksa.') : copy.title}</h1><p>{id === 'pending' ? (isEnglish ? 'The time, joining path, and source are being checked before publication.' : 'Waktu, jalur ikut, dan sumber sedang diperiksa sebelum dipublikasikan.') : copy.description}</p></div><a class="kad-button kad-button--outline" href={href('/events')}>{copy.actions.back}</a></header>
-        <section class="kad-operational-section"><StatePanel state={id === 'pending' ? 'pending' : 'not-published'} locale={locale} statusLabel={id === 'pending' ? copy.states.pending : copy.states.notPublished} title={id === 'pending' ? (isEnglish ? 'Review is still in progress.' : 'Pemeriksaan masih berlangsung.') : (isEnglish ? 'No public event record is available.' : 'Belum ada rekaman acara publik.')} description={id === 'pending' ? (isEnglish ? 'Return to the schedule or confirm the latest information in Discord.' : 'Kembali ke agenda atau konfirmasikan informasi terbaru di Discord.') : (isEnglish ? 'Only approved event records appear on this route.' : 'Hanya rekaman acara yang telah disetujui yang tampil di halaman ini.')}><a class="kad-button kad-button--outline" href={href('/events')}>{copy.actions.back}</a></StatePanel></section>
-      </>)}
+      {(kind === 'events' || kind === 'event') && <AgendaPage locale={locale} href={href} id={kind === 'event' ? id : undefined} copy={{ eyebrow: copy.eyebrow, title: copy.title, description: copy.description, discord: copy.actions.discord, back: copy.actions.back }} />}
 
       {kind === 'volunteer' && (<>
         <header class="kad-subpage-intro kad-subpage-intro--volunteer" aria-labelledby="page-title" data-page-header="volunteer-cycle"><div><p class="kad-eyebrow">{copy.eyebrow}</p><h1 id="page-title">{copy.title}</h1><p>{copy.description}</p></div><div class="kad-subpage-intro__aside"><strong>{isEnglish ? '3-month cycle' : 'Siklus 3 bulan'}</strong><span>{isEnglish ? 'Clear scope, delivery, and handover' : 'Lingkup, hasil, dan serah terima yang jelas'}</span><a class="kad-button kad-button--primary" href={DISCORD_URL} target="_blank" rel="noopener noreferrer">{copy.actions.discord}</a></div></header>
         <section class="kad-operational-section" aria-labelledby="cycle-title"><div class="kad-section-heading kad-section-heading--compact"><div><p class="kad-kicker">{isEnglish ? 'How a cycle moves' : 'Alur satu siklus'}</p><h2 id="cycle-title">{isEnglish ? 'One scoped contribution at a time.' : 'Satu kontribusi dengan lingkup jelas.'}</h2></div><p class="kad-note">{isEnglish ? 'Ask about current intake before committing time.' : 'Tanyakan penerimaan yang sedang dibuka sebelum menyisihkan waktu.'}</p></div><ol class="kad-process-list">{(isEnglish ? [['Intake', 'Agree on the need, owner, scope, and expected result.'], ['Program work', 'Deliver one useful outcome with the relevant program team.'], ['Handover', 'Record decisions, files, and follow-up for the next cycle.']] : [['Penerimaan', 'Sepakati kebutuhan, penanggung jawab, lingkup, dan hasil yang diharapkan.'], ['Kerja program', 'Tuntaskan satu hasil berguna bersama tim program terkait.'], ['Serah terima', 'Catat keputusan, berkas, dan tindak lanjut untuk siklus berikutnya.']]).map(([heading, text], index) => <li><span>{String(index + 1).padStart(2, '0')}</span><div><h3>{heading}</h3><p>{text}</p></div></li>)}</ol></section>
-        {STAGING_FIXTURES_ENABLED ? <><section class="kad-operational-section kad-operational-section--bordered" aria-labelledby="work-areas-title"><div class="kad-section-heading kad-section-heading--compact"><div><p class="kad-kicker">{isEnglish ? 'Work areas' : 'Area kerja'}</p><h2 id="work-areas-title">{isEnglish ? 'Work is grouped by the result it supports.' : 'Pekerjaan dikelompokkan berdasarkan hasil yang didukung.'}</h2></div></div><div class="kad-work-list">{STAGING_TEAMS.map((team) => <article data-fixture-id={team.id} data-fixture-state={team.state}><StatusBadge state={team.state} locale={locale} /><div><h3>{fixtureText(team.name, locale)}</h3><p>{fixtureText(team.purpose, locale)}</p><small>{fixtureText(team.handoff, locale)}</small></div></article>)}</div></section><section class="kad-operational-section kad-operational-section--bordered" aria-labelledby="profiles-title"><div class="kad-section-heading kad-section-heading--compact"><div><p class="kad-kicker">{isEnglish ? 'Attribution choices' : 'Pilihan atribusi'}</p><h2 id="profiles-title">{isEnglish ? 'Public credit is optional.' : 'Kredit publik tetap pilihan.'}</h2></div><p class="kad-note">{isEnglish ? 'A contributor can use a chosen name or remain anonymous.' : 'Kontributor dapat memakai nama pilihan atau tetap anonim.'}</p></div><div class="kad-grid kad-grid--three">{STAGING_VOLUNTEERS.map((profile) => <VolunteerProfileCard profile={profile} locale={locale} />)}</div></section></> : <section class="kad-operational-section"><StatePanel state="pending" locale={locale} statusLabel={copy.states.pending} title={isEnglish ? 'Volunteer intake is not published yet.' : 'Penerimaan relawan belum dipublikasikan.'} description={isEnglish ? 'Ask in Discord for current openings and their scope.' : 'Tanyakan posisi yang sedang dibuka beserta lingkupnya di Discord.'}><a class="kad-button kad-button--primary" href={DISCORD_URL} target="_blank" rel="noopener noreferrer">{copy.actions.discord}</a></StatePanel></section>}
+        {fixturesEnabled ? <><section class="kad-operational-section kad-operational-section--bordered" aria-labelledby="work-areas-title"><div class="kad-section-heading kad-section-heading--compact"><div><p class="kad-kicker">{isEnglish ? 'Work areas' : 'Area kerja'}</p><h2 id="work-areas-title">{isEnglish ? 'Work is grouped by the result it supports.' : 'Pekerjaan dikelompokkan berdasarkan hasil yang didukung.'}</h2></div></div><div class="kad-work-list">{activeStagingTeams().map((team) => <article data-fixture-id={team.id} data-fixture-state={team.state}><StatusBadge state={team.state} locale={locale} /><div><h3>{fixtureText(team.name, locale)}</h3><p>{fixtureText(team.purpose, locale)}</p><small>{fixtureText(team.handoff, locale)}</small></div></article>)}</div></section><section class="kad-operational-section kad-operational-section--bordered" aria-labelledby="profiles-title"><div class="kad-section-heading kad-section-heading--compact"><div><p class="kad-kicker">{isEnglish ? 'Attribution choices' : 'Pilihan atribusi'}</p><h2 id="profiles-title">{isEnglish ? 'Public credit is optional.' : 'Kredit publik tetap pilihan.'}</h2></div><p class="kad-note">{isEnglish ? 'A contributor can use a chosen name or remain anonymous.' : 'Kontributor dapat memakai nama pilihan atau tetap anonim.'}</p></div><div class="kad-grid kad-grid--three">{activeStagingVolunteers().map((profile) => <VolunteerProfileCard profile={profile} locale={locale} />)}</div></section></> : <section class="kad-operational-section"><StatePanel state="pending" locale={locale} statusLabel={copy.states.pending} title={isEnglish ? 'Volunteer intake is not published yet.' : 'Penerimaan relawan belum dipublikasikan.'} description={isEnglish ? 'Ask in Discord for current openings and their scope.' : 'Tanyakan posisi yang sedang dibuka beserta lingkupnya di Discord.'}><a class="kad-button kad-button--primary" href={DISCORD_URL} target="_blank" rel="noopener noreferrer">{copy.actions.discord}</a></StatePanel></section>}
       </>)}
 
-      {kind === 'stories' && (<><header class="kad-subpage-intro kad-subpage-intro--stories" aria-labelledby="page-title" data-page-header="story-index"><div><p class="kad-eyebrow">{copy.eyebrow}</p><h1 id="page-title">{copy.title}</h1><p>{copy.description}</p></div><div class="kad-subpage-intro__aside"><strong>{STAGING_FIXTURES_ENABLED ? STAGING_PUBLISHED_RECORDS.filter((record) => record.recordType === 'story').length : 0} {isEnglish ? 'stories' : 'cerita'}</strong><span>{STAGING_FIXTURES_ENABLED ? (isEnglish ? 'published preview records' : 'rekaman pratinjau terbit') : (isEnglish ? 'published story records' : 'rekaman cerita terbit')}</span><small>{isEnglish ? 'Editorial and attribution review required' : 'Wajib melalui pemeriksaan editorial dan atribusi'}</small></div></header><section class="kad-operational-section" aria-labelledby="story-index-title"><div class="kad-section-heading kad-section-heading--compact"><div><p class="kad-kicker">{isEnglish ? 'Community notes' : 'Catatan komunitas'}</p><h2 id="story-index-title">{isEnglish ? 'Read the context, not just the headline.' : 'Baca konteksnya, bukan hanya judulnya.'}</h2></div></div>{STAGING_FIXTURES_ENABLED ? <div class="kad-story-list">{STAGING_PUBLISHED_RECORDS.filter((record) => record.recordType === 'story').map((record) => <article data-fixture-id={record.id} data-fixture-state={record.state}><div class="kad-story-list__meta"><StatusBadge state={record.state} locale={locale} /><time datetime={record.publishedDate}>{new Intl.DateTimeFormat(isEnglish ? 'en-GB' : 'id-ID', { dateStyle: 'long', timeZone: 'Asia/Jakarta' }).format(new Date(`${record.publishedDate}T12:00:00+07:00`))}</time></div><h3>{fixtureText(record.title, locale)}</h3><p>{fixtureText(record.summary, locale)}</p><div class="kad-card-actions"><span>{fixtureText(record.sourceLabel, locale)}</span>{record.slug && <a class="kad-text-link" href={href(`/stories/${record.slug}`)}>{copy.actions.detail}</a>}</div></article>)}</div> : <StatePanel state="pending" locale={locale} statusLabel={copy.states.pending} title={copy.states.empty} description={isEnglish ? 'A story publishes only after editorial and attribution review.' : 'Cerita hanya terbit setelah pemeriksaan editorial dan atribusi.'}><a class="kad-button kad-button--primary" href={DISCORD_URL} target="_blank" rel="noopener noreferrer">{copy.actions.discord}</a></StatePanel>}</section></>)}
-
-      {kind === 'story' && (story ? <><nav class="kad-breadcrumb" aria-label={isEnglish ? 'Breadcrumb' : 'Jejak halaman'}><a href={href('/stories')}>{isEnglish ? 'Stories' : 'Cerita'}</a><span aria-hidden="true">/</span><span aria-current="page">{fixtureText(story.title, locale)}</span></nav><article class="kad-story-detail" data-fixture-id={story.id} data-fixture-state={story.state}><header><div class="kad-story-list__meta"><StatusBadge state={story.state} locale={locale} /><time datetime={story.publishedDate}>{new Intl.DateTimeFormat(isEnglish ? 'en-GB' : 'id-ID', { dateStyle: 'long', timeZone: 'Asia/Jakarta' }).format(new Date(`${story.publishedDate}T12:00:00+07:00`))}</time></div><p class="kad-eyebrow">{copy.eyebrow}</p><h1 id="page-title">{fixtureText(story.title, locale)}</h1><p>{fixtureText(story.summary, locale)}</p></header><div class="kad-story-detail__body">{story.body?.map((paragraph) => <p>{fixtureText(paragraph, locale)}</p>)}</div><footer><p>{fixtureText(story.sourceLabel, locale)}</p><div class="kad-actions"><a class="kad-button kad-button--outline" href={href('/stories')}>{copy.actions.back}</a><a class="kad-button kad-button--primary" href={DISCORD_URL} target="_blank" rel="noopener noreferrer">{copy.actions.discord}</a></div></footer></article></> : <><header class="kad-subpage-intro kad-subpage-intro--record" aria-labelledby="page-title"><div><p class="kad-eyebrow">{copy.eyebrow}</p><h1 id="page-title">{copy.title}</h1><p>{copy.description}</p></div></header><section class="kad-operational-section"><StatePanel state="not-published" locale={locale} title={copy.states.notPublished} description={copy.description}><a class="kad-button kad-button--outline" href={href('/stories')}>{copy.actions.back}</a></StatePanel></section></>)}
-
       {kind === 'impact' && (<>
-        <header class="kad-subpage-intro kad-subpage-intro--impact" aria-labelledby="page-title" data-page-header="impact-ledger"><div><p class="kad-eyebrow">{copy.eyebrow}</p><h1 id="page-title">{isEnglish ? 'Community impact' : 'Dampak komunitas'}</h1><p>{copy.description}</p></div><div class="kad-subpage-intro__aside"><strong>{STAGING_FIXTURES_ENABLED ? STAGING_METRICS.length : 0} {isEnglish ? 'metrics' : 'metrik'}</strong><span>{STAGING_FIXTURES_ENABLED ? (isEnglish ? 'published preview records' : 'rekaman pratinjau terbit') : (isEnglish ? 'published metric records' : 'rekaman metrik terbit')}</span></div></header>
-        <section class="kad-operational-section" aria-labelledby="metrics-title"><div class="kad-section-heading kad-section-heading--compact"><div><p class="kad-kicker">{isEnglish ? 'Impact ledger' : 'Buku dampak'}</p><h2 id="metrics-title">{isEnglish ? 'Read the number together with its method.' : 'Baca angka bersama cara menghitungnya.'}</h2></div><p class="kad-note">{isEnglish ? 'Different measures are kept separate so reach is not confused with participation or completed work.' : 'Setiap ukuran dipisahkan agar jangkauan tidak disamakan dengan partisipasi atau pekerjaan selesai.'}</p></div>{STAGING_FIXTURES_ENABLED ? <div class="kad-metric-ledger">{STAGING_METRICS.map((metric) => <MetricCard metric={metric} locale={locale} />)}</div> : <StatePanel state="pending" locale={locale} statusLabel={copy.states.pending} title={isEnglish ? 'No metric has passed publication review.' : 'Belum ada metrik yang lolos pemeriksaan publikasi.'} description={isEnglish ? 'A metric needs a period, definition, source, method, revision, and correction path.' : 'Metrik membutuhkan periode, definisi, sumber, metode, revisi, dan jalur koreksi.'} />}</section>
+        <header class="kad-subpage-intro kad-subpage-intro--impact" aria-labelledby="page-title" data-page-header="impact-ledger"><div><p class="kad-eyebrow">{copy.eyebrow}</p><h1 id="page-title">{isEnglish ? 'Community impact' : 'Dampak komunitas'}</h1><p>{copy.description}</p></div><div class="kad-subpage-intro__aside"><strong>{fixturesEnabled ? activeStagingMetrics().length : 0} {isEnglish ? 'metrics' : 'metrik'}</strong><span>{fixturesEnabled ? (isEnglish ? 'published preview records' : 'rekaman pratinjau terbit') : (isEnglish ? 'published metric records' : 'rekaman metrik terbit')}</span></div></header>
+        <section class="kad-operational-section" aria-labelledby="metrics-title"><div class="kad-section-heading kad-section-heading--compact"><div><p class="kad-kicker">{isEnglish ? 'Impact ledger' : 'Buku dampak'}</p><h2 id="metrics-title">{isEnglish ? 'Read the number together with its method.' : 'Baca angka bersama cara menghitungnya.'}</h2></div><p class="kad-note">{isEnglish ? 'Different measures are kept separate so reach is not confused with participation or completed work.' : 'Setiap ukuran dipisahkan agar jangkauan tidak disamakan dengan partisipasi atau pekerjaan selesai.'}</p></div>{fixturesEnabled ? <div class="kad-metric-ledger">{activeStagingMetrics().map((metric) => <MetricCard metric={metric} locale={locale} />)}</div> : <StatePanel state="pending" locale={locale} statusLabel={copy.states.pending} title={isEnglish ? 'No metric has passed publication review.' : 'Belum ada metrik yang lolos pemeriksaan publikasi.'} description={isEnglish ? 'A metric needs a period, definition, source, method, revision, and correction path.' : 'Metrik membutuhkan periode, definisi, sumber, metode, revisi, dan jalur koreksi.'} />}</section>
       </>)}
 
       {kind === 'credits' && (
         <>
-          <header class="kad-subpage-intro kad-subpage-intro--credits" aria-labelledby="page-title" data-page-header="contribution-ledger"><div><p class="kad-eyebrow">{copy.eyebrow}</p><h1 id="page-title">{isEnglish ? 'Contribution credits' : 'Kredit kontribusi'}</h1><p>{copy.description}</p></div><div class="kad-subpage-intro__aside"><strong>{STAGING_FIXTURES_ENABLED ? STAGING_CONTRIBUTIONS.length : 0} {isEnglish ? 'contributions' : 'kontribusi'}</strong><span>{STAGING_FIXTURES_ENABLED ? (isEnglish ? 'published preview records' : 'rekaman pratinjau terbit') : (isEnglish ? 'published contribution records' : 'rekaman kontribusi terbit')}</span><small>{isEnglish ? 'Anonymous by default' : 'Anonim secara bawaan'}</small></div></header>
+          <header class="kad-subpage-intro kad-subpage-intro--credits" aria-labelledby="page-title" data-page-header="contribution-ledger"><div><p class="kad-eyebrow">{copy.eyebrow}</p><h1 id="page-title">{isEnglish ? 'Contribution credits' : 'Kredit kontribusi'}</h1><p>{copy.description}</p></div><div class="kad-subpage-intro__aside"><strong>{fixturesEnabled ? activeStagingContributions().length : 0} {isEnglish ? 'contributions' : 'kontribusi'}</strong><span>{fixturesEnabled ? (isEnglish ? 'published preview records' : 'rekaman pratinjau terbit') : (isEnglish ? 'published contribution records' : 'rekaman kontribusi terbit')}</span><small>{isEnglish ? 'Anonymous by default' : 'Anonim secara bawaan'}</small></div></header>
           <section class="kad-operational-section">
-            {STAGING_FIXTURES_ENABLED ? (
+            {fixturesEnabled ? (
               <>
                 <div class="kad-section-heading kad-section-heading--compact">
                   <div>
@@ -201,7 +90,7 @@ const communityMetrics = STAGING_FIXTURES_ENABLED
                     <h2>{isEnglish ? 'Credit the work without requiring a public identity.' : 'Catat pekerjaannya tanpa mewajibkan identitas publik.'}</h2>
                   </div>
                 </div>
-                <div class="kad-contribution-ledger">{STAGING_CONTRIBUTIONS.map((item) => <article data-fixture-id={item.id} data-fixture-state={item.state}><StatusBadge state={item.state} locale={locale} /><div><h3>{fixtureText(item.area, locale)}</h3><p>{fixtureText(item.summary, locale)}</p></div><small>{fixtureText(item.contributor, locale)}</small></article>)}</div>
+                <div class="kad-contribution-ledger">{activeStagingContributions().map((item) => <article data-fixture-id={item.id} data-fixture-state={item.state}><StatusBadge state={item.state} locale={locale} /><div><h3>{fixtureText(item.area, locale)}</h3><p>{fixtureText(item.summary, locale)}</p></div><small>{fixtureText(item.contributor, locale)}</small></article>)}</div>
                 <div class="kad-section-heading kad-section-heading--nested">
                   <div>
                     <p class="kad-kicker">{isEnglish ? 'Consent states' : 'Status izin'}</p>
@@ -210,7 +99,7 @@ const communityMetrics = STAGING_FIXTURES_ENABLED
                   <p class="kad-note">{isEnglish ? 'Withdrawing permission leaves a neutral record; it does not keep the previous identity visible.' : 'Pencabutan izin menyisakan rekaman netral tanpa mempertahankan identitas sebelumnya.'}</p>
                 </div>
                 <div class="kad-grid kad-grid--three">
-                  {STAGING_ATTRIBUTION.map((consent) => <AttributionConsentCard consent={consent} locale={locale} />)}
+                  {activeStagingAttribution().map((consent) => <AttributionConsentCard consent={consent} locale={locale} />)}
                 </div>
                 <div class="kad-inline-cta"><div><h2>{isEnglish ? 'Want to contribute without public attribution?' : 'Ingin berkontribusi tanpa atribusi publik?'}</h2><p>{isEnglish ? 'Ask about current work and choose how, or whether, your name appears.' : 'Tanyakan pekerjaan yang tersedia dan pilih apakah namamu perlu ditampilkan.'}</p></div><a class="kad-button kad-button--primary" href={DISCORD_URL} target="_blank" rel="noopener noreferrer">{copy.actions.discord}</a></div>
               </>

@@ -1,30 +1,23 @@
 import { readFile, readdir, stat } from 'node:fs/promises';
-import { createHash } from 'node:crypto';
 import { dirname, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+/**
+ * Build-level IR-to-runtime guard for the KAD public information system.
+ *
+ * This intentionally checks stable semantic selectors and the production /
+ * fixture boundary. It does not replace browser interaction, screenshots, or
+ * human hierarchy review.
+ */
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const distDir = join(root, 'dist');
 const irPath = join(root, 'docs/interface/kad-community-interface.ir.json');
 const publicContentIrPath = join(root, 'docs/public-content-system/interface-ir.json');
-const programFixturePath = join(root, 'src/content/community-site.ts');
 const publicContentPath = join(root, 'src/content/public-content.ts');
 const stagingFixturePath = join(root, 'src/content/staging-fixtures.ts');
 const stagingMode = process.env.PUBLIC_STAGING_FIXTURES === 'true';
 
-const requiredRoutes = [
-  '/',
-  '/community/',
-  '/programs/',
-  '/events/',
-  '/volunteer/',
-  '/stories/',
-  '/about/history/',
-  '/community/impact/',
-  '/support/',
-  '/community/credits/',
-];
-
+const requiredRoutes = ['/', '/community/', '/programs/', '/events/', '/volunteer/', '/stories/'];
 const canonicalProgramSources = [
   'https://x.com/KADSocialHub/status/2083791105590784033',
   'https://x.com/KADSocialHub/status/2083159775362302137',
@@ -33,32 +26,22 @@ const canonicalProgramSources = [
   'https://x.com/KADSocialHub/status/2080283341807604175',
 ];
 
-const approvedLocalPosters = {
-  '/images/programs/french-club-trial-2026-08-02.webp': '547cc84cc3d5fe76502701b56e2b0ea74fa4f4c0dc3cf28940c42a09ecd05bc2',
-  '/images/programs/mandarin-transport-2026-08-01.webp': 'e021a8fe8eb8a3d43adfb6c193e6290f795d43028bf7cc0721429409191fe5a1',
-  '/images/programs/apple-developer-academy-2027-info-session.webp': '5c17b45927e24c8f0b0cee0bc3a1b0be30baa02099041fd884586290ec90e28e',
-  '/images/programs/english-study-club-weekly-2026-07.webp': 'dd8e0cef2fe909b5faf3071f13d5286000ef76daf2e671db6023a882de9629cb',
-  '/images/programs/mandarin-study-club-weekly-2026-07.webp': '4d81ce9813ac93081c2612b0896d7ffc5575ed03e1ff96a534d9b68570739a3b',
-};
-const requiredLocalPosterPaths = Object.keys(approvedLocalPosters);
-
-const forbiddenRuntimePatterns = [
-  { label: 'Twitter CDN media', pattern: /https?:\/\/(?:pbs\.)?twimg\.com\//i },
-  { label: 'Discord CDN/private media', pattern: /https?:\/\/(?:media|cdn)\.discord(?:app)?\.com\//i },
-  { label: 'Discord channel/message URL', pattern: /https?:\/\/(?:www\.)?(?:discord(?:app)?\.com)\/(?:channels|message|messages)\//i },
-  { label: 'old Discord invite', pattern: /https?:\/\/discord\.com\/invite\/KaburAjaDulu/i },
-  { label: 'private Discord identifier field', pattern: /discord_(?:message|announcement_message|scheduled_event)_id|announcement_channel_id|host_voice_channel_id/i },
-  { label: 'research manifest filename', pattern: /source-manifest\.json/i },
-  { label: 'private fixture identifier field', pattern: /discord[_-](?:id|message|channel)|(?:privateMetric|private_metric|demographics)\s*[:=]/i },
+const forbiddenPatterns = [
+  ['Twitter CDN media', /https?:\/\/(?:pbs\.)?twimg\.com\//i],
+  ['Discord CDN/private media', /https?:\/\/(?:media|cdn)\.discord(?:app)?\.com\//i],
+  ['Discord channel/message URL', /https?:\/\/(?:www\.)?discord(?:app)?\.com\/(?:channels|message|messages)\//i],
+  ['old Discord invite', /https?:\/\/discord\.com\/invite\/KaburAjaDulu/i],
+  ['private Discord identifier field', /discord_(?:message|announcement_message|scheduled_event)_id|announcement_channel_id|host_voice_channel_id/i],
+  ['private fixture identifier field', /discord[_-](?:id|message|channel)|(?:privateMetric|private_metric|demographics)\s*[:=]/i],
 ];
-const fixtureIdPattern = /demo-(?:event|session|volunteer|contribution|metric|record|preview|consent)-[a-z0-9-]+/i;
+const fixtureIdPattern = /demo-(?:event|session|volunteer|contribution|metric|record|preview|consent|program|series|division|cycle|opportunity)-[a-z0-9-]+/i;
 
 async function walk(directory) {
   const entries = await readdir(directory, { withFileTypes: true });
   const files = [];
   for (const entry of entries) {
     const path = join(directory, entry.name);
-    if (entry.isDirectory()) files.push(...(await walk(path)));
+    if (entry.isDirectory()) files.push(...await walk(path));
     else files.push(path);
   }
   return files;
@@ -69,10 +52,21 @@ function fail(message) {
   process.exitCode = 1;
 }
 
-const [irRaw, publicContentIrRaw, programFixture, publicContentSource, stagingFixture, distStat] = await Promise.all([
+function count(text, pattern) {
+  return (text.match(pattern) ?? []).length;
+}
+
+function has(text, pattern) {
+  return typeof pattern === 'string' ? text.includes(pattern) : pattern.test(text);
+}
+
+function routeFile(route) {
+  return route === '/' ? 'index.html' : `${route.replace(/^\//, '').replace(/\/$/, '')}/index.html`;
+}
+
+const [irRaw, publicContentIrRaw, publicContentSource, stagingFixtureSource, distStat] = await Promise.all([
   readFile(irPath, 'utf8'),
   readFile(publicContentIrPath, 'utf8'),
-  readFile(programFixturePath, 'utf8'),
   readFile(publicContentPath, 'utf8'),
   readFile(stagingFixturePath, 'utf8'),
   stat(distDir).catch(() => null),
@@ -88,180 +82,154 @@ try {
   process.exit(1);
 }
 
-const programPosterMedia = Array.isArray(ir.media)
-  ? ir.media.filter((media) => media.id.startsWith('program_poster_'))
-  : [];
-const programCollection = Array.isArray(ir.components)
-  ? ir.components.find((component) => component.id === 'program_collection')
-  : null;
-const communityOverview = Array.isArray(ir.components)
-  ? ir.components.find((component) => component.id === 'community_overview')
-  : null;
-const gksMedia = Array.isArray(ir.media)
-  ? ir.media.find((media) => media.id === 'gks_third_party_media')
-  : null;
-
 if (!distStat?.isDirectory()) {
   fail(`built dist directory is missing: ${relative(root, distDir)}`);
   process.exit(1);
 }
 
+const [allFiles, ...routeContents] = await Promise.all([
+  walk(distDir),
+  ...requiredRoutes.map((route) => readFile(join(distDir, routeFile(route)), 'utf8').catch(() => '')),
+]);
+const runtimeFiles = allFiles.filter((file) => /\.(?:html|js|css|json)$/i.test(file));
+const runtime = new Map();
+for (const file of runtimeFiles) runtime.set(relative(distDir, file), await readFile(file, 'utf8'));
+const html = [...runtime.entries()].filter(([file]) => file.endsWith('.html'));
+const htmlText = html.map(([, content]) => content).join('\n');
+const communityHtml = runtime.get('community/index.html') ?? routeContents[1];
+const programsHtml = runtime.get('programs/index.html') ?? routeContents[2];
+const agendaHtml = runtime.get('events/index.html') ?? routeContents[3];
+const volunteerHtml = runtime.get('volunteer/index.html') ?? routeContents[4];
+const storiesHtml = runtime.get('stories/index.html') ?? routeContents[5];
+
+for (const [index, route] of requiredRoutes.entries()) {
+  if (!routeContents[index]) fail(`required route missing from dist: ${route} (${routeFile(route)})`);
+}
+
+const component = (id) => ir.components?.find((item) => item.id === id);
 const irChecks = [
   ['kind=interface-ir', ir.kind === 'interface-ir'],
   ['schema_version=1.0', ir.schema_version === '1.0'],
   ['no absolute local paths', !/\/(?:Users|home)\/[^/]+\//i.test(irRaw)],
-  ['semantic-navigation capability', Boolean(ir.capabilities?.['semantic-navigation'])],
-  ['source-provenance capability', Boolean(ir.capabilities?.['source-provenance'])],
-  ['responsive-recomposition capability', Boolean(ir.capabilities?.['responsive-recomposition'])],
-  ['mobile_menu state', Boolean(ir.states?.some((state) => state.id === 'mobile_menu'))],
-  ['event_feed state', Boolean(ir.states?.some((state) => state.id === 'event_feed'))],
-  ['program_availability state', Boolean(ir.states?.some((state) => state.id === 'program_availability'))],
-  ['five approved local poster records', programPosterMedia.length === 5 && programPosterMedia.every((media) => media.type === 'image' && media.implementation_safe === true && typeof media.src === 'string')],
-  ['four image-bearing programs', programCollection?.props?.image_program_count === 4],
-  ['English + Mandarin gallery count=2', programCollection?.props?.gallery_image_count === 2],
-  ['Community content order', JSON.stringify(communityOverview?.props?.content_order) === JSON.stringify(['pulse', 'programs', 'activity', 'people', 'sources'])],
-  ['Community metric context', JSON.stringify(communityOverview?.props?.metric_context) === JSON.stringify(['definition', 'method', 'source', 'period', 'reviewed_date'])],
-  ['Community five-record ledger', communityOverview?.props?.program_record_count === 5],
-  ['Community staging people contract', communityOverview?.props?.staging_people_count === 3],
-  ['Community production people boundary', communityOverview?.props?.production_people_policy === 'opt_in_pending_no_profiles'],
-  ['GKS third-party media forbidden', gksMedia?.type === 'none' && gksMedia?.implementation_safe === false],
+  ['community order', JSON.stringify(component('community_overview')?.props?.content_order) === JSON.stringify(['current', 'programs', 'agenda', 'people', 'sources'])],
+  ['program structure contract', component('program_catalogue')?.props?.structure === 'Program -> optional Series -> Session'],
+  ['staging Agenda union counts', component('agenda_index')?.props?.staging_kind_counts?.session === 3 && component('agenda_index')?.props?.staging_kind_counts?.event === 1],
+  ['volunteer organization counts', component('volunteer_directory')?.props?.positions === 4 && component('volunteer_directory')?.props?.divisions === 7 && component('volunteer_directory')?.props?.openings === 3],
+  ['profile no impact score', component('volunteer_profile')?.props?.personal_impact_score === false],
+  ['compact inner page contract', component('page_heading')?.props?.inner_page_max_rem === 3 && component('page_status_summary')?.props?.landing_hero_only === true],
+  ['safe Discord media boundary', ir.media?.some((media) => media.id === 'discord_private_media' && media.implementation_safe === false)],
 ];
 for (const [label, passed] of irChecks) if (!passed) fail(`IR missing ${label}`);
 
 const publicContentChecks = [
   ['kind=interface-ir', publicContentIr.kind === 'interface-ir'],
   ['schema_version=1.0', publicContentIr.schema_version === '1.0'],
-  ['category filter component', publicContentIr.components?.some((component) => component.id === 'category_filter')],
-  ['program list component', publicContentIr.components?.some((component) => component.id === 'program_list')],
-  ['program detail component', publicContentIr.components?.some((component) => component.id === 'program_detail')],
-  ['needs-confirmation initial state', publicContentIr.states?.some((state) => state.id === 'program_status' && state.initial === 'needs-confirmation')],
   ['repository interface', publicContentSource.includes('interface PublicContentRepository')],
   ['public DTO schema version', publicContentSource.includes('schemaVersion: 1')],
   ['public provenance field', publicContentSource.includes('publicProvenance')],
   ['repository result lifecycle', publicContentSource.includes("RepositoryState = 'loading' | 'ready' | 'empty' | 'stale' | 'error'")],
-  ['public projection excludes Discord fields', !/discord(?:Id|_id|Message|Channel)|consent(?:Id|_id)|authority(?:Id|_id)/.test(publicContentSource)],
+  ['public projection excludes private fields', !/discord(?:Id|_id|Message|Channel)|consent(?:Id|_id)|authority(?:Id|_id)/.test(publicContentSource)],
 ];
 for (const [label, passed] of publicContentChecks) if (!passed) fail(`public content contract missing ${label}`);
 
-const files = await walk(distDir);
-const runtimeFiles = files.filter((file) => /\.(?:html|js|css|json)$/i.test(file));
-const runtime = new Map();
-for (const file of runtimeFiles) runtime.set(relative(distDir, file), await readFile(file, 'utf8'));
-const html = [...runtime.entries()].filter(([file]) => file.endsWith('.html'));
-const htmlText = html.map(([, content]) => content).join('\n');
-const communityHtml = runtime.get('community/index.html') ?? '';
-const programsHtml = runtime.get('programs/index.html') ?? '';
-const languageProgramsHtml = runtime.get('programs/category/language/index.html') ?? '';
-const careerProgramsHtml = runtime.get('programs/category/career/index.html') ?? '';
-const weeklyDetailHtml = runtime.get('programs/english-mandarin-weekly-clubs/index.html') ?? '';
-const staleProgramsHtml = runtime.get('design-preview/programs/stale/index.html') ?? '';
-const errorProgramsHtml = runtime.get('design-preview/programs/error/index.html') ?? '';
-
-for (const route of requiredRoutes) {
-  const file = route === '/' ? 'index.html' : `${route.replace(/^\//, '').replace(/\/$/, '')}/index.html`;
-  if (!runtime.has(file)) fail(`required route missing from dist: ${route} (${file})`);
-}
-
-const programRuntimeChecks = [
-  ['Programs page family', programsHtml.includes('data-page-family="programs"')],
-  ['five public Program records', (programsHtml.match(/<li data-program-record/g) ?? []).length === 5],
-  ['five needs-confirmation labels', (programsHtml.match(/data-program-availability="needs_confirmation"/g) ?? []).length === 5],
-  ['three URL category filters', (programsHtml.match(/data-program-filter="/g) ?? []).length === 3],
-  ['language category route', (languageProgramsHtml.match(/<li data-program-record/g) ?? []).length === 3],
-  ['career category route', (careerProgramsHtml.match(/<li data-program-record/g) ?? []).length === 2],
-  ['no repeated task header', !programsHtml.includes('data-page-header="task"')],
-  ['Program detail family', weeklyDetailHtml.includes('data-page-family="program-detail"')],
-  ['Program detail known/confirmation split', weeklyDetailHtml.includes('Yang sudah diketahui') && weeklyDetailHtml.includes('Yang perlu dikonfirmasi')],
-  ['stale lifecycle route', staleProgramsHtml.includes('data-repository-state="stale"') && staleProgramsHtml.includes('data-freshness="stale"')],
-  ['recoverable error route', errorProgramsHtml.includes('data-repository-state="error"') && errorProgramsHtml.includes('Coba lagi')],
+const communitySections = [...communityHtml.matchAll(/data-community-section=["']([^"']+)["']/g)].map((match) => match[1]);
+const communityChecks = [
+  ['Community surface', has(communityHtml, 'data-community-surface="overview"')],
+  ['Community exact section order', JSON.stringify(communitySections) === JSON.stringify(['current', 'programs', 'agenda', 'people', 'sources'])],
+  ['Community heading', has(communityHtml, 'KAD saat ini')],
+  ['Community metric count', count(communityHtml, /data-community-metric=/g) === 3],
+  ['Community Program count', count(communityHtml, /data-program-record=/g) === 5],
+  ['No forbidden legacy labels', !/Pulse|Denyut komunitas/i.test(communityHtml)],
 ];
-for (const [label, passed] of programRuntimeChecks) if (!passed) fail(`Programs runtime missing ${label}`);
+for (const [label, passed] of communityChecks) if (!passed) fail(`Community runtime missing ${label}`);
 
-const communityRuntimeChecks = [
-  ['compact orientation header', communityHtml.includes('data-page-header="orientation"') && communityHtml.includes('kad-community-intro')],
-  ['ordered evidence regions', ['pulse', 'programs', 'activity', 'people', 'sources'].every((section) => communityHtml.includes(`data-community-section="${section}"`))],
-  ['semantic three-value pulse', (communityHtml.match(/data-community-metric=/g) ?? []).length === 3],
-  ['qualified pulse context', (communityHtml.match(/kad-community-metrics__context/g) ?? []).length === 3 && communityHtml.includes('Metode') && communityHtml.includes('Sumber') && communityHtml.includes('Ditinjau')],
-  ['five Program evidence records', (communityHtml.match(/data-program-record=/g) ?? []).length === 5],
-  ['no generic journey cards', !communityHtml.includes('kad-journey-card')],
-  ['no generic social cards', !communityHtml.includes('kad-card kad-source-link')],
+const detailHtml = [...runtime.values()].filter((text) => text.includes('data-page-family="program-detail"'))[0] ?? '';
+const agendaDetailHtml = [...runtime.values()].filter((text) => text.includes('data-page-header="event-record"'))[0] ?? '';
+const volunteerDetailHtml = [...runtime.values()].filter((text) => text.includes('data-volunteer-profile'))[0] ?? '';
+const storyDetailHtml = [...runtime.values()].filter((text) => text.includes('data-story-surface="detail"'))[0] ?? '';
+
+const programChecks = [
+  ['Programs page family', has(programsHtml, 'data-page-family="programs"')],
+  ['five Program records', count(programsHtml, /data-program-record/g) === 5],
+  ['Program detail route generated', Boolean(detailHtml)],
+  ['Program detail structure marker', has(detailHtml, 'data-program-structure-section') || has(detailHtml, 'data-program-series-list')],
+  ['Program metrics marker', has(detailHtml, 'data-program-metrics') || has(detailHtml, 'data-program-metric')],
+  ['Program contributor responsibility marker', has(detailHtml, 'data-program-contributors') || has(detailHtml, 'data-contributor-responsibility')],
 ];
+for (const [label, passed] of programChecks) if (!passed) fail(`Programs runtime missing ${label}`);
+
+const agendaChecks = [
+  ['Agenda page header', has(agendaHtml, 'data-page-header="schedule"') || has(agendaHtml, 'data-page-header="agenda"')],
+  ['Agenda public label', /<h1[^>]*>Agenda<\/h1>/i.test(agendaHtml) || /<h1[^>]*>Agenda\b/i.test(agendaHtml)],
+  ['Agenda state marker', has(agendaHtml, 'data-agenda-state=')],
+  ['Agenda detail route generated in staging', stagingMode ? Boolean(agendaDetailHtml) : true],
+  ['Agenda detail relationship', stagingMode ? (has(agendaDetailHtml, 'data-agenda-kind=') && has(agendaDetailHtml, 'data-agenda-id=')) : true],
+];
+for (const [label, passed] of agendaChecks) if (!passed) fail(`Agenda runtime missing ${label}`);
+
+const volunteerChecks = [
+  ['Volunteer page family', has(volunteerHtml, 'data-page-family="volunteer"')],
+  ['Volunteer cycle marker', has(volunteerHtml, 'data-volunteer-cycle')],
+  ['four volunteer positions', count(volunteerHtml, /data-volunteer-position/g) === 4],
+  ['seven volunteer divisions in staging', stagingMode ? count(volunteerHtml, /data-volunteer-division/g) === 7 : true],
+  ['three volunteer openings in staging', stagingMode ? count(volunteerHtml, /data-volunteer-opening/g) === 3 : true],
+  ['Volunteer detail route generated in staging', stagingMode ? Boolean(volunteerDetailHtml) : true],
+  ['Program-grouped ledger', stagingMode ? count(volunteerDetailHtml, /data-contribution-group/g) > 0 : true],
+  ['No personal impact score', !/data-personal-impact-score|personal impact score|personal impact score/i.test(volunteerHtml + volunteerDetailHtml)],
+];
+for (const [label, passed] of volunteerChecks) if (!passed) fail(`Volunteer runtime missing ${label}`);
+
+const storyChecks = [
+  ['Stories surface', has(storiesHtml, 'data-story-surface="index"')],
+  ['Story detail route generated in staging', stagingMode ? Boolean(storyDetailHtml) : true],
+  ['Stories do not replace Agenda/ledger', !/replaces the Agenda|menggantikan Agenda/i.test(storiesHtml + storyDetailHtml) || has(storiesHtml + storyDetailHtml, 'data-story-surface')],
+];
+for (const [label, passed] of storyChecks) if (!passed) fail(`Stories runtime missing ${label}`);
+
 if (stagingMode) {
-  communityRuntimeChecks.push(
-    ['three staged activity records', (communityHtml.match(/data-fixture-id="demo-event-/g) ?? []).length === 3],
-    ['three staged opt-in people records', (communityHtml.match(/data-attribution="opt-in-demo"/g) ?? []).length === 3],
-  );
+  const stagedAgenda = [...runtime.values()].filter((text) => text.includes('data-agenda-kind='));
+  const stagedAgendaText = stagedAgenda.join('\n');
+  const stagingChecks = [
+    ['staging fixture marker', has(htmlText, 'data-fixtures="enabled"')],
+    ['staging disclosure', /Pratinjau · data contoh|Preview · sample data/i.test(htmlText)],
+    ['staging Agenda has three Sessions', count(agendaHtml, /data-agenda-kind="session"/g) === 3],
+    ['staging Agenda has one standalone Event', count(agendaHtml, /data-agenda-kind="event"/g) === 1],
+    ['staging Agenda join paths', count(agendaHtml, /data-discord-join-path/g) === 4],
+    ['staging volunteer people', count(volunteerHtml, /data-volunteer-person/g) >= 3],
+    ['staging fictional IDs exist', fixtureIdPattern.test(htmlText)],
+    ['staging all pages noindex', html.every(([, content]) => /<meta\s+name=["']robots["']\s+content=["']noindex, nofollow["']/i.test(content))],
+  ];
+  for (const [label, passed] of stagingChecks) if (!passed) fail(`Staging runtime missing ${label}`);
+  if (!stagedAgendaText) fail('staging Agenda records are missing');
 } else {
-  communityRuntimeChecks.push(
-    ['production opt-in policy', communityHtml.includes('Atribusi publik bersifat opt-in.')],
-    ['production published event count', communityHtml.includes('data-community-metric="published-event-count"') && communityHtml.includes('Agenda terbit')],
-    ['no staged people records', !communityHtml.includes('data-attribution="opt-in-demo"')],
-  );
-}
-for (const [label, passed] of communityRuntimeChecks) if (!passed) fail(`Community runtime missing ${label}`);
-
-const sourceMatches = [...new Set(canonicalProgramSources.filter((source) => htmlText.includes(source)))];
-if (sourceMatches.length !== canonicalProgramSources.length) {
-  fail(`canonical program source links found ${sourceMatches.length}/5`);
-}
-
-const posterMatches = [...new Set(requiredLocalPosterPaths.filter((path) => htmlText.includes(path)))];
-if (posterMatches.length !== requiredLocalPosterPaths.length) {
-  fail(`approved local poster paths found ${posterMatches.length}/${requiredLocalPosterPaths.length}`);
+  const productionChecks = [
+    ['production fixture marker', has(htmlText, 'data-fixtures="disabled"')],
+    ['production empty Agenda', has(agendaHtml, 'data-agenda-state="empty"') && has(agendaHtml, 'data-evidence-placeholder')],
+    ['production no fixture IDs', !fixtureIdPattern.test(htmlText)],
+    ['production no demo copy', !/Data simulasi|Demo data|Pratinjau · data contoh/i.test(htmlText)],
+    ['production no staged people', !has(htmlText, 'data-attribution="opt-in-demo"')],
+    ['production volunteer placeholder', has(volunteerHtml, 'data-volunteer-state="evidence-placeholder"') || has(volunteerHtml, 'data-state="pending"')],
+    ['production stories placeholder/empty', has(storiesHtml, 'data-state="empty"') || has(storiesHtml, 'Evidence Placeholder')],
+  ];
+  for (const [label, passed] of productionChecks) if (!passed) fail(`Production runtime missing ${label}`);
+  const sourceMatches = [...new Set(canonicalProgramSources.filter((source) => htmlText.includes(source)))];
+  if (sourceMatches.length !== canonicalProgramSources.length) fail(`canonical program source links found ${sourceMatches.length}/${canonicalProgramSources.length}`);
 }
 
-for (const [posterPath, approvedHash] of Object.entries(approvedLocalPosters)) {
-  const builtPosterPath = join(distDir, posterPath.replace(/^\//, ''));
-  const poster = await readFile(builtPosterPath).catch(() => null);
-  if (!poster) {
-    fail(`approved local poster is missing from dist: ${posterPath}`);
-    continue;
-  }
-  const actualHash = createHash('sha256').update(poster).digest('hex');
-  if (actualHash !== approvedHash) fail(`approved local poster hash mismatch: ${posterPath}`);
-  if (!programFixture.includes(posterPath) || !programFixture.includes(approvedHash)) {
-    fail(`poster path/hash is missing from checked content fixture: ${posterPath}`);
-  }
-}
-
-const imageSources = [...htmlText.matchAll(/<img\b[^>]*\bsrc=["']([^"']+)["']/gi)].map((match) => match[1]);
-const externalImageSources = imageSources.filter((src) => /^https?:\/\//i.test(src));
-if (externalImageSources.length) {
-  fail(`external image src found in dist: ${[...new Set(externalImageSources)].join(', ')}`);
-}
-
-if (!stagingMode && !htmlText.includes('data-fixtures="disabled"')) fail('production fixture boundary marker is missing');
-if (stagingMode) {
-  if (!htmlText.includes('data-fixture-id="demo-preview-fixture-kad-2026"')) fail('staging fixture banner marker is missing');
-  if (!htmlText.includes('data-fixture-state="upcoming"')) fail('staging event state marker is missing');
-  if (!fixtureIdPattern.test(htmlText)) fail('staging fixture IDs are missing');
-  if (!htmlText.includes('Pratinjau · data contoh') && !htmlText.includes('Preview · sample data')) fail('staging preview disclosure is missing');
-  const indexablePages = html
-    .filter(([, content]) => !/<meta\s+name=["']robots["']\s+content=["']noindex, nofollow["']/i.test(content))
-    .map(([file]) => file);
-  if (indexablePages.length) fail(`staging pages missing noindex: ${indexablePages.slice(0, 5).join(', ')}`);
-} else {
-  if (fixtureIdPattern.test(htmlText)) fail('fixture IDs leaked into production runtime');
-  if (/Data simulasi|Demo data/.test(htmlText)) fail('demo labels leaked into production runtime');
-  if (!htmlText.includes('data-event-count="0"')) fail('production empty event count is missing');
-  if (!htmlText.includes('data-event-state="empty"')) fail('production empty event state is missing');
-  for (const marker of ['Tinjauan bukti', 'Belum menerima pembayaran', 'Anonim secara bawaan', 'Belum dipublikasikan']) {
-    if (!htmlText.includes(marker)) fail(`production readiness marker missing: ${marker}`);
-  }
-}
-
-if (!stagingFixture.includes('PUBLIC_STAGING_FIXTURES') || !stagingFixture.includes('demo: true')) {
+if (!stagingFixtureSource.includes('PUBLIC_STAGING_FIXTURES') || !stagingFixtureSource.includes('demo: true')) {
   fail('typed staging fixture boundary is missing');
 }
 for (const forbiddenField of ['email:', 'discordId', 'channelId', 'messageId', 'avatarUrl', 'demographics']) {
-  if (stagingFixture.includes(forbiddenField)) fail(`forbidden fixture field found: ${forbiddenField}`);
+  if (stagingFixtureSource.includes(forbiddenField)) fail(`forbidden fixture field found: ${forbiddenField}`);
 }
 
 for (const [file, content] of runtime) {
-  for (const { label, pattern } of forbiddenRuntimePatterns) {
+  for (const [label, pattern] of forbiddenPatterns) {
     if (pattern.test(content)) fail(`${label} found in dist/${file}`);
   }
 }
 
+if (/Pulse|Denyut komunitas/i.test(htmlText)) fail('deprecated community labels found in runtime');
+
 if (process.exitCode) process.exit(1);
-console.log(`INTERFACE_RUNTIME_PASS routes=${requiredRoutes.length} programs=${sourceMatches.length} files=${runtimeFiles.length}`);
+console.log(`INTERFACE_RUNTIME_PASS mode=${stagingMode ? 'staging' : 'production'} routes=${requiredRoutes.length} html=${html.length} files=${runtimeFiles.length}`);

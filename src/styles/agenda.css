@@ -1,0 +1,82 @@
+/* Agenda-specific structure; kept separate so shared program styles stay stable. */
+.kad-agenda-groups {
+  display: grid;
+  gap: clamp(28px, 5vw, 52px);
+}
+
+.kad-agenda-day-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  margin-block-end: 10px;
+  padding-block-end: 10px;
+  border-block-end: 2px solid var(--kad-ink);
+}
+
+.kad-agenda-day-heading h3 {
+  margin: 0;
+  color: var(--kad-ink);
+  font-size: clamp(1rem, 1.8vw, 1.3rem);
+  letter-spacing: -.02em;
+}
+
+.kad-agenda-day-heading span {
+  color: var(--kad-muted);
+  font-size: .68rem;
+  font-weight: 800;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+.kad-agenda-freshness {
+  color: var(--kad-muted);
+  font-size: .72rem;
+}
+
+.kad-agenda-time {
+  display: grid;
+  gap: 2px;
+  justify-items: start;
+  color: var(--kad-muted);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.35;
+}
+
+.kad-agenda-time span:last-child {
+  color: var(--kad-cobalt);
+  font-size: .68rem;
+  font-weight: 800;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+
+.kad-agenda-context {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .45rem 1.1rem;
+  color: var(--kad-muted);
+  font-size: .78rem;
+}
+
+.kad-agenda-context strong { color: var(--kad-ink); }
+
+.kad-agenda-join {
+  white-space: nowrap;
+}
+
+.kad-agenda-detail-time {
+  display: block;
+  margin-block-start: 3px;
+  color: var(--kad-muted);
+  font-size: .76rem;
+  font-weight: 500;
+}
+
+@media (max-width: 720px) {
+  .kad-agenda-day-heading { align-items: flex-start; flex-direction: column; gap: 4px; }
+  .kad-agenda-time { grid-template-columns: auto auto; }
+  .kad-agenda-time span:last-child { grid-column: 1 / -1; }
+  .kad-agenda-context { display: grid; gap: 5px; }
+  .kad-agenda-join { justify-self: start; }
+}

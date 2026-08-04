@@ -11,17 +11,20 @@ test('staging is noindex and visibly labels fictional data', async ({ page }) =>
   await expect(page.locator('.kad-demo-banner summary')).toHaveText('Pratinjau · data contoh');
 });
 
-test('community staging exposes qualified pulse, activity, and opt-in people', async ({ page }) => {
+test('community staging exposes qualified current metrics, agenda, and consent-safe people', async ({ page }) => {
   await page.goto('/community/', { waitUntil: 'domcontentloaded' });
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', 'noindex, nofollow');
-  await expect(page.locator('[data-community-section="pulse"] [data-community-metric^="demo-metric-"]')).toHaveCount(3);
-  await expect(page.locator('[data-community-section="pulse"] .kad-community-metrics__value')).toHaveText(['12', '8', '3']);
-  await expect(page.locator('[data-community-section="pulse"] .kad-community-metrics__context')).toHaveCount(3);
+  await expect(page.locator('[data-community-section="current"] [data-community-metric^="demo-metric-"]')).toHaveCount(3);
+  await expect(page.locator('[data-community-section="current"] .kad-community-information__metric-value')).toHaveText(['12', '8', '3']);
+  await expect(page.locator('[data-community-section="current"] .kad-community-information__metric-detail')).toHaveCount(3);
   await expect(page.locator('[data-community-section="programs"] [data-program-record]')).toHaveCount(5);
-  await expect(page.locator('[data-community-section="activity"] [data-fixture-id^="demo-event-"]')).toHaveCount(3);
-  await expect(page.locator('[data-community-section="people"] [data-attribution="opt-in-demo"]')).toHaveCount(3);
+  await expect(page.locator('[data-community-section="agenda"] [data-agenda-kind="session"]')).toHaveCount(3);
+  await expect(page.locator('[data-community-section="agenda"] [data-agenda-kind="event"]')).toHaveCount(1);
+  await expect(page.locator('[data-community-section="people"] [data-attribution="opt-in-demo"]')).toHaveCount(1);
+  await expect(page.locator('[data-community-section="people"] [data-attribution="anonymous-stub"]')).toHaveCount(3);
   await expect(page.getByText('Nara (fiktif)', { exact: true })).toBeVisible();
-  await expect(page.getByText('Yang perlu dikonfirmasi', { exact: true }).first()).toBeVisible();
+  await expect(page.getByText('Bima (fiktif)', { exact: true })).toHaveCount(0);
+  await expect(page.getByText('Sari (fiktif)', { exact: true })).toHaveCount(0);
 });
 
 test('staging uses one compact page-level preview disclosure', async ({ page }) => {
@@ -30,7 +33,7 @@ test('staging uses one compact page-level preview disclosure', async ({ page }) 
     { width: 390, height: 844, maxNoticeHeight: 64 },
   ]) {
     await page.setViewportSize({ width: viewport.width, height: viewport.height });
-    for (const route of ['/community/', '/events/', '/events/demo-event-mandarin-transport-01/', '/programs/', '/programs/english-mandarin-weekly-clubs/', '/volunteer/', '/stories/', '/stories/catatan-belajar-satu-siklus/', '/about/history/', '/community/impact/', '/community/credits/', '/support/']) {
+    for (const route of ['/community/', '/events/', '/events/demo-session-japanese-n5-01/', '/programs/', '/programs/japanese-study-club/', '/volunteer/', '/stories/', '/stories/catatan-belajar-satu-siklus/', '/about/history/', '/community/impact/', '/community/credits/', '/support/']) {
       await page.goto(route, { waitUntil: 'domcontentloaded' });
       const notices = page.locator('.kad-demo-banner:visible');
       await expect(notices, `${route} should expose one visible preview notice`).toHaveCount(1);
@@ -42,40 +45,52 @@ test('staging uses one compact page-level preview disclosure', async ({ page }) 
   }
 });
 
-test('event schedule derives upcoming and completed states from the scenario clock', async ({ page }) => {
+test('Agenda mixes canonical sessions and one standalone event', async ({ page }) => {
   await page.goto('/events/', { waitUntil: 'domcontentloaded' });
-  const cards = page.locator('.kad-event-card[data-fixture-id]');
-  await expect(cards).toHaveCount(3);
-  expect((await cards.evaluateAll((items) => items.map((item) => item.getAttribute('data-fixture-state')))).sort()).toEqual(['completed', 'completed', 'upcoming']);
-
-  const detailLink = cards.filter({ hasText: 'Mandarin Study Club' }).locator('h2 a');
-  await detailLink.click();
-  await expect(page.locator('[data-fixture-id="demo-event-mandarin-transport-01"]')).toBeVisible();
+  await expect(page.locator('[data-agenda-state="ready"]')).toBeVisible();
+  await expect(page.locator('[data-agenda-kind="session"]')).toHaveCount(3);
+  await expect(page.locator('[data-agenda-kind="event"]')).toHaveCount(1);
+  await expect(page.locator('[data-agenda-date]')).toHaveCount(4);
+  await expect(page.locator('[data-agenda-date] h3')).toHaveCount(4);
+  await expect(page.locator('[data-agenda-list] [data-agenda-state="upcoming"]')).toHaveCount(4);
+  await expect(page.locator('[data-agenda-kind="session"]').first()).toContainText(/Program session|Sesi program/);
+  await expect(page.locator('[data-agenda-kind="event"]').first()).toContainText(/One-off event|Acara satu kali/);
+  await expect(page.locator('[data-discord-join-path]')).toHaveCount(4);
+  await expect(page.locator('[data-agenda-freshness="demo"]')).toHaveCount(4);
+  expect(await page.locator('[data-discord-join-path]').evaluateAll((links) => links.map((link) => link.getAttribute('href')))).toEqual([
+    'https://discord.gg/RUFFbEaeDx',
+    'https://discord.gg/RUFFbEaeDx',
+    'https://discord.gg/RUFFbEaeDx',
+    'https://discord.gg/RUFFbEaeDx',
+  ]);
+  await expect(page.locator('body')).not.toContainText(/Pulse|Denyut/i);
+  const directSession = page.locator('[data-agenda-kind="session"]').filter({ hasText: 'English Study Club' });
+  await expect(directSession.locator('p').first()).not.toContainText(/series|seri program|rangkaian/i);
 
   await page.goto('/events/not-published/', { waitUntil: 'domcontentloaded' });
   await expect(page.locator('[data-state-panel="not-published"]')).toBeVisible();
 });
 
-test('event lifecycle follows the Aug 4 scenario clock and detail stays customer-facing', async ({ page }) => {
+test('Agenda detail exposes status, Program, Series, and safe Discord join path', async ({ page }) => {
   await page.goto('/events/', { waitUntil: 'domcontentloaded' });
-  const completedCard = page.locator('.kad-event-card').filter({ hasText: 'Mandarin Study Club' });
-  await expect(completedCard).toHaveCount(1);
-  await expect(completedCard).toHaveAttribute('data-fixture-state', 'completed');
-  await expect(completedCard.locator('[data-status="completed"]')).toBeVisible();
-
-  await completedCard.locator('h2 a').click();
+  const sessionCard = page.locator('[data-agenda-kind="session"]').first();
+  await sessionCard.locator('h2 a').click();
   const detail = page.locator('.kad-record-intro, .kad-record-actions');
   await expect(page.locator('.kad-record-intro')).toBeVisible();
   await expect(page.locator('.kad-record-actions')).toBeVisible();
   const detailText = await detail.allInnerTexts().then((parts) => parts.join('\n'));
-  expect(detailText).not.toMatch(/demo-(?:event|session)-[a-z0-9-]+|fixture\s*id|deterministic|developer|staging seed/i);
-  await expect(page.locator('.kad-record-facts dt')).toHaveText(['Waktu', 'Durasi', 'Format', 'Program']);
-  await expect(page.locator('.kad-record-facts')).toContainText(/3 Agustus 2026|August 3, 2026/i);
-  await expect(page.locator('.kad-record-facts')).toContainText(/75\s*menit|75\s*minutes/i);
-  await expect(page.locator('.kad-record-facts')).toContainText(/daring|online/i);
+  expect(detailText).not.toMatch(/demo-(?:event|session)-[a-z0-9-]+|fixture\s*id|deterministic|developer|staging seed|discord_(?:id|message|channel)/i);
+  await expect(page.locator('.kad-record-facts dt')).toHaveText(['Status', 'Waktu', 'Durasi', 'Program', 'Seri', 'Revisi sumber']);
+  await expect(page.locator('.kad-record-facts')).toContainText(/Akan datang|Upcoming/i);
+  await expect(page.locator('.kad-record-facts')).toContainText(/Japanese Study Club/i);
+  await expect(page.locator('.kad-record-facts')).toContainText(/N5/i);
   await expect(page.locator('.kad-record-facts a[href*="/programs/"]')).toHaveCount(1);
   await expect(page.locator('.kad-record-actions a[href*="discord"]')).toHaveCount(1);
   await expect(page.locator('.kad-record-actions a[href$="/events"], .kad-record-actions a[href$="/events/"]')).toHaveCount(1);
+
+  await page.goto('/events/demo-event-community-collaboration-01/', { waitUntil: 'domcontentloaded' });
+  await expect(page.locator('[data-agenda-kind="event"]')).toBeVisible();
+  await expect(page.locator('.kad-record-facts')).toContainText(/Standalone event|Acara berdiri sendiri/i);
 });
 
 test('programs keep the catalogue focused instead of adding a staging assistant module', async ({ page }) => {
@@ -85,12 +100,50 @@ test('programs keep the catalogue focused instead of adding a staging assistant 
   await expect(page.getByRole('heading', { name: 'Lihat cara modul jadwal berikutnya bekerja.' })).toHaveCount(0);
 });
 
-test('volunteer staging shows fictional structure and opt-in profiles', async ({ page }) => {
+test('staging Programs expose optional Series, direct Sessions, metrics, responsibilities, and honest Tech/Coding state', async ({ page }) => {
+  await page.goto('/programs/', { waitUntil: 'domcontentloaded' });
+  await expect(page.locator('[data-program-record]')).toHaveCount(5);
+  for (const title of ['Korean Study Club', 'CeritaAjaDulu']) {
+    await expect(page.locator('[data-program-record]').filter({ hasText: title }).locator('[data-program-availability="needs_confirmation"]')).toHaveCount(1);
+  }
+
+  await page.goto('/programs/japanese-study-club/', { waitUntil: 'domcontentloaded' });
+  await expect(page.locator('[data-program-series]')).toHaveCount(3);
+  await expect(page.locator('[data-program-series][data-series-id="japanese-n5"]')).toBeVisible();
+  await expect(page.locator('[data-program-series][data-series-id="japanese-n4-n3"]')).toBeVisible();
+  await expect(page.locator('[data-program-series][data-series-id="japanese-n2-n1"]')).toBeVisible();
+  await expect(page.locator('[data-program-metric]')).toHaveCount(4);
+  await expect(page.locator('[data-contributor-responsibility]')).toHaveCount(2);
+
+  await page.goto('/programs/english-study-club/', { waitUntil: 'domcontentloaded' });
+  await expect(page.locator('[data-program-series]')).toHaveCount(0);
+  await expect(page.locator('[data-program-session][data-series-id]')).toHaveCount(0);
+
+  await page.goto('/programs/tech-coding-club/', { waitUntil: 'domcontentloaded' });
+  await expect(page.locator('[data-program-repository]')).toContainText('Belum ada repositori proyek.');
+});
+
+test('volunteer staging shows the current cycle, privacy-safe structure, and contribution path', async ({ page }) => {
   await page.goto('/volunteer/', { waitUntil: 'domcontentloaded' });
-  await expect(page.locator('[data-fixture-id^="demo-team-"]')).toHaveCount(3);
-  await expect(page.locator('.kad-volunteer-card[data-fixture-id]')).toHaveCount(3);
-  await expect(page.getByRole('heading', { name: 'Pekerjaan dikelompokkan berdasarkan hasil yang didukung.' })).toBeVisible();
+  await expect(page.locator('[data-fixtures="enabled"]')).toBeVisible();
+  await expect(page.locator('[data-volunteer-cycle]')).toContainText('Siklus 3 bulan');
+  await expect(page.locator('[data-volunteer-position]')).toHaveCount(4);
+  await expect(page.locator('[data-volunteer-division]')).toHaveCount(7);
+  await expect(page.locator('[data-volunteer-opening]')).toHaveCount(3);
+  await expect(page.locator('[data-opening-application]')).toHaveCount(3);
+  await expect(page.locator('[data-opening-apply]')).toHaveCount(3);
+  await expect(page.locator('[data-volunteer-person]')).toHaveCount(4);
+  await expect(page.locator('[data-volunteer-person][data-visibility="opt-in-profile"]')).toHaveCount(1);
+  await expect(page.locator('[data-volunteer-person][data-visibility="anonymous-stub"]')).toHaveCount(3);
   await expect(page.getByText('Nara (fiktif)', { exact: true })).toBeVisible();
+
+  await page.goto('/volunteer/nara/', { waitUntil: 'domcontentloaded' });
+  await expect(page.locator('[data-volunteer-profile][data-visibility="opt-in-profile"]')).toBeVisible();
+  await expect(page.locator('[data-contribution-group][data-contribution-program]')).toHaveCount(1);
+  await expect(page.locator('[data-contribution-group] [data-contribution-entry]')).toHaveCount(1);
+  await expect(page.locator('[data-volunteer-assignment][data-assignment-state="current"]')).toHaveCount(1);
+  await expect(page.locator('[data-volunteer-assignment][data-assignment-state="historical"]')).toHaveCount(1);
+  await expect(page.locator('[data-volunteer-assignment][data-assignment-source="simulated-fixture"]')).toContainText(/simulasi/i);
 });
 
 test('impact and credits show qualified demo records', async ({ page }) => {
@@ -145,14 +198,14 @@ test('English and fallback locale surfaces do not mix Indonesian fixture copy', 
   await page.goto('/en/events/', { waitUntil: 'domcontentloaded' });
   await expect(page.locator('main')).toHaveAttribute('lang', 'en');
   await expect(page.locator('.kad-demo-banner summary')).toHaveText('Preview · sample data');
-  await expect(page.getByRole('heading', { name: 'Community events' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Agenda' })).toBeVisible();
   await expect(page.getByText('Data simulasi', { exact: true })).toHaveCount(0);
 
   await page.goto('/ja/volunteer/', { waitUntil: 'domcontentloaded' });
   await expect(page.locator('html')).toHaveAttribute('lang', 'ja');
   await expect(page.locator('main')).toHaveAttribute('lang', 'en');
   await expect(page.getByText('This community surface is available in English while a full translation is prepared.')).toBeVisible();
-  await expect(page.getByRole('heading', { name: 'Public credit is optional.' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'How the work is organized.' })).toBeVisible();
 
   await page.goto('/ar/events/', { waitUntil: 'domcontentloaded' });
   await expect(page.locator('html')).toHaveAttribute('dir', 'rtl');

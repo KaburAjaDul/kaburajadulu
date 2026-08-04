@@ -5,7 +5,7 @@ import Footer from '@/components/layout/Footer';
 import DemoBanner from '@/components/community-system/DemoBanner.astro';
 import StatePanel from '@/components/community-system/StatePanel.astro';
 import { DISCORD_URL, localizedPath } from '@/content/community-site';
-import { STAGING_FIXTURES_ENABLED } from '@/content/staging-fixtures';
+import { stagingFixturesEnabled } from '@/content/staging-fixtures';
 import { programDisplayState, type ProgramCategoryId, type RepositoryResult, type PublicProgram } from '@/content/public-content';
 import type { Locale } from '@/i18n/constants';
 import '@/styles/global.css';
@@ -19,6 +19,7 @@ interface Props {
 }
 
 const { locale, currentPath, result, selectedCategory, forceNoindex = false } = Astro.props;
+const fixturesEnabled = stagingFixturesEnabled();
 const programs = result.records;
 const isIndonesian = locale === 'id';
 const contentLanguage = isIndonesian ? 'id' : 'en';
@@ -52,9 +53,9 @@ const statusLabels = {
 };
 ---
 
-<Layout title={title} description={description} canonical={`https://kaburajadulu.com${currentPath}`} locale={locale} currentPath={currentPath} robots={STAGING_FIXTURES_ENABLED || forceNoindex ? 'noindex, nofollow' : undefined}>
+<Layout title={title} description={description} canonical={`https://kaburajadulu.com${currentPath}`} locale={locale} currentPath={currentPath} robots={fixturesEnabled || forceNoindex ? 'noindex, nofollow' : undefined}>
   <Navbar client:only="react" locale={locale} currentPath={currentPath} />
-  <main id="main-content" class="kad-page kad-page--task" lang={contentLanguage} data-page-family="programs" data-requested-locale={locale} data-fixtures={STAGING_FIXTURES_ENABLED ? 'enabled' : 'disabled'} data-repository-state={result.state}>
+  <main id="main-content" class="kad-page kad-page--task" lang={contentLanguage} data-page-family="programs" data-requested-locale={locale} data-fixtures={fixturesEnabled ? 'enabled' : 'disabled'} data-repository-state={result.state}>
     <div class="kad-container">
       {fallbackText && <p class="kad-translation-notice" lang="en" role="status">{fallbackText}</p>}
       <DemoBanner locale={locale} />
@@ -124,6 +125,12 @@ const statusLabels = {
                       </div>
                       <h3><a href={href(`/programs/${program.slug}`)}>{program.title}</a></h3>
                       <p>{program.summary}</p>
+                      <p class="kad-program-row__structure" data-program-structure>
+                        {program.series.length > 0
+                          ? (isIndonesian ? `${program.series.length} rangkaian · ${program.sessions.length} sesi` : `${program.series.length} series · ${program.sessions.length} sessions`)
+                          : (isIndonesian ? `${program.sessions.length} sesi langsung ke program` : `${program.sessions.length} direct sessions`)}
+                      </p>
+                      {program.sessions[0] && <p class="kad-program-row__next" data-program-next-session>{isIndonesian ? 'Sesi berikutnya' : 'Next session'}: {new Intl.DateTimeFormat(isIndonesian ? 'id-ID' : 'en-GB', { dateStyle: 'medium', timeZone: program.sessions[0].timezone }).format(new Date(program.sessions[0].startsAt))}</p>}
                       {source?.url && (
                         <div class="kad-program-row__actions">
                           <a class="kad-source-link" href={source.url} target="_blank" rel="noopener noreferrer">{source.label} <span aria-hidden="true">↗</span></a>

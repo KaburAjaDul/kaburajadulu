@@ -43,14 +43,14 @@ const DESIGN_PREVIEWS = [
 ] as const;
 
 const SUBPAGE_HEADERS = [
-  ['/events/', 'schedule', 'dalam jadwal publik'],
+  ['/events/', 'schedule', '0 item terjadwal'],
   ['/volunteer/', 'volunteer-cycle', 'Siklus 3 bulan'],
-  ['/stories/', 'story-index', 'rekaman cerita terbit'],
+  ['/stories/', 'story-index', 'Cerita dengan konteks.'],
   ['/about/history/', 'history-review', 'Tinjauan bukti'],
   ['/community/impact/', 'impact-ledger', 'rekaman metrik terbit'],
   ['/support/', 'support-readiness', 'Belum menerima pembayaran'],
   ['/community/credits/', 'contribution-ledger', 'Anonim secara bawaan'],
-  ['/events/not-published/', 'event-record', 'Acara ini belum dipublikasikan.'],
+  ['/events/not-published/', 'event-record', 'Agenda'],
 ] as const;
 
 const INFORMATION_FIRST_ROUTES = [
@@ -108,24 +108,22 @@ test.describe('route-specific first viewport', () => {
     await expect(page.locator('[data-page-header="task"]')).toHaveCount(0);
   });
 
-  test('Community leads with pulse, program proof, activity, and people', async ({ page }) => {
+  test('Community leads with current metrics, programs, agenda, and people', async ({ page }) => {
     await page.goto('/community/', { waitUntil: 'domcontentloaded' });
-    await expect(page.locator('.kad-community-intro .kad-button--primary')).toHaveAttribute('href', /discord/);
-    await expect(page.locator('.kad-community-intro .kad-button--outline')).toHaveAttribute('href', '/programs');
-    await expect(page.locator('[data-community-section="pulse"] dl')).toBeVisible();
-    await expect(page.locator('[data-community-section="pulse"] dl > div')).toHaveCount(3);
-    await expect(page.locator('[data-community-section="pulse"] .kad-community-metrics__value')).toHaveText(['5', '2', '0']);
-    await expect(page.locator('[data-community-section="pulse"] .kad-community-metrics__context')).toHaveCount(3);
+    await expect(page.locator('[data-community-section="current"] dl')).toBeVisible();
+    await expect(page.locator('[data-community-section="current"] dl > div')).toHaveCount(3);
+    await expect(page.locator('[data-community-section="current"] .kad-community-information__metric-value')).toHaveText(['—', '—', '—']);
+    await expect(page.locator('[data-community-section="current"] .kad-community-information__metric-detail')).toHaveCount(3);
     await expect(page.locator('[data-community-section="programs"] [data-program-record]')).toHaveCount(5);
-    await expect(page.locator('[data-community-section="activity"]')).toBeVisible();
+    await expect(page.locator('[data-community-section="agenda"]')).toBeVisible();
     await expect(page.locator('[data-community-section="people"]')).toBeVisible();
     await expect(page.locator('.kad-journey-card, .kad-band, [data-community-section="social"]')).toHaveCount(0);
-    const headingOrder = await page.locator('[data-community-section] > .kad-section-heading h2').allTextContents();
+    const headingOrder = await page.locator('[data-community-section] > .kad-community-information__section-heading h2').allTextContents();
     expect(headingOrder.slice(0, 4)).toEqual([
-      'Tiga angka, lengkap dengan konteksnya.',
-      'Lima program dengan catatan publik.',
-      'Agenda dan status terbaru.',
-      'Orang di balik kerja komunitas.',
+      'KAD saat ini',
+      'Program adalah kerja yang berkelanjutan.',
+      'Langkah berikutnya, bukan janji.',
+      'Orang dapat menunjukkan kerja tanpa kehilangan privasi.',
     ]);
   });
 
@@ -138,7 +136,7 @@ test.describe('route-specific first viewport', () => {
       expect(box?.height ?? Number.POSITIVE_INFINITY).toBeLessThanOrEqual(viewport.width === 1280 ? 400 : 600);
       await expectNoHorizontalOverflow(page);
       const sections = await page.locator('[data-community-section]').evaluateAll((items) => items.map((item) => item.getAttribute('data-community-section')));
-      expect(sections).toEqual(['pulse', 'programs', 'activity', 'people', 'sources']);
+      expect(sections).toEqual(['current', 'programs', 'agenda', 'people', 'sources']);
     }
   });
 
@@ -200,7 +198,7 @@ test.describe('route-specific first viewport', () => {
 
           const metrics = await header.evaluate((element) => {
             const title = element.querySelector('h1');
-            const summary = element.querySelector('.kad-subpage-intro__aside');
+            const summary = element.querySelector('.kad-subpage-intro__aside, .kad-index-intro__record, .kad-community-information__header-note');
             const rect = element.getBoundingClientRect();
             const titleStyle = title ? getComputedStyle(title) : null;
             return {
@@ -215,7 +213,7 @@ test.describe('route-specific first viewport', () => {
           expect(metrics.titleSize, `${route} title should not use hero scale at ${viewport.width}px`).toBeLessThanOrEqual(viewport.maxTitleSize);
           expect(metrics.summaryCount, `${route} header should expose its information summary`).toBe(1);
           expect(metrics.summaryBottom, `${route} summary should be visible near the first viewport`).toBeLessThanOrEqual(viewport.height + 16);
-          const firstAction = page.locator('main a.kad-button').first();
+          const firstAction = page.locator('main a.kad-button, .kad-story-information__empty a').first();
           await expect(firstAction).toBeVisible();
           const actionBox = await firstAction.boundingBox();
           expect(actionBox ? actionBox.y + actionBox.height : Number.POSITIVE_INFINITY, `${route} should expose a useful next action near the first viewport`).toBeLessThanOrEqual(viewport.height + 16);
@@ -388,6 +386,15 @@ test('GKS remains a text-only fallback and English + Mandarin detail has two pos
   expect(galleryMetadata.find(({ path }) => path === PROGRAM_POSTER_PATHS[4])?.alt).toContain('Mandarin Study Club');
 });
 
+test('production Program detail keeps unproven structure and metrics as Evidence Placeholders', async ({ page }) => {
+  await page.goto('/programs/french-club-trial/', { waitUntil: 'domcontentloaded' });
+  await expect(page.locator('main')).toHaveAttribute('data-fixtures', 'disabled');
+  await expect(page.locator('[data-program-series]')).toHaveCount(0);
+  await expect(page.locator('[data-program-metric]')).toHaveCount(4);
+  await expect(page.locator('[data-program-metric] [data-metric-value]')).toHaveText(new Array(4).fill('Belum terdokumentasi'));
+  await expect(page.locator('[data-evidence-placeholder]').first()).toBeVisible();
+});
+
 test('program documentation keeps a descriptive fallback when local posters fail', async ({ page }) => {
   await page.route('**/images/programs/*.webp', (route) => route.abort());
   await page.goto('/programs/', { waitUntil: 'networkidle' });
@@ -421,6 +428,7 @@ test('program detail puts Discord confirmation before documentation on mobile', 
 test('events begin with an honest zero-count empty state', async ({ page }) => {
   await page.goto('/events/', { waitUntil: 'domcontentloaded' });
   await expect(page.locator('[data-event-count="0"]')).toBeVisible();
+  await expect(page.locator('[data-evidence-placeholder="agenda-empty"]')).toBeVisible();
   await expect(page.locator('[data-event-state="empty"]')).toBeVisible();
   await expect(page.locator('[data-event-count="0"] .kad-status')).toContainText('0');
   await expect(page.locator('.kad-event-card, [data-event-state="published"]')).toHaveCount(0);
@@ -466,8 +474,8 @@ test('Arabic routes preserve locale links and RTL composition', async ({ page })
 
   await page.goto('/ar/community/', { waitUntil: 'domcontentloaded' });
   await expect(page.locator('[data-page-header="orientation"]')).toBeVisible();
-  await expect(page.locator('[data-community-section="pulse"] dl')).toBeVisible();
-  await expect(page.locator('.kad-community-source-links a').first()).toBeVisible();
+  await expect(page.locator('[data-community-section="current"] dl')).toBeVisible();
+  await expect(page.locator('.kad-community-information__sources a').first()).toBeVisible();
 });
 
 test('production excludes staging fixtures and keeps language fallback explicit', async ({ page }) => {
@@ -488,7 +496,7 @@ test('production excludes staging fixtures and keeps language fallback explicit'
   await expect(page.locator('html')).toHaveAttribute('lang', 'ja');
   await expect(page.locator('main')).toHaveAttribute('lang', 'en');
   await expect(page.getByText('This community surface is available in English while a full translation is prepared.')).toBeVisible();
-  await expect(page.getByRole('heading', { name: 'People, programs, and work that keep KAD moving.' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'A clear view of KAD today.' })).toBeVisible();
 
   await page.goto('/ja/', { waitUntil: 'domcontentloaded' });
   await expect(page.locator('html')).toHaveAttribute('lang', 'ja');
@@ -575,7 +583,7 @@ test.describe('responsive and motion safeguards', () => {
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.goto('/volunteer/', { waitUntil: 'domcontentloaded' });
     const motion = await page.locator('body').evaluate(() => {
-      const sample = document.querySelector('.kad-process-list li');
+      const sample = document.querySelector('.kad-volunteer-position');
       if (!sample) return null;
       const style = getComputedStyle(sample);
       return { transitionDuration: style.transitionDuration, animationDuration: style.animationDuration };
