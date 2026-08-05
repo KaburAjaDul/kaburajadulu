@@ -1,0 +1,126 @@
+---
+import Layout from '@/layouts/Layout.astro';
+import Navbar from '@/components/layout/Navbar';
+import Footer from '@/components/layout/Footer';
+import DemoBanner from '@/components/community-system/DemoBanner.astro';
+import StatePanel from '@/components/community-system/StatePanel.astro';
+import { localizedPath } from '@/content/community-site';
+import { fixtureText, stagingFixturesEnabled } from '@/content/staging-fixtures';
+import { volunteerPositionLabel, volunteerReviewLabel, type VolunteerDirectoryRecord } from '@/content/volunteer-content';
+import type { Locale } from '@/i18n/constants';
+import '@/styles/global.css';
+
+interface Props {
+  locale: Locale;
+  currentPath: string;
+  profile: VolunteerDirectoryRecord | null;
+}
+
+const { locale, currentPath, profile } = Astro.props;
+const isEnglish = locale !== 'id';
+const fallbackText = !['id', 'en'].includes(locale)
+  ? 'This community surface is available in English while a full translation is prepared.'
+  : null;
+const fixturesEnabled = stagingFixturesEnabled();
+const href = (path: string) => localizedPath(locale, path);
+const title = profile ? `${fixtureText(profile.displayName, locale)} — KaburAjaDulu` : (isEnglish ? 'Volunteer profile — KaburAjaDulu' : 'Profil relawan — KaburAjaDulu');
+const description = isEnglish ? 'A privacy-safe public contribution record for a KaburAjaDulu volunteer.' : 'Rekaman kontribusi publik yang menjaga privasi relawan KaburAjaDulu.';
+const statusText = (state: VolunteerDirectoryRecord['contributions'][number]['reviewState']) => volunteerReviewLabel(state, locale);
+---
+
+<Layout title={title} description={description} canonical={`https://kaburajadulu.com${currentPath}`} locale={locale} currentPath={currentPath} robots={fixturesEnabled ? 'noindex, nofollow' : undefined}>
+  <Navbar client:only="react" locale={locale} currentPath={currentPath} />
+  <main id="main-content" class="kad-page kad-page--task kad-volunteer-detail" lang={isEnglish ? 'en' : 'id'} data-page-family="volunteer-detail" data-fixtures={fixturesEnabled ? 'enabled' : 'disabled'}>
+    <div class="kad-container">
+      {fallbackText && <p class="kad-translation-notice" lang="en" role="status">{fallbackText}</p>}
+      {fixturesEnabled && <DemoBanner locale={locale} />}
+      <a class="kad-back-link" href={href('/volunteer')}>← {isEnglish ? 'Back to volunteer directory' : 'Kembali ke direktori relawan'}</a>
+
+      {profile ? <>
+        <header class="kad-volunteer-profile-header" data-volunteer-profile data-visibility={profile.visibility} aria-labelledby="volunteer-profile-title">
+          <div class="kad-volunteer-profile-avatar" aria-hidden="true">{profile.visibility === 'anonymous-stub' ? '?' : fixtureText(profile.displayName, locale).slice(0, 1)}</div>
+          <div>
+            <p class="kad-eyebrow">{isEnglish ? 'Contribution record' : 'Rekaman kontribusi'}</p>
+            <h1 id="volunteer-profile-title" data-public-display-name>{fixtureText(profile.displayName, locale)}</h1>
+            <p class="kad-volunteer-profile-role">{volunteerPositionLabel(profile.position, locale)} · {fixtureText(profile.role, locale)}</p>
+            <p class="kad-volunteer-profile-privacy" data-public-identity>{profile.visibility === 'anonymous-stub' ? (isEnglish ? 'Identity is not public. The contribution ledger remains available.' : 'Identitas tidak ditampilkan ke publik. Buku kontribusi tetap tersedia.') : (isEnglish ? 'Name shown with recorded opt-in. Attribution can be withdrawn.' : 'Nama tampil dengan izin opt-in yang tercatat. Atribusi dapat dicabut.')}</p>
+          </div>
+          <div class="kad-volunteer-profile-facts"><span>{isEnglish ? 'Cycle' : 'Siklus'}</span><strong>{fixtureText(profile.cycle, locale)}</strong><span>{isEnglish ? 'Divisions' : 'Divisi'}</span><strong>{profile.divisions.map((division) => fixtureText(division, locale)).join(' · ')}</strong></div>
+        </header>
+
+        <section class="kad-volunteer-detail-section" aria-labelledby="responsibility-title">
+          <div class="kad-section-heading kad-section-heading--compact"><div><p class="kad-kicker">{isEnglish ? 'Scope' : 'Lingkup kerja'}</p><h2 id="responsibility-title">{isEnglish ? 'Responsibilities in this cycle' : 'Tanggung jawab pada siklus ini'}</h2></div></div>
+          <ul class="kad-volunteer-responsibilities">{profile.responsibilities.map((item) => <li>{fixtureText(item, locale)}</li>)}</ul>
+        </section>
+
+        <section class="kad-volunteer-detail-section" aria-labelledby="assignment-title">
+          <div class="kad-section-heading kad-section-heading--compact"><div><p class="kad-kicker">{isEnglish ? 'Assignment history' : 'Riwayat penugasan'}</p><h2 id="assignment-title">{isEnglish ? 'Where this work sat over time.' : 'Jejak peran dari siklus ke siklus.'}</h2></div></div>
+          <div class="kad-volunteer-assignments">{profile.assignments.map((assignment) => <article data-volunteer-assignment data-assignment-state={assignment.current ? 'current' : 'historical'} data-assignment-source={assignment.source}><div class="kad-volunteer-assignment__meta"><span>{assignment.current ? (isEnglish ? 'Current' : 'Berjalan') : (isEnglish ? 'Historical · simulated' : 'Sebelumnya · simulasi')}</span><strong>{fixtureText(assignment.cycle, locale)}</strong></div><h3>{volunteerPositionLabel(assignment.position, locale)}</h3><p>{assignment.divisions.map((division) => fixtureText(division, locale)).join(' · ')}</p><ul>{assignment.responsibilities.map((item) => <li>{fixtureText(item, locale)}</li>)}</ul>{!assignment.current && <small class="kad-volunteer-assignment__disclosure">{isEnglish ? 'Illustrative staging history; not a verified public record.' : 'Riwayat ilustratif untuk staging; bukan rekaman publik terverifikasi.'}</small>}</article>)}</div>
+        </section>
+
+        <section class="kad-volunteer-detail-section" aria-labelledby="ledger-title">
+          <div class="kad-section-heading kad-section-heading--compact"><div><p class="kad-kicker">{isEnglish ? 'Contribution ledger' : 'Buku kontribusi'}</p><h2 id="ledger-title">{isEnglish ? 'Contribution by program.' : 'Kontribusi per program.'}</h2></div><p class="kad-note">{isEnglish ? 'Program outcomes belong to the Program. This page records only this person’s responsibility and evidence.' : 'Keberhasilan berada di level Program. Halaman ini hanya mencatat tanggung jawab dan bukti milik orang ini.'}</p></div>
+          {profile.contributionGroups.length > 0 ? <div class="kad-volunteer-ledger">{profile.contributionGroups.map((group) => <article data-contribution-group data-contribution-program={group.programId}><header><div><span class="kad-kicker">{isEnglish ? 'Program' : 'Program'}</span><h3><a href={href(`/programs/${group.programId}`)}>{fixtureText(group.programLabel, locale)}</a></h3></div><span class="kad-volunteer-ledger-count">{group.entries.length} {isEnglish ? 'entries' : 'entri'}</span></header><div class="kad-volunteer-ledger-entries">{group.entries.map((contribution) => <div class="kad-volunteer-ledger-entry" data-contribution-entry><p class="kad-volunteer-ledger__area">{fixtureText(contribution.area, locale)} · {fixtureText(contribution.period, locale)}</p><p>{fixtureText(contribution.summary, locale)}</p><div class="kad-volunteer-ledger__facts"><div data-contribution-responsibility><span>{isEnglish ? 'Responsibility' : 'Tanggung jawab'}</span><strong>{fixtureText(contribution.responsibility, locale)}</strong></div><div data-contribution-review><span>{isEnglish ? 'Review state' : 'Status tinjauan'}</span><strong>{statusText(contribution.reviewState)}</strong></div><div data-contribution-evidence><span>{isEnglish ? 'Evidence' : 'Bukti'}</span><strong>{contribution.evidence.length > 0 ? contribution.evidence.map((item) => fixtureText(item, locale)).join(' · ') : (isEnglish ? 'Not attached yet' : 'Belum terlampir')}</strong></div></div></div>)}</div></article>)}</div> : <StatePanel state="empty" locale={locale} title={isEnglish ? 'No contribution records yet.' : 'Belum ada rekaman kontribusi.'} description={isEnglish ? 'The ledger will show each verified contribution by Program when one is recorded.' : 'Buku akan menampilkan setiap kontribusi terverifikasi berdasarkan Program saat dicatat.'} />}
+        </section>
+
+        <aside class="kad-volunteer-verification" data-verification-future>
+          <div><p class="kad-kicker">{isEnglish ? 'Recruiter verification' : 'Verifikasi perekrut'}</p><h2>{isEnglish ? 'Private proof is not public attribution.' : 'Bukti privat bukan atribusi publik.'}</h2><p>{isEnglish ? 'An owner-controlled, revocable verification link can be added later. This preview never exposes a private contact or proof link.' : 'Tautan verifikasi yang dikendalikan pemilik dan dapat dicabut dapat ditambahkan nanti. Preview ini tidak membuka kontak atau tautan bukti privat.'}</p></div>
+        </aside>
+      </> : <section data-volunteer-state="evidence-placeholder" class="kad-volunteer-detail-placeholder"><StatePanel state={fixturesEnabled ? 'empty' : 'pending'} locale={locale} statusLabel={fixturesEnabled ? (isEnglish ? 'Profile not found' : 'Profil tidak ditemukan') : (isEnglish ? 'Evidence placeholder' : 'Placeholder bukti')} title={fixturesEnabled ? (isEnglish ? 'This contributor record is not available.' : 'Rekaman kontributor ini tidak tersedia.') : (isEnglish ? 'Public volunteer profiles are not published yet.' : 'Profil relawan publik belum dipublikasikan.')} description={fixturesEnabled ? (isEnglish ? 'Check the directory for an anonymous or opt-in record.' : 'Periksa direktori untuk rekaman anonim atau opt-in.') : (isEnglish ? 'Names and contribution ledgers will appear only after explicit consent and source review.' : 'Nama dan buku kontribusi hanya tampil setelah izin eksplisit dan tinjauan sumber.' )}><a class="kad-button kad-button--primary" href={href('/volunteer')}>{isEnglish ? 'Back to directory' : 'Kembali ke direktori'}</a></StatePanel></section>}
+    </div>
+  </main>
+  <Footer client:only="react" locale={locale} />
+</Layout>
+
+<style>
+  .kad-volunteer-detail { --volunteer-ink: #171821; --volunteer-muted: #646979; --volunteer-line: #dfe2ea; }
+  .kad-back-link { display: inline-flex; margin: 1.5rem 0 2rem; color: var(--volunteer-muted); text-decoration: none; }
+  .kad-back-link:hover, .kad-back-link:focus-visible { color: var(--color-primary, #135dff); }
+  .kad-volunteer-profile-header { display: grid; grid-template-columns: 5rem minmax(0, 1fr) 18rem; gap: 1.5rem; align-items: start; border-bottom: 1px solid var(--volunteer-line); padding: 1rem 0 2.5rem; }
+  .kad-volunteer-profile-avatar { display: grid; place-items: center; width: 5rem; height: 5rem; border-radius: 50%; background: #eaf0ff; color: var(--color-primary, #135dff); font-size: 2rem; font-weight: 800; }
+  .kad-volunteer-profile-header h1 { margin: .2rem 0 .5rem; font-size: clamp(2rem, 4vw, 3rem); letter-spacing: -.05em; }
+  .kad-volunteer-profile-role { margin: 0; font-size: 1.1rem; }
+  .kad-volunteer-profile-privacy { color: var(--volunteer-muted); margin: .65rem 0 0; }
+  .kad-volunteer-profile-facts { display: grid; gap: .35rem; border-left: 3px solid var(--color-primary, #135dff); padding-left: 1rem; }
+  .kad-volunteer-profile-facts span { color: var(--volunteer-muted); font-size: .75rem; text-transform: uppercase; letter-spacing: .06em; }
+  .kad-volunteer-profile-facts strong { margin-bottom: .55rem; }
+  .kad-volunteer-detail-section { padding: 3.5rem 0 0; }
+  .kad-volunteer-responsibilities { list-style: none; display: flex; flex-wrap: wrap; gap: .7rem; padding: 0; margin: 0; }
+  .kad-volunteer-responsibilities li { border: 1px solid var(--volunteer-line); padding: .75rem 1rem; }
+  .kad-volunteer-assignments { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+  .kad-volunteer-assignments article { border: 1px solid var(--volunteer-line); padding: 1.15rem; }
+  .kad-volunteer-assignment__meta { display: flex; justify-content: space-between; gap: 1rem; color: var(--volunteer-muted); font-size: .8rem; }
+  .kad-volunteer-assignments h3 { margin: 1rem 0 .35rem; font-size: 1.1rem; }
+  .kad-volunteer-assignments p { color: var(--volunteer-muted); margin: 0; }
+  .kad-volunteer-assignments ul { margin: .9rem 0 0; padding-left: 1.15rem; }
+  .kad-volunteer-assignments li { margin: .25rem 0; }
+  .kad-volunteer-assignment__disclosure { display: block; color: var(--volunteer-muted); margin-top: .8rem; font-size: .8rem; }
+  .kad-volunteer-ledger { display: grid; gap: 1rem; }
+  .kad-volunteer-ledger article { border: 1px solid var(--volunteer-line); padding: 1.3rem; }
+  .kad-volunteer-ledger header { display: flex; justify-content: space-between; align-items: start; gap: 1rem; }
+  .kad-volunteer-ledger h3 { margin: .25rem 0 0; font-size: 1.3rem; }
+  .kad-volunteer-ledger h3 a { color: inherit; }
+  .kad-volunteer-ledger-count { color: var(--volunteer-muted); font-size: .8rem; }
+  .kad-volunteer-ledger-entries { display: grid; gap: 1rem; }
+  .kad-volunteer-ledger-entry + .kad-volunteer-ledger-entry { border-top: 1px solid var(--volunteer-line); padding-top: 1rem; }
+  .kad-volunteer-ledger__area { color: var(--color-primary, #135dff); font-size: .85rem; }
+  .kad-volunteer-ledger__facts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-top: 1px solid var(--volunteer-line); margin-top: 1.2rem; padding-top: .9rem; gap: 1rem; }
+  .kad-volunteer-ledger__facts div { display: grid; gap: .3rem; }
+  .kad-volunteer-ledger__facts span { color: var(--volunteer-muted); font-size: .8rem; }
+  .kad-volunteer-ledger__facts strong { font-size: .9rem; }
+  .kad-volunteer-verification { display: flex; justify-content: space-between; align-items: center; gap: 2rem; border-top: 3px solid var(--volunteer-ink); margin: 4rem 0; padding-top: 1.25rem; }
+  .kad-volunteer-verification h2 { margin: .25rem 0 .5rem; font-size: 1.3rem; }
+  .kad-volunteer-verification p { color: var(--volunteer-muted); margin: 0; max-width: 50rem; }
+  .kad-volunteer-verification .kad-button { flex: none; }
+  .kad-volunteer-detail-placeholder { margin: 1rem 0 3rem; }
+  @media (max-width: 760px) {
+    .kad-volunteer-profile-header { grid-template-columns: 4rem minmax(0, 1fr); }
+    .kad-volunteer-profile-avatar { width: 4rem; height: 4rem; }
+    .kad-volunteer-profile-header h1 { font-size: 2.6rem; }
+    .kad-volunteer-profile-facts { grid-column: 1 / -1; border-left: 0; border-top: 1px solid var(--volunteer-line); padding: 1rem 0 0; }
+    .kad-volunteer-ledger__facts { grid-template-columns: 1fr; }
+    .kad-volunteer-assignments { grid-template-columns: 1fr; }
+    .kad-volunteer-verification { display: block; }
+    .kad-volunteer-verification .kad-button { display: inline-flex; margin-top: 1rem; }
+  }
+</style>

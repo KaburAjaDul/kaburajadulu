@@ -1,0 +1,16 @@
+---
+import ProgramsPage from '@/components/programs/ProgramsPage.astro';
+import { publicContentRepository, type ProgramSeedScenario } from '@/content/public-content';
+import type { Locale } from '@/i18n/constants';
+
+export function getStaticPaths() {
+  const states: readonly ProgramSeedScenario[] = ['loading', 'empty', 'stale', 'error'];
+  return states.map((state) => ({ params: { state } }));
+}
+
+const locale: Locale = 'id';
+const state = Astro.params.state as ProgramSeedScenario;
+const result = await publicContentRepository.listPrograms({ locale, scenario: state });
+---
+
+<ProgramsPage locale={locale} currentPath={`/design-preview/programs/${state}`} result={result} forceNoindex />

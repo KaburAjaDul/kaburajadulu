@@ -102,7 +102,7 @@ test('root metadata contains the Discord invite and a real GitHub contributor an
   );
 
   const github = page.locator(
-    'a[aria-label="Ikut membangun website"][href="https://github.com/KaburAjaDul/kaburajadulu"]',
+    'a[aria-label="Lihat ruang kerja publik"][href="https://github.com/KaburAjaDul/kaburajadulu"]',
   );
   await expect(github).toHaveCount(1);
   await expect(github).toBeVisible();
@@ -122,7 +122,7 @@ test('mobile viewport smoke keeps the primary content usable', async ({ page }) 
   await expect(page.locator('body')).toBeVisible();
 });
 
-test('popular destinations support deterministic manual selection', async ({ page }) => {
+test('city context supports deterministic manual selection and an accessible status', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/id/', { waitUntil: 'domcontentloaded' });
 
@@ -130,13 +130,16 @@ test('popular destinations support deterministic manual selection', async ({ pag
   const selectors = page.locator('[data-testid="destination-selector"]:visible');
   const tokyoSelector = selectors.filter({ hasText: 'Tokyo, Jepang' });
   const autoplayToggle = page.locator('[data-testid="destination-autoplay-toggle"]:visible');
+  const liveStatus = page.locator('[data-testid="destination-live-status"]');
 
   await expect(featured).toHaveAttribute('data-destination', 'seoul');
   await expect(selectors).toHaveCount(4);
   await expect(autoplayToggle).toBeDisabled();
+  await expect(liveStatus).toHaveAttribute('aria-live', 'polite');
   await tokyoSelector.click();
   await expect(featured).toHaveAttribute('data-destination', 'tokyo');
   await expect(tokyoSelector).toHaveAttribute('aria-pressed', 'true');
+  await expect(liveStatus).toHaveText('Tokyo, Jepang');
   await expect(selectors.filter({ hasText: 'Seoul, Korea Selatan' })).toHaveAttribute(
     'aria-pressed',
     'false',
@@ -151,10 +154,13 @@ test('destination controls pause on focus and expose an explicit resume action',
   const selectors = page.locator('[data-testid="destination-selector"]:visible');
   const tokyoSelector = selectors.filter({ hasText: 'Tokyo, Jepang' });
   const autoplayToggle = page.locator('[data-testid="destination-autoplay-toggle"]:visible');
+  const liveStatus = page.locator('[data-testid="destination-live-status"]');
 
   await expect(autoplayToggle).toHaveAttribute('aria-pressed', 'false');
+  await expect(liveStatus).toHaveAttribute('aria-live', 'off');
   await tokyoSelector.focus();
   await expect(autoplayToggle).toHaveAttribute('aria-pressed', 'true');
+  await expect(liveStatus).toHaveAttribute('aria-live', 'polite');
   await tokyoSelector.press('Enter');
   await expect(featured).toHaveAttribute('data-destination', 'tokyo');
 

@@ -1,15 +1,16 @@
 ---
-import { fixtureText, type Event } from '@/content/staging-fixtures';
+import { eventLifecycle, fixtureText, type Event } from '@/content/staging-fixtures';
 import StatusBadge from './StatusBadge.astro';
 
 interface Props { event: Event; locale?: string; href: string; }
 const { event, locale = 'id', href } = Astro.props;
+const state = eventLifecycle(event);
 const date = new Intl.DateTimeFormat(locale === 'id' ? 'id-ID' : 'en-US', { dateStyle: 'medium', timeStyle: 'short', timeZone: event.timezone }).format(new Date(event.startsAt));
 ---
 
-<article class="kad-card kad-event-card" data-fixture-id={event.id} data-fixture-state={event.state}>
-  <div class="kad-card-top"><StatusBadge state={event.state} locale={locale} /><small>{date} WIB</small></div>
+<article class="kad-card kad-event-card" data-fixture-id={event.id} data-fixture-state={state} data-participation-model="open_discord" data-registration-required="false">
+  <div class="kad-card-top"><StatusBadge state={state} locale={locale} /><small>{date}</small></div>
   <h2><a href={href}>{fixtureText(event.title, locale)}</a></h2>
   <p>{fixtureText(event.summary, locale)}</p>
-  <div class="kad-card-actions"><span class="kad-status">{locale === 'id' ? 'Data simulasi' : 'Demo data'}</span><a class="kad-text-link" href={href}>{locale === 'id' ? 'Lihat detail' : 'View details'}</a></div>
+  <div class="kad-card-actions"><small>{fixtureText(event.sourceLabel, locale)} · {locale === 'id' ? 'Tanpa pendaftaran' : 'No registration'}</small><a class="kad-text-link" href={href}>{locale === 'id' ? 'Lihat detail' : 'View details'}</a></div>
 </article>

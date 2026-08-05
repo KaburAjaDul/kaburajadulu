@@ -1,0 +1,240 @@
+---
+import Layout from '@/layouts/Layout.astro';
+import Navbar from '@/components/layout/Navbar';
+import Footer from '@/components/layout/Footer';
+import DemoBanner from '@/components/community-system/DemoBanner.astro';
+import StatePanel from '@/components/community-system/StatePanel.astro';
+import { DISCORD_URL, localizedPath } from '@/content/community-site';
+import { stagingFixturesEnabled } from '@/content/staging-fixtures';
+import { programDisplayState, type PublicProgram } from '@/content/public-content';
+import type { Locale } from '@/i18n/constants';
+import '@/styles/global.css';
+
+interface Props {
+  locale: Locale;
+  currentPath: string;
+  program?: PublicProgram | null;
+}
+
+const { locale, currentPath, program } = Astro.props;
+const fixturesEnabled = stagingFixturesEnabled();
+const isIndonesian = locale === 'id';
+const contentLanguage = isIndonesian ? 'id' : 'en';
+const fallbackText = !['id', 'en'].includes(locale)
+  ? 'This community surface is available in English while a full translation is prepared.'
+  : null;
+const href = (path: string): string => localizedPath(locale, path);
+const title = program
+  ? `${program.title} — KaburAjaDulu`
+  : isIndonesian ? 'Program tidak ditemukan — KaburAjaDulu' : 'Program not found — KaburAjaDulu';
+const description = program?.summary ?? (isIndonesian ? 'Program ini belum memiliki catatan publik.' : 'This program has no public record.');
+const reviewedLabel = program
+  ? new Intl.DateTimeFormat(isIndonesian ? 'id-ID' : 'en-GB', {
+      dateStyle: 'medium',
+      timeZone: 'Asia/Jakarta',
+    }).format(new Date(program.updatedAt))
+  : null;
+const publicSource = program?.publicProvenance[0];
+const displayState = program ? programDisplayState(program) : null;
+const canJoin = Boolean(program && program.archiveState !== 'archived');
+const availabilityLabels = {
+  active: isIndonesian ? 'Aktif' : 'Active',
+  needs_confirmation: isIndonesian ? 'Sesi berikutnya belum dipastikan' : 'Next session not published',
+  archived: isIndonesian ? 'Diarsipkan' : 'Archived',
+};
+const freshnessLabels = {
+  current: isIndonesian ? 'Terkini' : 'Current',
+  aging: isIndonesian ? 'Segera ditinjau ulang' : 'Review due soon',
+  stale: isIndonesian ? 'Perlu ditinjau ulang' : 'Review overdue',
+  unknown: isIndonesian ? 'Belum diketahui' : 'Unknown',
+};
+---
+
+<Layout title={title} description={description} canonical={`https://kaburajadulu.com${currentPath}`} locale={locale} currentPath={currentPath} robots={fixturesEnabled ? 'noindex, nofollow' : undefined}>
+  <Navbar client:only="react" locale={locale} currentPath={currentPath} />
+  <main id="main-content" class="kad-page kad-page--task" lang={contentLanguage} data-page-family="program-detail" data-requested-locale={locale} data-fixtures={fixturesEnabled ? 'enabled' : 'disabled'}>
+    <div class="kad-container">
+      {fallbackText && <p class="kad-translation-notice" lang="en" role="status">{fallbackText}</p>}
+      <DemoBanner locale={locale} />
+
+      {program ? (
+        <>
+          <nav class="kad-breadcrumb" aria-label={isIndonesian ? 'Jejak halaman' : 'Breadcrumb'}>
+            <a href={href('/programs')}>{isIndonesian ? 'Program' : 'Programs'}</a>
+            <span aria-hidden="true">/</span>
+            <span aria-current="page">{program.title}</span>
+          </nav>
+
+          <header class="kad-program-detail-intro" aria-labelledby="program-title" data-program-join-available={String(canJoin)}>
+            <div>
+              <p class="kad-eyebrow">{program.category}</p>
+              <h1 id="program-title">{program.title}</h1>
+              <p class="kad-program-detail-intro__summary">{program.summary}</p>
+              {canJoin && <a class="kad-button kad-button--primary kad-program-detail-intro__action" data-discord-join-path href={DISCORD_URL} target="_blank" rel="noopener noreferrer">{isIndonesian ? 'Gabung KAD di Discord' : 'Join KAD on Discord'}</a>}
+            </div>
+            <dl class="kad-program-record-meta">
+              <div>
+                <dt>{isIndonesian ? 'Ketersediaan' : 'Availability'}</dt>
+                <dd data-program-availability={program.archiveState} data-program-display-state={displayState ?? undefined}>{availabilityLabels[program.archiveState]}</dd>
+              </div>
+              <div>
+                <dt>{isIndonesian ? 'Terakhir ditinjau' : 'Last reviewed'}</dt>
+                <dd>{reviewedLabel}</dd>
+              </div>
+              <div>
+                <dt>{isIndonesian ? 'Status data' : 'Data status'}</dt>
+                <dd data-freshness={program.freshness}>{freshnessLabels[program.freshness]}</dd>
+              </div>
+              <div>
+                <dt>{isIndonesian ? 'Revisi publik' : 'Public revision'}</dt>
+                <dd>{program.revision}</dd>
+              </div>
+            </dl>
+          </header>
+
+          <section class="kad-program-evidence" aria-label={isIndonesian ? 'Status informasi program' : 'Program information status'}>
+            <article>
+              <p class="kad-eyebrow">{isIndonesian ? 'Dari sumber publik' : 'From the public source'}</p>
+              <h2>{isIndonesian ? 'Yang sudah diketahui' : 'What is known'}</h2>
+              <ul class="kad-check-list">
+                {program.known.map((fact) => <li>{fact}</li>)}
+              </ul>
+              {publicSource?.url && <a class="kad-source-link" href={publicSource.url} target="_blank" rel="noopener noreferrer">{publicSource.label} <span aria-hidden="true">↗</span></a>}
+            </article>
+            <article>
+              <p class="kad-eyebrow">{isIndonesian ? 'Sebelum ikut' : 'Before joining'}</p>
+              <h2>{isIndonesian ? 'Yang perlu diketahui' : 'What to know'}</h2>
+              <ul class="kad-check-list">
+                {program.needsConfirmation.map((item) => <li>{item}</li>)}
+              </ul>
+              <p class="kad-program-confirmation-note">{canJoin ? (isIndonesian ? 'Tidak perlu mendaftar. Bergabunglah ke Discord untuk ikut saat sesi tersedia.' : 'No registration is required. Join Discord to take part when a session is available.') : (isIndonesian ? 'Program ini sudah diarsipkan dan tidak memiliki jalur ikut aktif.' : 'This program is archived and has no active joining path.')}</p>
+            </article>
+          </section>
+
+          <section class="kad-program-structure" aria-labelledby="program-structure-title" data-program-structure-section>
+            <div class="kad-program-structure__heading">
+              <p class="kad-eyebrow">{isIndonesian ? 'Isi program' : 'Program contents'}</p>
+              <div class="kad-program-structure__heading-copy">
+                <h2 id="program-structure-title">{isIndonesian ? 'Tujuan, rangkaian, dan sesi' : 'Purpose, structure, and sessions'}</h2>
+                <p>{program.purpose}</p>
+                {program.audience && <p><strong>{isIndonesian ? 'Peserta:' : 'Audience:'}</strong> {program.audience}</p>}
+              </div>
+            </div>
+            {program.series.length > 0 && (
+              <div data-program-series-list>
+                {program.series.map((series) => (
+                  <article data-program-series data-series-id={series.id}>
+                    <h3>{series.title}</h3>
+                    {series.level && <p data-series-level>{series.level}</p>}
+                    <p>{series.summary}</p>
+                    <small>{series.sessionIds.length} {isIndonesian ? 'sesi' : 'sessions'}</small>
+                  </article>
+                ))}
+              </div>
+            )}
+            <div data-program-session-list>
+              <h3>{isIndonesian ? 'Sesi terjadwal' : 'Scheduled sessions'}</h3>
+              {program.sessions.length > 0 ? (
+                <ol>
+                  {program.sessions.map((session) => (
+                    <li data-program-session data-session-id={session.id} data-series-id={session.seriesId ?? undefined}>
+                      <strong>{session.title}</strong>
+                      <time datetime={session.startsAt}>{new Intl.DateTimeFormat(isIndonesian ? 'id-ID' : 'en-GB', { dateStyle: 'medium', timeStyle: 'short', timeZone: session.timezone }).format(new Date(session.startsAt))}</time>
+                      <span>{session.durationMinutes} {isIndonesian ? 'menit' : 'minutes'} · {session.timezone}</span>
+                    </li>
+                  ))}
+                </ol>
+              ) : <p data-evidence-placeholder>{isIndonesian ? 'Belum ada sesi yang terdokumentasi.' : 'No sessions are documented yet.'}</p>}
+            </div>
+          </section>
+
+          <section class="kad-program-metrics" aria-labelledby="program-metrics-title" data-program-metrics>
+            <p class="kad-eyebrow">{isIndonesian ? 'Aktivitas program' : 'Program activity'}</p>
+            <h2 id="program-metrics-title">{isIndonesian ? 'Angka yang tersedia' : 'Available figures'}</h2>
+            <div class="kad-program-metrics__list">
+              {program.metrics.map((metric) => (
+                <article data-program-metric data-metric-key={metric.key}>
+                  <h3>{metric.label}</h3>
+                  <p class="kad-program-metrics__value" data-metric-value>{metric.value ?? (isIndonesian ? 'Belum terdokumentasi' : 'Not documented')}</p>
+                  <p>{metric.period}</p>
+                  <details>
+                    <summary>{isIndonesian ? 'Cara membaca angka ini' : 'How to read this figure'}</summary>
+                    <dl>
+                      <div><dt>{isIndonesian ? 'Definisi' : 'Definition'}</dt><dd>{metric.definition}</dd></div>
+                      <div><dt>{isIndonesian ? 'Metode' : 'Method'}</dt><dd>{metric.method}</dd></div>
+                      <div><dt>{isIndonesian ? 'Sumber' : 'Source'}</dt><dd>{metric.sourceLabel}</dd></div>
+                    </dl>
+                  </details>
+                </article>
+              ))}
+            </div>
+          </section>
+
+          <section class="kad-program-contributors" aria-labelledby="program-contributors-title" data-program-contributors>
+            <p class="kad-eyebrow">{isIndonesian ? 'Jejak kerja' : 'Work trail'}</p>
+            <h2 id="program-contributors-title">{isIndonesian ? 'Kontributor dan tanggung jawab' : 'Contributors and responsibilities'}</h2>
+            {program.contributors.length > 0 ? (
+              <ul>
+                {program.contributors.map((contributor) => (
+                  <li data-contributor-responsibility data-contributor-visibility={contributor.visibility}>
+                    <strong>{contributor.displayName ?? (isIndonesian ? 'Kontributor anonim' : 'Anonymous contributor')}</strong>
+                    <span>{contributor.responsibility}</span>
+                  </li>
+                ))}
+              </ul>
+            ) : <p data-evidence-placeholder>{isIndonesian ? 'Belum ada atribusi kontributor yang disetujui.' : 'No approved contributor attribution is available yet.'}</p>}
+          </section>
+
+          {program.slug === 'tech-coding-club' && (
+            <section class="kad-program-repository" data-program-repository aria-label={isIndonesian ? 'Repositori proyek' : 'Project repository'}>
+              <p class="kad-eyebrow">{isIndonesian ? 'Artefak teknis' : 'Technical artifact'}</p>
+              <h2>{isIndonesian ? 'Repositori proyek' : 'Project repository'}</h2>
+              {program.repositoryUrl ? <a href={program.repositoryUrl}>{program.repositoryUrl}</a> : <p data-evidence-placeholder>{isIndonesian ? 'Belum ada repositori proyek.' : 'No project repository exists.'}</p>}
+            </section>
+          )}
+
+          {program.media.length > 0 && (
+            <section class="kad-program-documentation" aria-labelledby="program-documentation-title">
+              <div class="kad-program-documentation__heading">
+                <h2 id="program-documentation-title">{isIndonesian ? 'Dokumentasi pengumuman' : 'Announcement documentation'}</h2>
+                <p>{isIndonesian ? 'Media ini mendokumentasikan sumber publik, bukan menjamin jadwal masih aktif.' : 'This media documents a public source; it does not guarantee the schedule is still active.'}</p>
+              </div>
+              <div class:list={['kad-program-gallery', program.media.length === 1 && 'kad-program-gallery--single']}>
+                {program.media.map((media) => (
+                  <figure class="kad-program-figure">
+                    <div class="kad-program-figure__media">
+                      <img data-program-poster src={media.url} alt={media.alt} width={media.width ?? undefined} height={media.height ?? undefined} loading="lazy" decoding="async" />
+                      <p class="kad-media-fallback" hidden>{isIndonesian ? 'Poster gagal dimuat. Buka sumber publik.' : 'The poster failed to load. Open the public source.'}</p>
+                    </div>
+                    <figcaption>
+                      <span>{media.caption}</span>
+                      {publicSource?.url && <a href={publicSource.url} target="_blank" rel="noopener noreferrer">{isIndonesian ? 'Buka sumber publik' : 'Open public source'} <span aria-hidden="true">↗</span></a>}
+                    </figcaption>
+                  </figure>
+                ))}
+              </div>
+            </section>
+          )}
+        </>
+      ) : (
+        <section class="kad-program-missing">
+          <StatePanel state="not-published" locale={locale} statusLabel={isIndonesian ? 'Belum dipublikasikan' : 'Not published'} title={isIndonesian ? 'Program tidak ditemukan.' : 'Program not found.'} description={description} />
+          <a class="kad-text-link" href={href('/programs')}>{isIndonesian ? 'Kembali ke direktori program' : 'Back to the program directory'}</a>
+        </section>
+      )}
+    </div>
+  </main>
+  <Footer client:only="react" locale={locale} />
+</Layout>
+
+<script>
+  document.querySelectorAll<HTMLImageElement>('[data-program-poster]').forEach((image) => {
+    const showFallback = () => {
+      image.hidden = true;
+      const fallback = image.nextElementSibling;
+      if (fallback instanceof HTMLElement) fallback.hidden = false;
+    };
+    image.addEventListener('error', showFallback, { once: true });
+    if (image.complete && image.naturalWidth === 0) showFallback();
+  });
+</script>

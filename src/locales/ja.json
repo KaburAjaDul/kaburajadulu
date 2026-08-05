@@ -8,11 +8,11 @@
     "language": "言語"
   },
   "hero": {
-    "headline": "Kabur Aja Dulu",
-    "subheadline": "海外での勉強と仕事の機会を発見しましょう。私たちは印度ネシア人が海外で学ぶ·suku働く機会を得られるようサポートしています。",
-    "cta_primary": "始める",
+    "headline": "本当の疑問から始めよう。",
+    "subheadline": "KaburAjaDuluは、海外での進学・仕事・暮らしについて考える人のための公開コミュニティです。疑問を持ち寄り、共有された経験を確かめながら、次の一歩を自分のペースで選べます。",
+    "cta_primary": "DiscordでKADに参加",
     "cta_secondary": "プログラムを見る",
-    "badge": "コミュニティの公開スペース"
+    "badge": "KAD公開コミュニティ"
   },
   "about": {
     "headline": "KaburAjaDuluについて",
@@ -32,10 +32,10 @@
     "github_contributor": "GitHub 貢献者になる"
   },
   "destinations": {
-    "headline": "人気の目的地",
-    "subheadline": "印度ネシア人に最も人気のない外国を見てみましょう。",
-    "view_all": "すべての目的地を見る",
-    "learn_more": "詳細を見る",
+    "headline": "気になる街から、理解を始めよう。",
+    "subheadline": "それぞれの街にまつわる疑問、ストーリー、プログラムを見つけられます。人気順ではなく、会話の入口として紹介しています。",
+    "view_all": "会話を見る",
+    "learn_more": "この街を探る",
     "show": "表示",
     "pause": "自動切り替えを一時停止",
     "resume": "自動切り替えを再開",
@@ -47,10 +47,10 @@
     }
   },
   "cta": {
-    "headline": "旅を始め 준비되셨나요?",
-    "subheadline": "コミュニティと一緒に、プログラムや対話、次の一歩を見つけましょう。",
-    "cta_primary": "参加する",
-    "cta_secondary": "お問い合わせ"
+    "headline": "どこから始めればいい？",
+    "subheadline": "本当の疑問をKADに持ち寄り、話せる場所を見つけてから、次の一歩を選びましょう。",
+    "cta_primary": "DiscordでKADに参加",
+    "cta_secondary": "プログラムを見る"
   },
   "blog": {
     "headline": "ブログ·suku記事",

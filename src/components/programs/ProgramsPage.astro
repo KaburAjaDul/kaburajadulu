@@ -1,0 +1,184 @@
+---
+import Layout from '@/layouts/Layout.astro';
+import Navbar from '@/components/layout/Navbar';
+import Footer from '@/components/layout/Footer';
+import DemoBanner from '@/components/community-system/DemoBanner.astro';
+import StatePanel from '@/components/community-system/StatePanel.astro';
+import { localizedPath } from '@/content/community-site';
+import { stagingFixturesEnabled } from '@/content/staging-fixtures';
+import { programDisplayState, type ProgramCategoryId, type RepositoryResult, type PublicProgram } from '@/content/public-content';
+import type { Locale } from '@/i18n/constants';
+import '@/styles/global.css';
+
+interface Props {
+  locale: Locale;
+  currentPath: string;
+  result: RepositoryResult<PublicProgram>;
+  selectedCategory?: ProgramCategoryId;
+  forceNoindex?: boolean;
+}
+
+const { locale, currentPath, result, selectedCategory, forceNoindex = false } = Astro.props;
+const fixturesEnabled = stagingFixturesEnabled();
+const programs = result.records;
+const isIndonesian = locale === 'id';
+const contentLanguage = isIndonesian ? 'id' : 'en';
+const fallbackText = !['id', 'en'].includes(locale)
+  ? 'This community surface is available in English while a full translation is prepared.'
+  : null;
+const href = (path: string): string => localizedPath(locale, path);
+const categoryHref = (category?: ProgramCategoryId): string => category
+  ? href(`/programs/category/${category}`)
+  : href('/programs');
+const reviewedLabel = result.updatedAt
+  ? new Intl.DateTimeFormat(isIndonesian ? 'id-ID' : 'en-GB', {
+      dateStyle: 'medium',
+      timeZone: 'Asia/Jakarta',
+    }).format(new Date(result.updatedAt))
+  : null;
+const title = isIndonesian ? 'Program komunitas — KaburAjaDulu' : 'Community programs — KaburAjaDulu';
+const description = isIndonesian
+  ? 'Pilih topik dan ritme yang cocok, lalu lanjutkan ke Discord untuk ikut.'
+  : 'Choose a topic and rhythm that fits, then continue to Discord to take part.';
+const countLabel = isIndonesian
+  ? `${programs.length} program`
+  : `${programs.length} ${programs.length === 1 ? 'program' : 'programs'}`;
+const statusLabels = {
+  active: isIndonesian ? 'Aktif' : 'Active',
+  needs_confirmation: isIndonesian ? 'Sesi berikutnya belum dipastikan' : 'Next session not published',
+  archived: isIndonesian ? 'Diarsipkan' : 'Archived',
+  aging: isIndonesian ? 'Segera ditinjau ulang' : 'Review due soon',
+  stale: isIndonesian ? 'Perlu ditinjau ulang' : 'Review overdue',
+  unknown: isIndonesian ? 'Status terbaru belum diketahui' : 'Latest status unknown',
+};
+---
+
+<Layout title={title} description={description} canonical={`https://kaburajadulu.com${currentPath}`} locale={locale} currentPath={currentPath} robots={fixturesEnabled || forceNoindex ? 'noindex, nofollow' : undefined}>
+  <Navbar client:only="react" locale={locale} currentPath={currentPath} />
+  <main id="main-content" class="kad-page kad-page--task" lang={contentLanguage} data-page-family="programs" data-requested-locale={locale} data-fixtures={fixturesEnabled ? 'enabled' : 'disabled'} data-repository-state={result.state}>
+    <div class="kad-container">
+      {fallbackText && <p class="kad-translation-notice" lang="en" role="status">{fallbackText}</p>}
+      <DemoBanner locale={locale} />
+
+      <header class="kad-index-intro" aria-labelledby="programs-page-title">
+        <div>
+          <p class="kad-eyebrow">{isIndonesian ? 'Belajar dan berbagi' : 'Learn and share'}</p>
+          <h1 id="programs-page-title">{isIndonesian ? 'Program komunitas' : 'Community programs'}</h1>
+        </div>
+        <p class="kad-index-intro__record" data-program-count={String(programs.length)}>
+          <strong>{programs.length} {isIndonesian ? 'catatan program' : 'program records'}</strong>
+          {reviewedLabel && <span>{isIndonesian ? `Ditinjau ${reviewedLabel}` : `Reviewed ${reviewedLabel}`}</span>}
+        </p>
+      </header>
+
+      <section id="catalogue" class="kad-program-index" aria-labelledby="program-catalogue-title" data-program-catalogue>
+        <div class="kad-program-index__toolbar">
+          <div>
+            <h2 id="program-catalogue-title">{isIndonesian ? 'Jelajahi berdasarkan minat' : 'Browse by interest'}</h2>
+            <p data-program-result-count aria-live="polite">{countLabel}</p>
+          </div>
+          <nav class="kad-program-filters" aria-label={isIndonesian ? 'Saring program' : 'Filter programs'}>
+            <a href={`${categoryHref()}#catalogue`} data-program-filter="all" aria-current={!selectedCategory ? 'page' : undefined}>{isIndonesian ? 'Semua' : 'All'}</a>
+            <a href={`${categoryHref('language')}#catalogue`} data-program-filter="language" aria-current={selectedCategory === 'language' ? 'page' : undefined}>{isIndonesian ? 'Klub bahasa' : 'Language clubs'}</a>
+            <a href={`${categoryHref('career')}#catalogue`} data-program-filter="career" aria-current={selectedCategory === 'career' ? 'page' : undefined}>{isIndonesian ? 'Pendidikan & karier' : 'Education & career'}</a>
+          </nav>
+        </div>
+
+        {result.state === 'loading' && (
+          <StatePanel state="pending" locale={locale} statusLabel={isIndonesian ? 'Memuat program' : 'Loading programs'} title={isIndonesian ? 'Direktori sedang dimuat.' : 'The directory is loading.'} description={isIndonesian ? 'Struktur halaman tetap tersedia sambil menunggu data publik.' : 'The page structure remains available while public data loads.'} />
+        )}
+
+        {result.state === 'error' && (
+          <StatePanel state="error" locale={locale} title={isIndonesian ? 'Direktori belum bisa dimuat.' : 'The directory could not be loaded.'} description={isIndonesian ? 'Tidak ada data lama atau data privat yang ditampilkan sebagai pengganti.' : 'No old or private data is shown as a substitute.'}>
+            <a class="kad-button kad-button--outline" href={currentPath}>{isIndonesian ? 'Coba lagi' : 'Try again'}</a>
+          </StatePanel>
+        )}
+
+        {result.state === 'empty' && (
+          <StatePanel state="empty" locale={locale} title={isIndonesian ? 'Belum ada program dalam pilihan ini.' : 'There are no programs in this selection.'} description={isIndonesian ? 'Coba lihat semua program atau periksa kembali setelah catatan publik diperbarui.' : 'View all programs or check again after the public records are updated.'}>
+            {selectedCategory && <a class="kad-button kad-button--outline" href={categoryHref()}>{isIndonesian ? 'Lihat semua program' : 'View all programs'}</a>}
+          </StatePanel>
+        )}
+
+        {result.state === 'stale' && (
+          <div class="kad-freshness-alert" role="status" data-freshness="stale">
+            <strong>{isIndonesian ? 'Catatan perlu ditinjau ulang.' : 'These records need another review.'}</strong>
+            <span>{reviewedLabel ? (isIndonesian ? `Pembaruan terakhir ${reviewedLabel}.` : `Last updated ${reviewedLabel}.`) : null}</span>
+          </div>
+        )}
+
+        {programs.length > 0 && (
+          <ol class="kad-program-list">
+            {programs.map((program, index) => {
+              const cover = program.media[0];
+              const source = program.publicProvenance[0];
+              const displayState = programDisplayState(program);
+              const statusText = statusLabels[displayState];
+              return (
+                <li data-program-record data-program-category={program.categoryId} data-program-state={program.publicationState}>
+                  <article class="kad-program-row">
+                    <span class="kad-program-row__number" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
+                    <div class="kad-program-row__body">
+                      <div class="kad-program-row__meta">
+                        <span>{program.category}</span>
+                        <span data-program-availability={program.archiveState} data-freshness={program.freshness} data-program-display-state={displayState}>{statusText}</span>
+                      </div>
+                      <h3><a href={href(`/programs/${program.slug}`)}>{program.title}</a></h3>
+                      <p>{program.summary}</p>
+                      <p class="kad-program-row__structure" data-program-structure>
+                        {program.series.length > 0
+                          ? (isIndonesian ? `${program.series.length} rangkaian · ${program.sessions.length} sesi` : `${program.series.length} series · ${program.sessions.length} sessions`)
+                          : (isIndonesian ? `${program.sessions.length} sesi langsung ke program` : `${program.sessions.length} direct sessions`)}
+                      </p>
+                      {program.sessions[0] && <p class="kad-program-row__next" data-program-next-session>{isIndonesian ? 'Sesi berikutnya' : 'Next session'}: {new Intl.DateTimeFormat(isIndonesian ? 'id-ID' : 'en-GB', { dateStyle: 'medium', timeZone: program.sessions[0].timezone }).format(new Date(program.sessions[0].startsAt))}</p>}
+                      {source?.url && (
+                        <div class="kad-program-row__actions">
+                          <a class="kad-source-link" href={source.url} target="_blank" rel="noopener noreferrer">{source.label} <span aria-hidden="true">↗</span></a>
+                        </div>
+                      )}
+                      <a class="kad-button kad-button--outline" href={href(`/programs/${program.slug}`)}>{isIndonesian ? 'Buka program' : 'Open program'}</a>
+                    </div>
+                    {cover ? (
+                      <div class="kad-program-row__media">
+                        <img data-program-poster src={cover.url} alt={cover.alt} width={cover.width ?? undefined} height={cover.height ?? undefined} loading={index === 0 ? 'eager' : 'lazy'} decoding="async" />
+                        <p class="kad-media-fallback" hidden>{isIndonesian ? 'Poster gagal dimuat. Sumber publik tetap tersedia.' : 'The poster failed to load. The public source remains available.'}</p>
+                      </div>
+                    ) : (
+                      <div class="kad-program-row__media kad-program-row__media--fallback" aria-label={isIndonesian ? 'Program tanpa poster publik' : 'Program without a public poster'}>
+                        <span aria-hidden="true">KAD</span>
+                        <small>{isIndonesian ? 'Tanpa poster' : 'No poster'}</small>
+                      </div>
+                    )}
+                  </article>
+                </li>
+              );
+            })}
+          </ol>
+        )}
+      </section>
+
+      {programs.length > 0 && (
+        <section class="kad-program-next" aria-labelledby="program-next-title">
+          <div>
+            <p class="kad-eyebrow">{isIndonesian ? 'Langkah berikutnya' : 'Next step'}</p>
+            <h2 id="program-next-title">{isIndonesian ? 'Lihat sesi dan acara yang akan datang.' : 'See the sessions and events coming up.'}</h2>
+          </div>
+          <a class="kad-button kad-button--primary" href={href('/events')}>{isIndonesian ? 'Buka agenda' : 'Open agenda'}</a>
+        </section>
+      )}
+    </div>
+  </main>
+  <Footer client:only="react" locale={locale} />
+</Layout>
+
+<script>
+  document.querySelectorAll<HTMLImageElement>('[data-program-poster]').forEach((image) => {
+    const showFallback = () => {
+      image.hidden = true;
+      const fallback = image.nextElementSibling;
+      if (fallback instanceof HTMLElement) fallback.hidden = false;
+    };
+    image.addEventListener('error', showFallback, { once: true });
+    if (image.complete && image.naturalWidth === 0) showFallback();
+  });
+</script>

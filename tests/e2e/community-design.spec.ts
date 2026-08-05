@@ -42,24 +42,21 @@ const DESIGN_PREVIEWS = [
   ['community-atlas', 'Community Atlas'],
 ] as const;
 
-const TASK_HEADERS = [
-  ['/programs/', 'catalogue', 'Program publik', '5'],
-  ['/events/', 'operational', 'Agenda tampil', '0'],
-  ['/volunteer/', 'operational', 'Satu siklus', '3 bulan'],
-  ['/stories/', 'evidence', 'Cerita tampil', '0'],
-  ['/about/history/', 'evidence', 'Status', 'Tinjauan bukti'],
-  ['/community/impact/', 'evidence', 'Metrik tampil', '0'],
-  ['/support/', 'proposal', 'Pembayaran aktif', '0'],
-  ['/community/credits/', 'evidence', 'Kontribusi tampil', '0'],
-  ['/programs/french-club-trial/', 'record', 'Poster publik', '1'],
-  ['/events/not-published/', 'record', 'Status', 'Belum dipublikasikan'],
+const SUBPAGE_HEADERS = [
+  ['/events/', 'schedule', '0 rekaman publik'],
+  ['/volunteer/', 'volunteer-cycle', 'Siklus 3 bulan'],
+  ['/stories/', 'story-index', 'Catatan dari kegiatan.'],
+  ['/about/history/', 'history-review', 'Tinjauan bukti'],
+  ['/community/impact/', 'impact-ledger', 'rekaman metrik terbit'],
+  ['/support/', 'support-readiness', 'Belum menerima pembayaran'],
+  ['/community/credits/', 'contribution-ledger', 'Anonim secara bawaan'],
+  ['/events/not-published/', 'event-record', 'Agenda'],
 ] as const;
 
 const INFORMATION_FIRST_ROUTES = [
-  ['/programs/', 'catalogue'],
-  ['/events/', 'operational'],
-  ['/volunteer/', 'operational'],
-  ['/stories/', 'evidence'],
+  ['/events/', 'schedule'],
+  ['/volunteer/', 'volunteer-cycle'],
+  ['/stories/', 'story-index'],
 ] as const;
 
 async function expectNoHorizontalOverflow(page: Page) {
@@ -111,21 +108,51 @@ test.describe('route-specific first viewport', () => {
     await expect(page.locator('[data-page-header="task"]')).toHaveCount(0);
   });
 
-  for (const [route, variant, label, value] of TASK_HEADERS) {
-    test(`${route} exposes ${label} in a compact ${variant} header`, async ({ page }) => {
+  test('Community leads with current metrics, programs, agenda, and people', async ({ page }) => {
+    await page.goto('/community/', { waitUntil: 'domcontentloaded' });
+    await expect(page.locator('[data-community-section="current"] dl')).toBeVisible();
+    await expect(page.locator('[data-community-section="current"] dl > div')).toHaveCount(3);
+    await expect(page.locator('[data-community-section="current"] .kad-community-information__metric-value')).toHaveText(['—', '—', '—']);
+    await expect(page.locator('[data-community-section="current"] .kad-community-information__metric-detail')).toHaveCount(3);
+    await expect(page.locator('[data-community-section="programs"] [data-program-record]')).toHaveCount(3);
+    await expect(page.locator('[data-community-section="agenda"]')).toBeVisible();
+    await expect(page.locator('[data-community-section="people"]')).toBeVisible();
+    await expect(page.locator('.kad-journey-card, .kad-band, [data-community-section="social"]')).toHaveCount(0);
+    const headingOrder = await page.locator('[data-community-section] > .kad-community-information__section-heading h2').allTextContents();
+    expect(headingOrder.slice(0, 4)).toEqual([
+      'KAD saat ini',
+      'Program yang bisa dijelajahi',
+      'Agenda terdekat',
+      'Kontribusi relawan',
+    ]);
+  });
+
+  test('Community stays compact and ordered on desktop and mobile', async ({ page }) => {
+    for (const viewport of [{ width: 1280, height: 720 }, { width: 390, height: 844 }]) {
+      await page.setViewportSize(viewport);
+      await page.goto('/community/', { waitUntil: 'domcontentloaded' });
+      const header = page.locator('[data-page-header="orientation"]');
+      const box = await header.boundingBox();
+      expect(box?.height ?? Number.POSITIVE_INFINITY).toBeLessThanOrEqual(viewport.width === 1280 ? 400 : 600);
+      await expectNoHorizontalOverflow(page);
+      const sections = await page.locator('[data-community-section]').evaluateAll((items) => items.map((item) => item.getAttribute('data-community-section')));
+      expect(sections).toEqual(['current', 'programs', 'agenda', 'people', 'sources']);
+    }
+  });
+
+  for (const [route, headerKind, marker] of SUBPAGE_HEADERS) {
+    test(`${route} exposes a page-specific ${headerKind} header`, async ({ page }) => {
       await page.setViewportSize({ width: 1280, height: 720 });
       await page.goto(route, { waitUntil: 'domcontentloaded' });
 
-      const header = page.locator(`[data-page-header="task"][data-header-variant="${variant}"]`);
+      const header = page.locator(`[data-page-header="${headerKind}"]`);
       await expect(header).toHaveCount(1);
       await expect(page.locator('[data-page-header="orientation"]')).toHaveCount(0);
-      await expect(header.locator('.kad-task-header__stats > div')).toHaveCount(3);
-
-      const stat = header.locator('.kad-task-header__stats > div').filter({ hasText: label });
-      await expect(stat).toContainText(value);
-      const statBox = await header.locator('.kad-task-header__stats').boundingBox();
-      expect(statBox, 'status summary must be laid out in the first viewport').not.toBeNull();
-      expect((statBox?.y ?? 721) + (statBox?.height ?? 0)).toBeLessThanOrEqual(720);
+      await expect(page.locator('[data-page-header="task"]')).toHaveCount(0);
+      await expect(header).toContainText(marker);
+      const headerBox = await header.boundingBox();
+      expect(headerBox, 'page-specific header must be laid out in the first viewport').not.toBeNull();
+      expect((headerBox?.y ?? 721) + (headerBox?.height ?? 0)).toBeLessThanOrEqual(720);
       await expectNoHorizontalOverflow(page);
     });
   }
@@ -133,14 +160,30 @@ test.describe('route-specific first viewport', () => {
   test('Programs exposes real category controls at the start of the catalogue', async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 720 });
     await page.goto('/programs/', { waitUntil: 'domcontentloaded' });
-    const filters = page.locator('.kad-filter-row--content');
+    const filters = page.locator('.kad-program-filters');
     await expect(filters.getByRole('link')).toHaveCount(3);
     const box = await filters.boundingBox();
     expect((box?.y ?? 721) + (box?.height ?? 0)).toBeLessThanOrEqual(720);
   });
 
+  test('Programs catalogue and detail keep task-scale headings', async ({ page }) => {
+    for (const route of ['/programs/', '/programs/english-mandarin-weekly-clubs/']) {
+      for (const viewport of [
+        { width: 1280, height: 720, maxTitleSize: 48 },
+        { width: 390, height: 844, maxTitleSize: 43 },
+      ]) {
+        await page.setViewportSize({ width: viewport.width, height: viewport.height });
+        await page.goto(route, { waitUntil: 'domcontentloaded' });
+        const title = page.locator('main h1');
+        const titleSize = await title.evaluate((element) => Number.parseFloat(getComputedStyle(element).fontSize));
+        expect(titleSize, `${route} should use task-scale type at ${viewport.width}px`).toBeLessThanOrEqual(viewport.maxTitleSize);
+        await expectNoHorizontalOverflow(page);
+      }
+    }
+  });
+
   test.describe('information-first task headers', () => {
-    for (const [route, variant] of INFORMATION_FIRST_ROUTES) {
+    for (const [route, headerKind] of INFORMATION_FIRST_ROUTES) {
       test(`${route} is compact, useful, and contained on desktop and mobile`, async ({ page }) => {
         for (const viewport of [
           { width: 1280, height: 720, maxHeaderHeight: 300, maxTitleSize: 48 },
@@ -149,35 +192,31 @@ test.describe('route-specific first viewport', () => {
           await page.setViewportSize({ width: viewport.width, height: viewport.height });
           await page.goto(route, { waitUntil: 'domcontentloaded' });
 
-          const header = page.locator(`[data-page-header="task"][data-header-variant="${variant}"]`);
+          const header = page.locator(`[data-page-header="${headerKind}"]`);
           await expect(header).toHaveCount(1);
-          await expect(header).toHaveAttribute('data-header-density', 'compact');
           await expect(header.locator('h1')).toBeVisible();
 
           const metrics = await header.evaluate((element) => {
             const title = element.querySelector('h1');
-            const stats = element.querySelector('.kad-task-header__stats');
-            const action = element.querySelector('.kad-task-header__actions a, .kad-task-header__actions button');
+            const summary = element.querySelector('.kad-subpage-intro__aside, .kad-index-intro__record, .kad-community-information__header-note');
             const rect = element.getBoundingClientRect();
             const titleStyle = title ? getComputedStyle(title) : null;
-            const statsRect = stats?.getBoundingClientRect() ?? null;
-            const actionRect = action?.getBoundingClientRect() ?? null;
             return {
               headerHeight: rect.height,
               titleSize: titleStyle ? Number.parseFloat(titleStyle.fontSize) : 0,
-              statsBottom: statsRect ? statsRect.bottom : 0,
-              actionBottom: actionRect ? actionRect.bottom : 0,
-              statsCount: stats?.querySelectorAll(':scope > div').length ?? 0,
-              actionCount: element.querySelectorAll('.kad-task-header__actions a, .kad-task-header__actions button').length,
+              summaryBottom: summary?.getBoundingClientRect().bottom ?? 0,
+              summaryCount: summary ? 1 : 0,
             };
           });
 
           expect(metrics.headerHeight, `${route} header should stay compact at ${viewport.width}px`).toBeLessThanOrEqual(viewport.maxHeaderHeight);
           expect(metrics.titleSize, `${route} title should not use hero scale at ${viewport.width}px`).toBeLessThanOrEqual(viewport.maxTitleSize);
-          expect(metrics.statsCount, `${route} header should expose its information summary`).toBe(3);
-          expect(metrics.actionCount, `${route} header should expose a useful next action`).toBeGreaterThan(0);
-          expect(metrics.statsBottom, `${route} stats should be visible near the first viewport`).toBeLessThanOrEqual(viewport.height + 16);
-          expect(metrics.actionBottom, `${route} action should be visible near the first viewport`).toBeLessThanOrEqual(viewport.height + 16);
+          expect(metrics.summaryCount, `${route} header should expose its information summary`).toBe(1);
+          expect(metrics.summaryBottom, `${route} summary should be visible near the first viewport`).toBeLessThanOrEqual(viewport.height + 16);
+          const firstAction = page.locator('main a.kad-button, .kad-story-information__empty a').first();
+          await expect(firstAction).toBeVisible();
+          const actionBox = await firstAction.boundingBox();
+          expect(actionBox ? actionBox.y + actionBox.height : Number.POSITIVE_INFINITY, `${route} should expose a useful next action near the first viewport`).toBeLessThanOrEqual(viewport.height + 16);
           await expectNoHorizontalOverflow(page);
         }
       });
@@ -198,10 +237,10 @@ test.describe('staging landing direction review', () => {
     });
   }
 
-  test('Field Notes is the normal-home candidate and renders all five approved posters', async ({ page }) => {
+  test('Field Notes is the normal-home candidate and renders the selected program posters', async ({ page }) => {
     await page.goto('/', { waitUntil: 'networkidle' });
     await expect(page.locator('[data-design-direction="field-notes"]')).toBeVisible();
-    await expect(page.locator('[data-interface-slice="community-home"] img[src^="/images/programs/"]')).toHaveCount(5);
+    await expect(page.locator('[data-interface-slice="community-home"] img[src^="/images/programs/"]')).toHaveCount(4);
     await expect(page.locator('.kad-direction-tabs')).toHaveCount(0);
   });
 
@@ -215,22 +254,20 @@ test.describe('staging landing direction review', () => {
   });
 });
 
-test('program catalogue renders five source-backed cards with explicit status', async ({ page }) => {
+test('program catalogue uses an information-first index backed by public records', async ({ page }) => {
   await page.goto('/programs/', { waitUntil: 'domcontentloaded' });
 
-  const cards = page.locator('.kad-program-card');
-  await expect(cards).toHaveCount(5);
-  const categoryAnchorIds = await cards.evaluateAll((elements) =>
-    elements.map((element) => element.id).filter(Boolean),
-  );
-  expect(new Set(categoryAnchorIds).size).toBe(categoryAnchorIds.length);
-  expect(categoryAnchorIds.sort()).toEqual(['career', 'language']);
-  await expect(cards.locator('.kad-status')).toHaveCount(5);
-  expect(await cards.locator('.kad-status').allTextContents()).toEqual(
-    new Array(5).fill('Konfirmasi di Discord'),
+  await expect(page.locator('[data-page-family="programs"]')).toBeVisible();
+  await expect(page.locator('[data-page-header="task"]')).toHaveCount(0);
+  await expect(page.locator('[data-program-count="5"]')).toBeVisible();
+  const records = page.locator('[data-program-record]');
+  await expect(records).toHaveCount(5);
+  await expect(records.locator('[data-program-availability="needs_confirmation"]')).toHaveCount(5);
+  expect(await records.locator('[data-program-availability="needs_confirmation"]').allTextContents()).toEqual(
+    new Array(5).fill('Sesi berikutnya belum dipastikan'),
   );
 
-  const links = cards.locator(`a[href^="https://x.com/KADSocialHub/status/"]`);
+  const links = records.locator(`a[href^="https://x.com/KADSocialHub/status/"]`);
   await expect(links).toHaveCount(5);
   expect(await links.evaluateAll((anchors) => anchors.map((anchor) => (anchor as HTMLAnchorElement).href))).toEqual(
     expect.arrayContaining(PROGRAM_SOURCES),
@@ -242,8 +279,8 @@ test('program catalogue renders five source-backed cards with explicit status', 
 test('program posters use meaningful local media with loading metadata and dimensions', async ({ page }) => {
   await page.goto('/programs/', { waitUntil: 'networkidle' });
 
-  const cards = page.locator('.kad-program-card');
-  const posterImages = cards.locator('img');
+  const records = page.locator('[data-program-record]');
+  const posterImages = records.locator('img');
   await expect(posterImages).toHaveCount(4);
 
   const posterMetadata = await posterImages.evaluateAll((images) => images.map((image) => {
@@ -274,15 +311,60 @@ test('program posters use meaningful local media with loading metadata and dimen
   expect(weeklyEnglish?.alt).toContain('English Study Club');
 });
 
+test('category filters are URL-addressable and update the visible result count', async ({ page }) => {
+  await page.goto('/programs/category/language/#catalogue', { waitUntil: 'domcontentloaded' });
+  await expect(page.locator('[data-program-filter="language"]')).toHaveAttribute('aria-current', 'page');
+  await expect(page.locator('[data-program-record]')).toHaveCount(3);
+  await expect(page.locator('[data-program-result-count]')).toContainText('3 program');
+
+  await page.locator('[data-program-filter="career"]').click();
+  await expect(page).toHaveURL(/\/programs\/category\/career\/?#catalogue$/);
+  await expect(page.locator('[data-program-record]')).toHaveCount(2);
+  await expect(page.locator('[data-program-result-count]')).toContainText('2 program');
+});
+
+test('category filtering remains functional without JavaScript', async ({ browser }) => {
+  const context = await browser.newContext({ javaScriptEnabled: false });
+  const page = await context.newPage();
+  await page.goto('/programs/category/language/#catalogue', { waitUntil: 'domcontentloaded' });
+  await expect(page.locator('[data-program-record]')).toHaveCount(3);
+  await expect(page.locator('[data-program-filter="language"]')).toHaveAttribute('aria-current', 'page');
+  const careerFilter = page.locator('[data-program-filter="career"]');
+  await careerFilter.focus();
+  await careerFilter.press('Enter');
+  await expect(page).toHaveURL(/\/programs\/category\/career\/?#catalogue$/);
+  await expect(page.locator('[data-program-record]')).toHaveCount(2);
+  await context.close();
+});
+
+test('Programs lifecycle previews expose loading, empty, stale, and recoverable error states', async ({ page }) => {
+  const states = ['loading', 'empty', 'stale', 'error'] as const;
+  for (const state of states) {
+    await page.goto(`/design-preview/programs/${state}/`, { waitUntil: 'domcontentloaded' });
+    await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', 'noindex, nofollow');
+    await expect(page.locator('main')).toHaveAttribute('data-repository-state', state);
+  }
+
+  await page.goto('/design-preview/programs/stale/', { waitUntil: 'domcontentloaded' });
+  await expect(page.locator('[data-freshness="stale"]').first()).toBeVisible();
+  await expect(page.locator('[data-program-record]')).toHaveCount(5);
+
+  await page.goto('/design-preview/programs/error/', { waitUntil: 'domcontentloaded' });
+  await expect(page.locator('[data-state-panel="error"]')).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Coba lagi' })).toHaveAttribute('href', '/design-preview/programs/error');
+});
+
 test('GKS remains a text-only fallback and English + Mandarin detail has two posters', async ({ page }) => {
   await page.goto('/programs/', { waitUntil: 'domcontentloaded' });
-  const gksCard = page.locator('.kad-program-card').filter({ hasText: 'GKS preparation' });
+  const gksCard = page.locator('[data-program-record]').filter({ hasText: 'GKS preparation' });
   await expect(gksCard).toHaveCount(1);
   await expect(gksCard.locator('img')).toHaveCount(0);
   await expect(gksCard.locator('.kad-source-link')).toHaveCount(1);
-  await expect(gksCard.locator('.kad-status')).toContainText('Konfirmasi di Discord');
+  await expect(gksCard.locator('[data-program-availability]')).toContainText('Sesi berikutnya belum dipastikan');
 
   await page.goto('/programs/english-mandarin-weekly-clubs/', { waitUntil: 'networkidle' });
+  await expect(page.locator('[data-page-family="program-detail"]')).toBeVisible();
+  await expect(page.locator('[data-page-header="task"]')).toHaveCount(0);
   const gallery = page.locator('.kad-program-gallery');
   await expect(gallery).toHaveCount(1);
   const galleryImages = gallery.locator('img');
@@ -304,20 +386,49 @@ test('GKS remains a text-only fallback and English + Mandarin detail has two pos
   expect(galleryMetadata.find(({ path }) => path === PROGRAM_POSTER_PATHS[4])?.alt).toContain('Mandarin Study Club');
 });
 
+test('production Program detail keeps unproven structure and metrics as Evidence Placeholders', async ({ page }) => {
+  await page.goto('/programs/french-club-trial/', { waitUntil: 'domcontentloaded' });
+  await expect(page.locator('main')).toHaveAttribute('data-fixtures', 'disabled');
+  await expect(page.locator('[data-program-series]')).toHaveCount(0);
+  await expect(page.locator('[data-program-metric]')).toHaveCount(4);
+  await expect(page.locator('[data-program-metric] [data-metric-value]')).toHaveText(new Array(4).fill('Belum terdokumentasi'));
+  await expect(page.locator('[data-evidence-placeholder]').first()).toBeVisible();
+});
+
 test('program documentation keeps a descriptive fallback when local posters fail', async ({ page }) => {
   await page.route('**/images/programs/*.webp', (route) => route.abort());
   await page.goto('/programs/', { waitUntil: 'networkidle' });
 
-  const cards = page.locator('.kad-program-card');
-  await expect(cards).toHaveCount(5);
-  await expect(cards.locator('.kad-media-fallback:visible')).toHaveCount(4);
-  await expect(cards.locator('.kad-source-link')).toHaveCount(5);
-  await expect(cards.locator('.kad-status')).toHaveCount(5);
+  const records = page.locator('[data-program-record]');
+  await expect(records).toHaveCount(5);
+  await expect(records.locator('.kad-media-fallback:visible')).toHaveCount(4);
+  await expect(records.locator('.kad-source-link')).toHaveCount(5);
+  await expect(records.locator('[data-program-availability]')).toHaveCount(5);
+});
+
+test('program detail puts the Discord handoff before documentation on mobile', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/programs/english-mandarin-weekly-clubs/', { waitUntil: 'domcontentloaded' });
+
+  const handoff = page.locator('.kad-program-detail-intro__action[href*="discord"]').filter({ hasText: /Gabung KAD di Discord|Join KAD on Discord/i });
+  await expect(handoff).toHaveCount(1);
+  await expect(handoff).toBeVisible();
+  const handoffBox = await handoff.boundingBox();
+  expect(handoffBox?.y ?? Number.POSITIVE_INFINITY, 'Discord handoff should appear in the first mobile viewport').toBeLessThan(900);
+
+  await expect(page.locator('.kad-program-documentation')).toHaveCount(1);
+  const precedesDocumentation = await page.evaluate(() => {
+    const action = document.querySelector('.kad-program-detail-intro__action[href*="discord"]');
+    const documentation = document.querySelector('.kad-program-documentation');
+    return action !== null && documentation !== null && Boolean(action.compareDocumentPosition(documentation) & Node.DOCUMENT_POSITION_FOLLOWING);
+  });
+  expect(precedesDocumentation, 'Discord handoff must precede documentation in DOM order').toBe(true);
 });
 
 test('events begin with an honest zero-count empty state', async ({ page }) => {
   await page.goto('/events/', { waitUntil: 'domcontentloaded' });
   await expect(page.locator('[data-event-count="0"]')).toBeVisible();
+  await expect(page.locator('[data-evidence-placeholder="agenda-empty"]')).toBeVisible();
   await expect(page.locator('[data-event-state="empty"]')).toBeVisible();
   await expect(page.locator('[data-event-count="0"] .kad-status')).toContainText('0');
   await expect(page.locator('.kad-event-card, [data-event-state="published"]')).toHaveCount(0);
@@ -326,7 +437,7 @@ test('events begin with an honest zero-count empty state', async ({ page }) => {
 test('readiness states stay explicit for history, support, credits, and unpublished events', async ({ page }) => {
   const states = [
     ['/about/history/', 'Tinjauan bukti'],
-    ['/support/', 'Belum siap'],
+    ['/support/', 'Belum menerima pembayaran'],
     ['/community/credits/', 'Anonim secara bawaan'],
     ['/events/not-published/', 'Belum dipublikasikan'],
   ] as const;
@@ -362,36 +473,35 @@ test('Arabic routes preserve locale links and RTL composition', async ({ page })
   expect(internalLinks.filter((href) => !href.startsWith('#')).every((href) => href === '/ar/' || href.startsWith('/ar/'))).toBe(true);
 
   await page.goto('/ar/community/', { waitUntil: 'domcontentloaded' });
-  const firstChecklistItem = page.locator('.kad-check-list li').first();
-  await expect(firstChecklistItem).toBeVisible();
-  expect(await firstChecklistItem.evaluate((element) => ({
-    paddingInlineStart: getComputedStyle(element).paddingInlineStart,
-    marker: getComputedStyle(element, '::before').content,
-  }))).toEqual({ paddingInlineStart: '24px', marker: '"←"' });
+  await expect(page.locator('[data-page-header="orientation"]')).toBeVisible();
+  await expect(page.locator('[data-community-section="current"] dl')).toBeVisible();
+  await expect(page.locator('.kad-community-information__sources a').first()).toBeVisible();
 });
 
 test('production excludes staging fixtures and keeps language fallback explicit', async ({ page }) => {
-  await page.goto('/events/', { waitUntil: 'domcontentloaded' });
-  await expect(page.locator('main')).toHaveAttribute('data-fixtures', 'disabled');
-  await expect(page.locator('[data-fixture-id]')).toHaveCount(0);
-  await expect(page.getByText('Data simulasi', { exact: true })).toHaveCount(0);
+  for (const route of ['/community/', '/events/', '/programs/', '/volunteer/', '/stories/', '/about/history/', '/community/impact/', '/community/credits/', '/support/']) {
+    await page.goto(route, { waitUntil: 'domcontentloaded' });
+    await expect(page.locator('main')).toHaveAttribute('data-fixtures', 'disabled');
+    await expect(page.locator('[data-fixture-id], [data-fixture-revision]')).toHaveCount(0);
+    await expect(page.locator('main')).not.toContainText(/Data simulasi|Demo data|pratinjau|preview records|preview schedule/i);
+  }
 
   await page.goto('/en/programs/', { waitUntil: 'domcontentloaded' });
   await expect(page.locator('main')).toHaveAttribute('lang', 'en');
   await expect(page.getByRole('heading', { name: 'Community programs' })).toBeVisible();
   await expect(page.getByText('Sumber publik di X', { exact: true })).toHaveCount(0);
-  await expect(page.locator('.kad-program-card').first()).toContainText('Public source on X');
+  await expect(page.locator('[data-program-record]').first()).toContainText('Public source on X');
 
   await page.goto('/ja/community/', { waitUntil: 'domcontentloaded' });
   await expect(page.locator('html')).toHaveAttribute('lang', 'ja');
   await expect(page.locator('main')).toHaveAttribute('lang', 'en');
   await expect(page.getByText('This community surface is available in English while a full translation is prepared.')).toBeVisible();
-  await expect(page.getByRole('heading', { name: 'Community is more than a server.' })).toBeVisible();
+  await expect(page.locator('#community-title')).toHaveText('KAD today');
 
   await page.goto('/ja/', { waitUntil: 'domcontentloaded' });
   await expect(page.locator('html')).toHaveAttribute('lang', 'ja');
-  await expect(page.getByText('This page is available in English while a full translation is prepared.')).toBeVisible();
-  await expect(page.getByRole('heading', { name: 'Kabur Aja Dulu' })).toBeVisible();
+  await expect(page.getByText('Some community sections remain in English while their full translation is prepared.')).toBeVisible();
+  await expect(page.getByRole('heading', { name: '本当の疑問から始めよう。' })).toBeVisible();
   await expect(page.getByText('コミュニティの公開スペース', { exact: true })).toHaveCount(0);
 });
 
@@ -438,6 +548,30 @@ test.describe('responsive and motion safeguards', () => {
     await expectNoHorizontalOverflow(page);
   });
 
+  test('representative page families stay within the viewport on desktop and mobile', async ({ page }) => {
+    const routes = [
+      '/',
+      '/community/',
+      '/programs/',
+      '/programs/english-mandarin-weekly-clubs/',
+      '/events/',
+      '/events/not-published/',
+      '/volunteer/',
+      '/stories/',
+      '/about/history/',
+      '/community/impact/',
+      '/support/',
+      '/community/credits/',
+    ];
+    for (const viewport of [{ width: 1280, height: 720 }, { width: 390, height: 844 }]) {
+      await page.setViewportSize(viewport);
+      for (const route of routes) {
+        await page.goto(route, { waitUntil: 'domcontentloaded' });
+        await expectNoHorizontalOverflow(page);
+      }
+    }
+  });
+
   test('the 200% zoom-equivalent viewport remains readable without two-dimensional scrolling', async ({ page }) => {
     await page.setViewportSize({ width: 640, height: 720 });
     await page.goto('/support/', { waitUntil: 'domcontentloaded' });
@@ -449,7 +583,7 @@ test.describe('responsive and motion safeguards', () => {
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.goto('/volunteer/', { waitUntil: 'domcontentloaded' });
     const motion = await page.locator('body').evaluate(() => {
-      const sample = document.querySelector('.kad-card');
+      const sample = document.querySelector('.kad-volunteer-position');
       if (!sample) return null;
       const style = getComputedStyle(sample);
       return { transitionDuration: style.transitionDuration, animationDuration: style.animationDuration };
@@ -470,6 +604,7 @@ test.describe('responsive and motion safeguards', () => {
 test.describe('screenshot artifacts', () => {
   for (const [route, name] of [
     ['/', 'home'],
+    ['/community/', 'community'],
     ['/programs/', 'programs'],
     ['/programs/english-mandarin-weekly-clubs/', 'weekly-detail'],
     ['/support/', 'support'],

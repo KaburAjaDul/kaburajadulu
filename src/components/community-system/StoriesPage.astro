@@ -1,0 +1,64 @@
+---
+import type { Locale } from '@/i18n/constants';
+import { DISCORD_URL } from '@/content/community-site';
+import { activeStagingPublishedRecords, fixtureText, stagingFixturesEnabled, stagingStoryBySlug } from '@/content/staging-fixtures';
+import { storyReferencesFor } from '@/content/community-information-content';
+import '@/styles/community-information.css';
+
+interface Props { locale: Locale; href: (path: string) => string; slug?: string; }
+const { locale, href, slug } = Astro.props;
+const isEnglish = locale !== 'id';
+const fixturesEnabled = stagingFixturesEnabled();
+const story = slug ? stagingStoryBySlug(slug) : undefined;
+const stories = activeStagingPublishedRecords().filter((record) => record.recordType === 'story' && record.slug);
+const featuredStory = stories[0];
+const archiveStories = stories.slice(1);
+const date = (value: string) => new Intl.DateTimeFormat(isEnglish ? 'en-GB' : 'id-ID', { dateStyle: 'long', timeZone: 'Asia/Jakarta' }).format(new Date(`${value}T12:00:00+07:00`));
+const referenceHref = (referenceHref: string) => href(referenceHref.replace(/\/$/, ''));
+const statusLabel = (state: string) => state === 'completed' ? (isEnglish ? 'Reviewed' : 'Ditinjau') : (isEnglish ? 'Preview' : 'Pratinjau');
+---
+
+<div class="kad-story-information" data-story-surface={slug ? 'detail' : 'index'}>
+  {slug && story ? <>
+    <header class="kad-story-information__header" data-page-header="story-record" aria-labelledby="story-title">
+      <div><p class="kad-story-information__eyebrow">{isEnglish ? 'Community story' : 'Cerita komunitas'}</p><h1 id="story-title">{fixtureText(story.title, locale)}</h1><p>{fixtureText(story.summary, locale)}</p></div>
+      <p class="kad-community-information__header-note">{isEnglish ? 'A public note about what happened, what changed, and what can be carried forward.' : 'Catatan publik tentang apa yang terjadi, apa yang berubah, dan apa yang bisa diteruskan.'}</p>
+    </header>
+    <section class="kad-story-information__section kad-story-information__detail" aria-labelledby="story-body-title">
+      <div class="kad-story-information__section-heading"><div><p class="kad-story-information__eyebrow">{statusLabel(story.state)} · {date(story.publishedDate)}</p><h2 id="story-body-title">{isEnglish ? 'What happened and what was learned.' : 'Apa yang terjadi dan apa yang dipelajari.'}</h2></div></div>
+      <div class="kad-story-information__detail-body">{story.body?.map((paragraph) => <p>{fixtureText(paragraph, locale)}</p>)}</div>
+      {fixturesEnabled && <div class="kad-story-information__references" aria-label={isEnglish ? 'Related records' : 'Rekaman terkait'}>{storyReferencesFor(story.id).map((reference) => <a class="kad-story-information__reference" href={referenceHref(reference.href)}>{fixtureText(reference.label, locale)} →</a>)}</div>}
+      <footer class="kad-story-information__detail-footer"><span>{fixtureText(story.sourceLabel, locale)}</span><a href={href('/stories')}>{isEnglish ? 'Back to stories' : 'Kembali ke cerita'} →</a></footer>
+    </section>
+  </> : slug ? <>
+    <header class="kad-story-information__header" data-page-header="story-record" aria-labelledby="story-not-found-title">
+      <div><p class="kad-story-information__eyebrow">{isEnglish ? 'Community documentation' : 'Dokumentasi komunitas'}</p><h1 id="story-not-found-title">{isEnglish ? 'Story not published.' : 'Cerita belum dipublikasikan.'}</h1><p>{isEnglish ? 'This record has not passed source, consent, and editorial review.' : 'Rekaman ini belum melewati tinjauan sumber, izin, dan editorial.'}</p></div>
+      <p class="kad-community-information__header-note">{isEnglish ? 'This story is not public yet.' : 'Cerita ini belum menjadi catatan publik.'}</p>
+    </header>
+    <section class="kad-story-information__section" aria-labelledby="story-not-found-body"><div class="kad-story-information__empty" data-state="empty"><h2 id="story-not-found-body">{isEnglish ? 'No public story record is available.' : 'Belum ada rekaman cerita publik.'}</h2><p>{isEnglish ? 'Return to the archive or share context for review.' : 'Kembali ke arsip atau bagikan konteks untuk ditinjau.'}</p><a href={href('/stories')}>{isEnglish ? 'Back to stories' : 'Kembali ke cerita'} →</a></div></section>
+  </> : <>
+    <header class="kad-story-information__header" data-page-header="story-index" aria-labelledby="stories-title">
+      <div><p class="kad-story-information__eyebrow">{isEnglish ? 'Documentation archive' : 'Arsip dokumentasi'}</p><h1 id="stories-title">{isEnglish ? 'Notes from the work.' : 'Catatan dari kegiatan.'}</h1><p>{isEnglish ? 'Read what happened, what people learned, and what the next cycle can use.' : 'Baca apa yang terjadi, apa yang dipelajari, dan apa yang bisa dipakai siklus berikutnya.'}</p></div>
+      <p class="kad-community-information__header-note">{isEnglish ? 'Stories publish only after editorial, source, and privacy review.' : 'Cerita hanya terbit setelah tinjauan editorial, sumber, dan privasi.'}</p>
+    </header>
+    <section class="kad-story-information__section" aria-labelledby="stories-list-title">
+      <div class="kad-story-information__section-heading"><div><p class="kad-story-information__eyebrow">01 · {isEnglish ? 'Featured note' : 'Catatan pilihan'}</p><h2 id="stories-list-title">{isEnglish ? 'Start with one story.' : 'Mulai dari satu cerita.'}</h2></div><p>{isEnglish ? 'Each note stays close to the activity it describes and links to the public records behind it.' : 'Setiap catatan tetap dekat dengan kegiatan yang diceritakan dan menaut ke rekaman publik yang melatarinya.'}</p></div>
+      {fixturesEnabled && featuredStory ? <>
+        <article class="kad-story-information__item kad-story-information__featured" data-story-featured data-fixture-id={featuredStory.id} data-fixture-state={featuredStory.state}><div class="kad-story-information__item-meta"><span>{statusLabel(featuredStory.state)}</span><time datetime={featuredStory.publishedDate}>{date(featuredStory.publishedDate)}</time></div><div><h3><a href={href(`/stories/${featuredStory.slug}`)}>{fixtureText(featuredStory.title, locale)}</a></h3><p>{fixtureText(featuredStory.summary, locale)}</p></div>{storyReferencesFor(featuredStory.id).length > 0 && <div class="kad-story-information__references">{storyReferencesFor(featuredStory.id).map((reference) => <a class="kad-story-information__reference" href={referenceHref(reference.href)}>{fixtureText(reference.label, locale)} →</a>)}</div>}</article>
+        {archiveStories.length > 0 && <div class="kad-story-information__archive"><div class="kad-story-information__section-heading"><div><p class="kad-story-information__eyebrow">02 · {isEnglish ? 'Archive' : 'Arsip'}</p><h2>{isEnglish ? 'More notes' : 'Catatan lainnya'}</h2></div></div><div class="kad-story-information__list">{archiveStories.map((item) => <article class="kad-story-information__item" data-fixture-id={item.id} data-fixture-state={item.state}><div class="kad-story-information__item-meta"><span>{statusLabel(item.state)}</span><time datetime={item.publishedDate}>{date(item.publishedDate)}</time></div><h3><a href={href(`/stories/${item.slug}`)}>{fixtureText(item.title, locale)}</a></h3><p>{fixtureText(item.summary, locale)}</p>{storyReferencesFor(item.id).length > 0 && <div class="kad-story-information__references">{storyReferencesFor(item.id).map((reference) => <a class="kad-story-information__reference" href={referenceHref(reference.href)}>{fixtureText(reference.label, locale)} →</a>)}</div>}</article>)}</div></div>}
+      </> : <div class="kad-story-information__empty" data-state="empty"><strong>{isEnglish ? 'No public story yet.' : 'Belum ada cerita publik.'}</strong><p>{isEnglish ? 'A story appears after its source, consent, and editorial review are ready.' : 'Cerita akan tampil setelah sumber, izin, dan tinjauan editorial siap.'}</p><a href={DISCORD_URL} target="_blank" rel="noopener noreferrer">{isEnglish ? 'Share context for review' : 'Bagikan konteks untuk ditinjau'} ↗</a></div>}
+    </section>
+  </>}
+</div>
+
+<style>
+  .kad-story-information__featured { background: #f5f7fb; border-color: #1456ff; grid-template-columns: auto minmax(0, 1fr); }
+  .kad-story-information__featured h3 { font-size: clamp(1.45rem, 3vw, 2.1rem); letter-spacing: -.035em; }
+  .kad-story-information__featured h3 a { color: #161a22; text-decoration-thickness: .08em; text-underline-offset: .15em; }
+  .kad-story-information__featured > .kad-story-information__references { grid-column: 2; }
+  .kad-story-information__archive { border-top: 1px solid var(--community-line); margin-top: 3.5rem; padding-top: 2.5rem; }
+  @media (max-width: 760px) {
+    .kad-story-information__featured { display: block; }
+    .kad-story-information__featured > .kad-story-information__references { margin-top: 1.2rem; }
+  }
+</style>

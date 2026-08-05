@@ -62,4 +62,17 @@ jobs:
             echo "Refusing stale deployment: tested=$EXPECTED_MAIN_SHA current=$current_main_sha" >&2
             exit 1
           fi
+          cloudflare_token="$CLOUDFLARE_API_TOKEN"
+          if [[ "$cloudflare_token" == curl*api.cloudflare.com/client/v4/user/tokens/verify* ]] &&
+             [[ "$cloudflare_token" =~ Authorization:[[:space:]]Bearer[[:space:]]([A-Za-z0-9._-]+) ]]; then
+            cloudflare_token="${BASH_REMATCH[1]}"
+          else
+            cloudflare_token="${cloudflare_token//$'\r'/}"
+            cloudflare_token="${cloudflare_token//$'\n'/}"
+          fi
+          if [[ ! "$cloudflare_token" =~ ^[A-Za-z0-9._-]{30,}$ ]]; then
+            echo "Cloudflare API token secret has an unsupported format" >&2
+            exit 1
+          fi
+          export CLOUDFLARE_API_TOKEN="$cloudflare_token"
           bun run deploy:ci

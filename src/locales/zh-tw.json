@@ -8,11 +8,11 @@
     "language": "語言"
   },
   "hero": {
-    "headline": "Kabur Aja Dulu",
-    "subheadline": "發現海外留學和工作機會。我們幫助印度尼西亞人在國外學習和工作。",
-    "cta_primary": "立即開始",
-    "cta_secondary": "探索活動",
-    "badge": "社群公共空間"
+    "headline": "從一個真實的問題開始。",
+    "subheadline": "KaburAjaDulu 是一個面向正在思考海外留學、工作或生活的人們的公開社群。帶著你的問題來，了解他人分享的經驗，再從容決定下一步。",
+    "cta_primary": "加入 KAD Discord",
+    "cta_secondary": "探索計畫",
+    "badge": "KAD 公開社群"
   },
   "about": {
     "headline": "關於 KaburAjaDulu",
@@ -32,10 +32,10 @@
     "github_contributor": "GitHub Contributor"
   },
   "destinations": {
-    "headline": "熱門目的地",
-    "subheadline": "探索印度尼西亞工人最常去的國家。",
-    "view_all": "查看所有目的地",
-    "learn_more": "了解更多",
+    "headline": "從你想了解的城市開始。",
+    "subheadline": "探索與每座城市相關的問題、故事和活動。這裡是開啟對話的入口，不是排名。",
+    "view_all": "查看相關對話",
+    "learn_more": "探索這座城市",
     "show": "顯示",
     "pause": "暫停輪播",
     "resume": "繼續輪播",
@@ -47,10 +47,10 @@
     }
   },
   "cta": {
-    "headline": "準備好開始您的旅程了嗎？",
-    "subheadline": "與社群一起探索活動、交流和你的下一步。",
-    "cta_primary": "加入我們",
-    "cta_secondary": "聯繫我們"
+    "headline": "還不知道從哪裡開始？",
+    "subheadline": "帶著一個真實的問題來到 KAD，找到合適的對話，再決定自己的下一步。",
+    "cta_primary": "加入 KAD Discord",
+    "cta_secondary": "探索計畫"
   },
   "blog": {
     "headline": "部落格與文章",

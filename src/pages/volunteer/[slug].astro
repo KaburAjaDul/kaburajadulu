@@ -1,0 +1,15 @@
+---
+import VolunteerDetailPage from '@/components/community-system/VolunteerDetailPage.astro';
+import { volunteerDirectory, volunteerBySlug } from '@/content/volunteer-content';
+import type { Locale } from '@/i18n/constants';
+
+export function getStaticPaths() {
+  const locale: Locale = 'id';
+  return volunteerDirectory(locale).people.map((profile) => ({ params: { slug: profile.slug } }));
+}
+
+const locale: Locale = 'id';
+const slug = Astro.params.slug ?? '';
+const profile = volunteerBySlug(locale, slug);
+---
+<VolunteerDetailPage profile={profile} locale={locale} currentPath={`/volunteer/${slug}`} />

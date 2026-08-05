@@ -8,11 +8,11 @@
     "language": "Taal"
   },
   "hero": {
-    "headline": "Kabur Aja Dulu",
-    "subheadline": "Ontdek studie- en werk mogelijkheden in het buitenland. Wij helpenIndonesiërs in het buitenland te studeren en werken.",
-    "cta_primary": "Aan de slag",
+    "headline": "Begin met een echte vraag.",
+    "subheadline": "KaburAjaDulu is een openbare community voor mensen die hun weg zoeken naar studeren, werken of wonen in het buitenland. Neem je vraag mee, bekijk gedeelde ervaringen en kies daarna rustig je volgende stap.",
+    "cta_primary": "Ga naar KAD op Discord",
     "cta_secondary": "Programma's ontdekken",
-    "badge": "Openbare communityruimte"
+    "badge": "Openbare KAD-community"
   },
   "about": {
     "headline": "Over KaburAjaDulu",
@@ -32,10 +32,10 @@
     "github_contributor": "GitHub Contributor"
   },
   "destinations": {
-    "headline": "Populaire bestemmingen",
-    "subheadline": "Ontdek de landen die het meest gezocht worden doorIndonesische werknemers.",
-    "view_all": "Bekijk alle bestemmingen",
-    "learn_more": "Meer informatie",
+    "headline": "Begin met een stad die je wilt begrijpen.",
+    "subheadline": "Ontdek vragen, verhalen en programma's die bij elke stad horen. Het zijn gesprekstarters, geen ranglijst.",
+    "view_all": "Bekijk de gesprekken",
+    "learn_more": "Ontdek deze stad",
     "show": "Toon",
     "pause": "Rotatie pauzeren",
     "resume": "Rotatie hervatten",
@@ -47,10 +47,10 @@
     }
   },
   "cta": {
-    "headline": "Klaar om je reis te beginnen?",
-    "subheadline": "Ontdek programma's, gesprekken en je volgende stap met de community.",
-    "cta_primary": "Doe mee met ons",
-    "cta_secondary": "Neem contact op"
+    "headline": "Weet je niet waar je moet beginnen?",
+    "subheadline": "Neem een echte vraag mee naar KAD. Vind het juiste gesprek en kies daarna je volgende stap.",
+    "cta_primary": "Ga naar KAD op Discord",
+    "cta_secondary": "Programma's ontdekken"
   },
   "blog": {
     "headline": "Blog & Artikelen",
