@@ -496,7 +496,7 @@ test('production excludes staging fixtures and keeps language fallback explicit'
   await expect(page.locator('html')).toHaveAttribute('lang', 'ja');
   await expect(page.locator('main')).toHaveAttribute('lang', 'en');
   await expect(page.getByText('This community surface is available in English while a full translation is prepared.')).toBeVisible();
-  await expect(page.getByRole('heading', { name: 'KAD today' })).toBeVisible();
+  await expect(page.locator('#community-title')).toHaveText('KAD today');
 
   await page.goto('/ja/', { waitUntil: 'domcontentloaded' });
   await expect(page.locator('html')).toHaveAttribute('lang', 'ja');
