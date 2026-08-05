@@ -7,9 +7,11 @@
 :root {
   --primary: oklch(0.49 0.3 264.05);
   --primary-blue: #0055FF;
-  --font-sans: 'Plus Jakarta Sans', sans-serif;
+  --font-sans: 'Archivo', sans-serif;
+  --font-editorial: 'Newsreader', Georgia, serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
   --font-caveat: 'Caveat', cursive;
-  --background: oklch(1 0 0);
+  --background: #f5f1e9;
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.145 0 0);
@@ -152,15 +154,16 @@ body {
  */
 
 :root {
-  --kad-paper: #ffffff;
-  --kad-ink: #111318;
-  --kad-cobalt: #0055ff;
-  --kad-cobalt-deep: #003fca;
-  --kad-sky: #edf4ff;
-  --kad-sun: #ffbd3e;
-  --kad-mint: #dff7eb;
-  --kad-muted: #687081;
-  --kad-line: #dfe4ec;
+  --kad-paper: #f5f1e9;
+  --kad-paper-bright: #fffdf8;
+  --kad-ink: #152132;
+  --kad-cobalt: #155bff;
+  --kad-cobalt-deep: #0b42c7;
+  --kad-sky: #dce8f8;
+  --kad-sun: #f26a3d;
+  --kad-mint: #b7d9b0;
+  --kad-muted: #5c6470;
+  --kad-line: #c8c5bc;
   --kad-shadow: 0 20px 60px rgb(31 43 74 / 12%);
   --kad-shadow-hover: 0 24px 70px rgb(0 85 255 / 18%);
   --kad-container: 1240px;
@@ -3112,5 +3115,807 @@ main[data-fixtures='enabled'] .kad-section + .kad-section {
   .kad-home-hero__note,
   .kad-home-hero__route span {
     animation: none;
+  }
+}
+
+/* KAD Field Station / PR A ---------------------------------------------------
+ * Shared shell, Home departure atlas, and Community briefing. Later route
+ * families keep their current composition until their own redesign slices.
+ */
+
+body {
+  background: var(--kad-paper);
+  font-family: var(--font-sans);
+}
+
+.kad-masthead {
+  background: color-mix(in srgb, var(--kad-paper) 94%, transparent);
+  border-bottom: 1px solid var(--kad-ink);
+  backdrop-filter: blur(16px);
+}
+
+.kad-nav {
+  min-height: 72px;
+}
+
+.kad-nav-links {
+  gap: 0;
+}
+
+.kad-nav-links a {
+  position: relative;
+  padding: 25px 11px 22px;
+  border-radius: 0;
+  color: var(--kad-ink);
+  font-family: var(--font-mono);
+  font-size: 0.69rem;
+  font-weight: 600;
+  letter-spacing: 0.035em;
+  text-transform: uppercase;
+}
+
+.kad-nav-links a::after {
+  position: absolute;
+  inset-inline: 11px;
+  inset-block-end: 15px;
+  height: 2px;
+  background: var(--kad-cobalt);
+  content: '';
+  opacity: 0;
+  transform: scaleX(0.45);
+  transition: opacity 180ms ease-out, transform 180ms ease-out;
+}
+
+.kad-nav-links a:hover,
+.kad-nav-links a[aria-current='page'] {
+  color: var(--kad-cobalt);
+  background: transparent;
+}
+
+.kad-nav-links a:hover::after,
+.kad-nav-links a[aria-current='page']::after {
+  opacity: 1;
+  transform: scaleX(1);
+}
+
+.kad-nav-discord,
+.kad-footer__discord {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: var(--kad-ink);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+.kad-nav-discord {
+  padding: 0.65rem 0;
+  border-bottom: 1px solid var(--kad-ink);
+}
+
+.kad-nav-discord:hover,
+.kad-footer__discord:hover {
+  color: var(--kad-cobalt);
+  border-color: var(--kad-cobalt);
+}
+
+.kad-menu-button,
+.kad-button {
+  border-radius: 6px;
+}
+
+.kad-button--primary {
+  color: var(--kad-paper-bright);
+  background: var(--kad-cobalt);
+  box-shadow: none;
+}
+
+.kad-button--primary:hover {
+  background: var(--kad-cobalt-deep);
+  box-shadow: 5px 5px 0 var(--kad-ink);
+}
+
+.kad-home-hero {
+  min-height: 0;
+  display: block;
+  padding: 0;
+  overflow: clip;
+  border-bottom: 1px solid var(--kad-ink);
+  background:
+    linear-gradient(90deg, transparent 49.9%, rgb(21 33 50 / 7%) 50%, transparent 50.1%),
+    var(--kad-paper);
+}
+
+.kad-home-hero__route-stamp {
+  min-height: 54px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  border-bottom: 1px solid var(--kad-line);
+  color: var(--kad-muted);
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.kad-home-hero__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(380px, 0.95fr);
+  gap: clamp(3rem, 7vw, 7rem);
+  align-items: center;
+  padding-block: clamp(4.5rem, 8vw, 8rem);
+}
+
+.kad-home-hero__content {
+  z-index: 2;
+  max-width: 710px;
+}
+
+.kad-home-hero__kicker {
+  margin: 0 0 1.5rem;
+  color: var(--kad-cobalt);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.kad-home-hero__content h1 {
+  max-width: 9ch;
+  margin: 0;
+  font-size: clamp(4.5rem, 8vw, 7.25rem);
+  font-stretch: 90%;
+  font-weight: 800;
+  line-height: 0.88;
+  letter-spacing: -0.075em;
+}
+
+.kad-home-hero__content h1::first-line {
+  color: var(--kad-ink);
+}
+
+.kad-home-hero__summary {
+  max-width: 38rem;
+  margin: 2rem 0 0;
+  color: var(--kad-muted);
+  font-size: clamp(1.05rem, 1.5vw, 1.3rem);
+  line-height: 1.55;
+}
+
+.kad-home-hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1.2rem 1.5rem;
+  margin-top: 2rem;
+}
+
+.kad-home-hero__primary {
+  min-height: 52px;
+  padding-inline: 1.4rem;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.025em;
+  text-transform: uppercase;
+}
+
+.kad-home-hero__secondary {
+  color: var(--kad-ink);
+  font-weight: 700;
+  text-decoration: none;
+  border-bottom: 1px solid var(--kad-ink);
+}
+
+.kad-home-hero__secondary:hover {
+  color: var(--kad-cobalt);
+  border-color: var(--kad-cobalt);
+}
+
+.kad-home-hero__note {
+  position: static;
+  display: block;
+  width: auto;
+  aspect-ratio: auto;
+  margin: 1rem 0 0;
+  padding: 0;
+  color: var(--kad-muted);
+  background: transparent;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  line-height: 1.5;
+  text-align: start;
+  transform: none;
+  box-shadow: none;
+  animation: none;
+}
+
+.kad-home-hero__visual {
+  position: relative;
+  min-width: 0;
+  margin: 0;
+  padding: 1.15rem 0 0 1.15rem;
+}
+
+.kad-home-hero__visual::before {
+  position: absolute;
+  inset: 0 1.15rem 1.15rem 0;
+  border: 1px solid var(--kad-ink);
+  content: '';
+}
+
+.kad-home-hero__image {
+  position: relative;
+  aspect-ratio: 4 / 5;
+  max-height: 600px;
+  overflow: hidden;
+  border-radius: 0 9rem 0 0;
+  background: var(--kad-archive-blue, #dce8f8);
+}
+
+.kad-home-hero__image::after {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle, rgb(245 241 233 / 55%) 0 1px, transparent 1.3px) 0 0 / 5px 5px,
+    linear-gradient(180deg, transparent 55%, rgb(21 33 50 / 45%));
+  content: '';
+  mix-blend-mode: multiply;
+}
+
+.kad-home-hero__image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: saturate(0.72) contrast(1.08);
+}
+
+.kad-home-hero__visual figcaption {
+  position: absolute;
+  inset-inline: 2.5rem 1.25rem;
+  inset-block-end: 2rem;
+  z-index: 2;
+  display: grid;
+  gap: 0.35rem;
+  color: white;
+}
+
+.kad-home-hero__visual figcaption span,
+.kad-home-hero__visual figcaption strong {
+  width: fit-content;
+  padding: 0.15rem 0.35rem;
+  background: var(--kad-ink);
+}
+
+.kad-home-hero__visual figcaption span {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.06em;
+}
+
+.kad-home-hero__visual figcaption strong {
+  font-size: 0.85rem;
+}
+
+.kad-home-hero__annotation {
+  position: absolute;
+  inset-block-start: -2.2rem;
+  inset-inline-end: 0;
+  font-family: var(--font-editorial);
+  font-size: 1.2rem;
+  font-style: italic;
+}
+
+.kad-home-dispatch {
+  padding-block: clamp(4rem, 7vw, 6.5rem);
+  border-bottom: 1px solid var(--kad-ink);
+  background: var(--kad-paper-bright);
+}
+
+.kad-home-dispatch__header {
+  display: grid;
+  grid-template-columns: 8rem minmax(0, 1fr) minmax(16rem, 23rem);
+  gap: 2rem;
+  align-items: start;
+  margin-bottom: 2.5rem;
+}
+
+.kad-home-dispatch__header > p,
+.kad-city-atlas__header > p,
+.kad-open-records__grid > div:first-child > p {
+  margin: 0;
+  color: var(--kad-cobalt);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.kad-home-dispatch__header h2,
+.kad-city-atlas__header h2,
+.kad-open-records h2 {
+  margin: 0;
+  font-size: clamp(2.35rem, 4.2vw, 4.25rem);
+  font-weight: 760;
+  line-height: 0.98;
+  letter-spacing: -0.055em;
+}
+
+.kad-home-dispatch__header > span,
+.kad-city-atlas__header > span {
+  color: var(--kad-muted);
+  line-height: 1.6;
+}
+
+.kad-home-dispatch__list {
+  margin: 0;
+  padding: 0;
+  border-top: 2px solid var(--kad-ink);
+}
+
+.kad-home-dispatch__list li {
+  list-style: none;
+  border-bottom: 1px solid var(--kad-line);
+}
+
+.kad-home-dispatch__list a {
+  display: grid;
+  grid-template-columns: 8rem minmax(0, 1fr) minmax(11rem, auto);
+  gap: 2rem;
+  align-items: center;
+  padding-block: 1.4rem;
+  color: inherit;
+  text-decoration: none;
+  transition: color 180ms ease-out, padding 180ms ease-out, background 180ms ease-out;
+}
+
+.kad-home-dispatch__list a:hover {
+  padding-inline: 1rem;
+  color: var(--kad-cobalt);
+  background: var(--kad-sky);
+}
+
+.kad-home-dispatch__number {
+  font-family: var(--font-editorial);
+  font-size: 2.25rem;
+  font-style: italic;
+}
+
+.kad-home-dispatch__copy {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.kad-home-dispatch__copy small {
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.kad-home-dispatch__copy strong {
+  color: var(--kad-ink);
+  font-size: 1.25rem;
+}
+
+.kad-home-dispatch__copy > span {
+  color: var(--kad-muted);
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+
+.kad-home-dispatch__action {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.kad-city-atlas {
+  padding-block: clamp(4.5rem, 8vw, 8rem);
+  border-bottom: 1px solid var(--kad-ink);
+  background: var(--kad-paper);
+}
+
+.kad-city-atlas__header {
+  display: grid;
+  grid-template-columns: 8rem minmax(0, 1fr) minmax(16rem, 23rem);
+  gap: 2rem;
+  align-items: start;
+  margin-bottom: 3.5rem;
+}
+
+.kad-city-atlas__stage {
+  display: grid;
+  grid-template-columns: minmax(0, 1.7fr) minmax(280px, 0.7fr);
+  gap: 1rem;
+}
+
+.kad-city-atlas__featured {
+  position: relative;
+  min-height: 560px;
+  margin: 0;
+  overflow: hidden;
+  border-radius: 3.5rem 0 0 0;
+  background: var(--kad-sky);
+  transition: opacity 500ms ease-out, transform 500ms ease-out;
+}
+
+.kad-city-atlas__featured.is-changing {
+  opacity: 0.6;
+  transform: translateY(12px);
+}
+
+.kad-city-atlas__featured::after {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 58%, rgb(21 33 50 / 72%));
+  content: '';
+}
+
+.kad-city-atlas__featured img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.kad-city-atlas__featured figcaption {
+  position: absolute;
+  inset-inline: 2rem;
+  inset-block-end: 1.7rem;
+  z-index: 2;
+  display: grid;
+  gap: 0.2rem;
+  color: white;
+}
+
+.kad-city-atlas__featured figcaption span {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+}
+
+.kad-city-atlas__featured figcaption strong {
+  font-size: clamp(2.2rem, 5vw, 4.5rem);
+  line-height: 0.95;
+  letter-spacing: -0.055em;
+}
+
+.kad-city-atlas__featured figcaption small {
+  font-family: var(--font-editorial);
+  font-size: 1.2rem;
+  font-style: italic;
+}
+
+.kad-city-atlas__selectors {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.kad-city-atlas__selector {
+  position: relative;
+  min-height: 0;
+  display: grid;
+  align-content: end;
+  justify-items: start;
+  overflow: hidden;
+  padding: 1rem;
+  border: 1px solid var(--kad-ink);
+  border-radius: 0 2.25rem 0 0;
+  color: white;
+  background: var(--kad-ink);
+  text-align: left;
+}
+
+.kad-city-atlas__selector img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.58;
+  transition: opacity 180ms ease-out, transform 180ms ease-out;
+}
+
+.kad-city-atlas__selector::after {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent, rgb(21 33 50 / 82%));
+  content: '';
+}
+
+.kad-city-atlas__selector > span,
+.kad-city-atlas__selector > strong {
+  position: relative;
+  z-index: 1;
+}
+
+.kad-city-atlas__selector > span {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+}
+
+.kad-city-atlas__selector > strong {
+  max-width: 12ch;
+  font-size: 0.88rem;
+  line-height: 1.2;
+}
+
+.kad-city-atlas__selector:hover img,
+.kad-city-atlas__selector.is-active img {
+  opacity: 0.88;
+  transform: scale(1.035);
+}
+
+.kad-city-atlas__selector.is-active {
+  outline: 4px solid var(--kad-cobalt);
+  outline-offset: -4px;
+}
+
+.kad-city-atlas__footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--kad-line);
+  color: var(--kad-muted);
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+}
+
+.kad-city-atlas__footer button {
+  padding: 0;
+  border: 0;
+  border-bottom: 1px solid currentColor;
+  color: var(--kad-ink);
+  background: transparent;
+  font: inherit;
+  cursor: pointer;
+}
+
+.kad-city-atlas__footer button:disabled {
+  color: var(--kad-muted);
+  cursor: default;
+}
+
+.kad-direction-surface {
+  border-color: var(--kad-ink);
+  background: var(--kad-paper-bright);
+}
+
+.kad-field-story__topline h2 em {
+  color: var(--kad-cobalt);
+  font-family: var(--font-editorial);
+}
+
+.kad-field-posters figure,
+.kad-lead-poster {
+  border-radius: 0 1.5rem 0 0;
+  box-shadow: none;
+}
+
+.kad-open-records {
+  padding-block: clamp(4rem, 7vw, 6.5rem);
+  border-bottom: 1px solid var(--kad-ink);
+  background: var(--kad-mint);
+}
+
+.kad-open-records__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(18rem, 0.8fr);
+  gap: clamp(3rem, 8vw, 8rem);
+}
+
+.kad-open-records__grid > div:last-child > p {
+  margin: 0 0 2rem;
+  color: var(--kad-ink);
+  font-size: 1rem;
+  line-height: 1.65;
+}
+
+.kad-open-records nav {
+  display: grid;
+  border-top: 1px solid var(--kad-ink);
+}
+
+.kad-open-records nav a {
+  padding-block: 0.9rem;
+  border-bottom: 1px solid rgb(21 33 50 / 35%);
+  color: var(--kad-ink);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.kad-open-records nav a:hover {
+  color: var(--kad-cobalt);
+}
+
+.kad-footer {
+  color: var(--kad-paper);
+  background: var(--kad-ink);
+}
+
+.kad-footer :is(p, a, .kad-footer__links a, .kad-eyebrow) {
+  color: var(--kad-paper);
+}
+
+.kad-footer__discord {
+  width: fit-content;
+  padding-bottom: 0.35rem;
+  border-bottom: 1px solid var(--kad-paper);
+}
+
+.kad-footer__bottom {
+  border-color: rgb(245 241 233 / 25%);
+}
+
+@media (max-width: 1040px) {
+  .kad-nav-links a { padding-inline: 8px; font-size: 0.64rem; }
+  .kad-home-hero__grid { grid-template-columns: minmax(0, 1fr) minmax(320px, 0.8fr); gap: 3rem; }
+  .kad-home-dispatch__header,
+  .kad-city-atlas__header { grid-template-columns: 6rem minmax(0, 1fr) minmax(14rem, 20rem); }
+  .kad-home-dispatch__list a { grid-template-columns: 6rem minmax(0, 1fr) auto; }
+}
+
+@media (max-width: 820px) {
+  .kad-nav-panel {
+    border-radius: 8px;
+    background: var(--kad-paper-bright);
+  }
+
+  .kad-nav-links a {
+    padding: 0.85rem 0;
+  }
+
+  .kad-nav-links a::after {
+    inset-inline: 0;
+    inset-block-end: 0.5rem;
+  }
+
+  .kad-nav-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .kad-home-hero__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .kad-home-hero__visual {
+    max-width: 520px;
+    margin-inline-start: auto;
+  }
+
+  .kad-home-dispatch__header,
+  .kad-city-atlas__header {
+    grid-template-columns: 1fr;
+    gap: 0.9rem;
+  }
+
+  .kad-home-dispatch__header > span,
+  .kad-city-atlas__header > span {
+    max-width: 34rem;
+  }
+
+  .kad-city-atlas__stage {
+    grid-template-columns: 1fr;
+  }
+
+  .kad-city-atlas__selectors {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .kad-city-atlas__selector {
+    min-height: 140px;
+  }
+}
+
+@media (max-width: 620px) {
+  .kad-home-hero__route-stamp {
+    min-height: 48px;
+    font-size: 0.58rem;
+  }
+
+  .kad-home-hero__route-stamp span:last-child {
+    display: none;
+  }
+
+  .kad-home-hero__grid {
+    gap: 3.5rem;
+    padding-block: 3rem 4rem;
+  }
+
+  .kad-home-hero__content h1 {
+    max-width: 8ch;
+    font-size: clamp(3.7rem, 18vw, 5.1rem);
+  }
+
+  .kad-home-hero__summary {
+    margin-top: 1.5rem;
+    font-size: 1rem;
+  }
+
+  .kad-home-hero__actions {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .kad-home-hero__primary {
+    width: 100%;
+  }
+
+  .kad-home-hero__visual {
+    width: calc(100% - 1rem);
+    margin-inline-start: 0;
+  }
+
+  .kad-home-hero__image {
+    aspect-ratio: 4 / 4.5;
+    border-radius: 0 5rem 0 0;
+  }
+
+  .kad-home-hero__annotation {
+    inset-block-start: -1.75rem;
+    font-size: 1rem;
+  }
+
+  .kad-home-dispatch__list a {
+    grid-template-columns: 2.4rem minmax(0, 1fr);
+    gap: 0.8rem;
+    padding-block: 1.2rem;
+  }
+
+  .kad-home-dispatch__number {
+    font-size: 1.5rem;
+  }
+
+  .kad-home-dispatch__action {
+    grid-column: 2;
+    justify-content: flex-start;
+  }
+
+  .kad-city-atlas__featured {
+    min-height: 450px;
+    border-radius: 2.5rem 0 0 0;
+  }
+
+  .kad-city-atlas__selectors {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    overflow: visible;
+    padding: 0;
+  }
+
+  .kad-city-atlas__selector {
+    min-height: 140px;
+  }
+
+  .kad-city-atlas__footer {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .kad-open-records__grid {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kad-city-atlas__featured,
+  .kad-city-atlas__selector img,
+  .kad-home-dispatch__list a {
+    transition: none;
   }
 }

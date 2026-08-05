@@ -23,12 +23,22 @@ test('community staging exposes qualified current metrics, agenda, and consent-s
   await expect(page.locator('[data-community-section="agenda"] [data-agenda-kind]')).toHaveCount(1);
   await expect(page.locator('[data-community-section="people"] [data-attribution="opt-in-demo"]')).toHaveCount(1);
   await expect(page.locator('[data-community-section="people"] [data-attribution="anonymous-stub"]')).toHaveCount(2);
-  await expect(page.getByText('Nara (fiktif)', { exact: true })).toBeVisible();
+  await expect(page.locator('[data-community-section="people"]').getByText('Nara (fiktif)', { exact: true })).toBeVisible();
   await expect(page.getByText('Bima (fiktif)', { exact: true })).toHaveCount(0);
   await expect(page.getByText('Sari (fiktif)', { exact: true })).toHaveCount(0);
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.reload({ waitUntil: 'domcontentloaded' });
+  const mobileAgenda = await page.locator('[data-community-section="agenda"] [data-agenda-kind]').evaluate((element) => {
+    const content = element.firstElementChild?.getBoundingClientRect();
+    const time = element.querySelector('time')?.getBoundingClientRect();
+    return { itemWidth: element.getBoundingClientRect().width, contentWidth: content?.width ?? 0, timeWidth: time?.width ?? 0 };
+  });
+  expect(mobileAgenda.contentWidth).toBeGreaterThan(mobileAgenda.itemWidth * 0.8);
+  expect(mobileAgenda.timeWidth).toBeGreaterThan(100);
 });
 
-test('staging uses one compact page-level preview disclosure', async ({ page }) => {
+test('staging uses one compact page-level preview notice', async ({ page }) => {
   for (const viewport of [
     { width: 1280, height: 720, maxNoticeHeight: 48 },
     { width: 390, height: 844, maxNoticeHeight: 64 },
@@ -36,12 +46,16 @@ test('staging uses one compact page-level preview disclosure', async ({ page }) 
     await page.setViewportSize({ width: viewport.width, height: viewport.height });
     for (const route of ['/community/', '/events/', '/events/demo-session-japanese-n5-01/', '/programs/', '/programs/japanese-study-club/', '/volunteer/', '/stories/', '/stories/catatan-belajar-satu-siklus/', '/about/history/', '/community/impact/', '/community/credits/', '/support/']) {
       await page.goto(route, { waitUntil: 'domcontentloaded' });
-      const notices = page.locator('.kad-demo-banner:visible');
+      const notices = page.locator('.kad-demo-banner:visible, [data-preview-notice="true"]:visible');
       await expect(notices, `${route} should expose one visible preview notice`).toHaveCount(1);
       const box = await notices.boundingBox();
       expect(box, `${route} preview notice should have a measurable box`).not.toBeNull();
       expect(box?.height ?? Number.POSITIVE_INFINITY, `${route} preview notice should stay compact at ${viewport.width}px`).toBeLessThanOrEqual(viewport.maxNoticeHeight);
-      await expect(notices.locator('details')).toHaveCount(1);
+      if (route === '/community/') {
+        await expect(notices).toContainText('Pratinjau · data contoh');
+      } else {
+        await expect(notices.locator('details')).toHaveCount(1);
+      }
     }
   }
 });

@@ -7,7 +7,7 @@ test.describe('community information architecture', () => {
     await page.goto('/community/', { waitUntil: 'domcontentloaded' });
     await expect(page.locator('[data-page-header="orientation"]')).toHaveCount(1);
     await expect(page.locator('[data-community-section]').first()).toHaveAttribute('data-community-section', 'current');
-    await expect(page.locator('[data-community-section] h2').first()).toHaveText('KAD saat ini');
+    await expect(page.locator('[data-community-section] h2').first()).toHaveText('Berikutnya di KAD');
     await expect(page.locator('[data-community-section]')).toHaveCount(5);
     const sections = await page.locator('[data-community-section]').evaluateAll((items) => items.map((section) => section.getAttribute('data-community-section')));
     expect(sections).toEqual(['current', 'programs', 'agenda', 'people', 'sources']);
@@ -16,8 +16,8 @@ test.describe('community information architecture', () => {
 
   test('English community headings stay in English', async ({ page }) => {
     await page.goto('/en/community/', { waitUntil: 'domcontentloaded' });
-    await expect(page.locator('[data-community-section="current"] h2')).toHaveText('KAD today');
-    await expect(page.locator('[data-community-section="current"] h2')).not.toContainText('saat ini');
+    await expect(page.locator('[data-community-section="current"] h2').first()).toHaveText('What happens next');
+    await expect(page.locator('[data-community-section="current"]')).not.toContainText('saat ini');
   });
 
   test('production uses evidence placeholders for unpublished community facts', async ({ page }) => {

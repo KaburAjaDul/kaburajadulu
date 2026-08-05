@@ -30,13 +30,13 @@ function posterLabel(mediaId: string, fallback: string): string {
 const STEPS_ID = [
   { number: '01', title: 'Pilih program', summary: 'Mulai dari topik yang ingin kamu pelajari atau bahas bersama.' },
   { number: '02', title: 'Gabung ke Discord', summary: 'Website memberi konteks. Percakapan dan event berlangsung di Discord.' },
-  { number: '03', title: 'Ikut saat sesi dimulai', summary: 'Tidak perlu daftar untuk event publik. Datang, ikut, dan bantu bila siap.' },
+  { number: '03', title: 'Ikut saat sesi dimulai', summary: 'Event publik tidak perlu daftar atau konfirmasi kehadiran. Datang saat waktunya tiba.' },
 ] as const;
 
 const STEPS_EN = [
   { number: '01', title: 'Choose a program', summary: 'Start with a topic you want to learn or discuss with others.' },
   { number: '02', title: 'Join Discord', summary: 'The website gives context. Conversations and events happen on Discord.' },
-  { number: '03', title: 'Join when it starts', summary: 'Public events do not require registration. Show up and take part.' },
+  { number: '03', title: 'Join when it starts', summary: 'Public events require no registration or attendance confirmation. Join when it begins.' },
 ] as const;
 
 function PreviewNavigation({ direction }: { direction: LandingDirectionId }) {
@@ -158,7 +158,7 @@ function FieldNotes({ locale }: { locale: Locale }) {
                   />
                 </a>
                 <figcaption>
-                  <strong>{isEnglish ? 'Learn together, one step at a time.' : 'Belajar bersama, satu langkah sekali.'}</strong>
+                  <strong>{isEnglish ? 'Learn together, one step at a time.' : 'Belajar bersama, selangkah demi selangkah.'}</strong>
                   <span>{isEnglish ? 'Public KADSocialHub source · confirm the latest status' : 'Sumber publik KADSocialHub · status terbaru perlu dikonfirmasi'}</span>
                 </figcaption>
               </figure>

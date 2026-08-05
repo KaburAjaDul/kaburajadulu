@@ -118,12 +118,14 @@ test.describe('route-specific first viewport', () => {
     await expect(page.locator('[data-community-section="agenda"]')).toBeVisible();
     await expect(page.locator('[data-community-section="people"]')).toBeVisible();
     await expect(page.locator('.kad-journey-card, .kad-band, [data-community-section="social"]')).toHaveCount(0);
-    const headingOrder = await page.locator('[data-community-section] > .kad-community-information__section-heading h2').allTextContents();
+    const headingOrder = await page.locator('[data-community-section]').evaluateAll((sections) =>
+      sections.map((section) => section.querySelector('h2')?.textContent?.trim() ?? ''),
+    );
     expect(headingOrder.slice(0, 4)).toEqual([
-      'KAD saat ini',
-      'Program yang bisa dijelajahi',
-      'Agenda terdekat',
-      'Kontribusi relawan',
+      'Berikutnya di KAD',
+      'Program yang bisa diikuti',
+      'Jadwal publik',
+      'Catatan kontribusi',
     ]);
   });
 
@@ -454,7 +456,7 @@ test('Arabic routes preserve locale links and RTL composition', async ({ page })
   await expect(page.locator('html')).toHaveAttribute('dir', 'rtl');
   await expect(page.locator('main')).toHaveAttribute('lang', 'en');
   await expect(page.locator('[data-testid="site-header"]')).toHaveAttribute('lang', 'en');
-  await expect(page.locator('.kad-nav-links a')).toHaveCount(4);
+  await expect(page.locator('.kad-nav-links a')).toHaveCount(5);
 
   const internalLinks = await page.locator('a[href]').evaluateAll((anchors) =>
     anchors
@@ -496,7 +498,7 @@ test('production excludes staging fixtures and keeps language fallback explicit'
   await expect(page.locator('html')).toHaveAttribute('lang', 'ja');
   await expect(page.locator('main')).toHaveAttribute('lang', 'en');
   await expect(page.getByText('This community surface is available in English while a full translation is prepared.')).toBeVisible();
-  await expect(page.locator('#community-title')).toHaveText('KAD today');
+  await expect(page.locator('#community-title')).toHaveText('See what the community is doing now.');
 
   await page.goto('/ja/', { waitUntil: 'domcontentloaded' });
   await expect(page.locator('html')).toHaveAttribute('lang', 'ja');
@@ -594,10 +596,10 @@ test.describe('responsive and motion safeguards', () => {
     expect(durationInMilliseconds(motion?.animationDuration ?? '1s')).toBeLessThanOrEqual(1);
 
     await page.goto('/', { waitUntil: 'domcontentloaded' });
-    const heroAnimationDuration = await page.locator('.kad-home-hero__dither').evaluate(
-      (element) => getComputedStyle(element).animationDuration,
+    const cityTransitionDuration = await page.locator('.kad-city-atlas__featured').evaluate(
+      (element) => getComputedStyle(element).transitionDuration,
     );
-    expect(durationInMilliseconds(heroAnimationDuration)).toBeLessThanOrEqual(1);
+    expect(durationInMilliseconds(cityTransitionDuration)).toBeLessThanOrEqual(1);
   });
 });
 

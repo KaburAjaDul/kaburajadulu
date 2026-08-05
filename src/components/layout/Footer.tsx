@@ -15,6 +15,7 @@ const FOOTER_LINKS = [
   { key: 'events', path: '/events' },
   { key: 'volunteer', path: '/volunteer' },
   { key: 'stories', path: '/stories' },
+  { key: 'history', path: '/about/history' },
   { key: 'impact', path: '/community/impact' },
   { key: 'credits', path: '/community/credits' },
   { key: 'support', path: '/support' },
@@ -37,7 +38,7 @@ export function Footer({ locale = 'id' }: FooterProps) {
             href={DISCORD_URL}
             target="_blank"
             rel="noopener noreferrer"
-            className="kad-button kad-button--primary"
+            className="kad-footer__discord"
           >
             {t('footer.join_discord')}
           </a>

@@ -39,10 +39,12 @@ test.describe('localized home routes', () => {
       await expect(page.locator('html')).toHaveAttribute('lang', route.lang);
       await expect(page.locator('html')).toHaveAttribute('dir', route.dir);
       await expect(page.locator('main h1')).toBeVisible();
+      await expect(page.locator('[data-testid="site-header"]')).toBeVisible();
 
       const discordLinks = page.locator(`a[href="${DISCORD_URL}"]`);
       const discordLinkCount = await discordLinks.count();
-      expect(discordLinkCount).toBeGreaterThanOrEqual(3);
+      expect(discordLinkCount).toBe(3);
+      await expect(page.locator('[data-home-primary-action]')).toHaveCount(1);
       for (let index = 0; index < discordLinkCount; index += 1) {
         await expect(discordLinks.nth(index)).toHaveAttribute('target', '_blank');
         await expect(discordLinks.nth(index)).toHaveAttribute('rel', 'noopener noreferrer');
@@ -84,6 +86,7 @@ test('redirects a stored preferred locale from / to /fr', async ({ page }) => {
   await page.goto('/', { waitUntil: 'domcontentloaded' });
   await page.waitForURL('http://127.0.0.1:4321/fr');
   await expect(page.locator('main h1')).toBeVisible();
+  await expect(page.locator('[data-testid="site-header"]')).toBeVisible();
   await expectNoBrowserErrors(page, errors, '/fr');
 });
 
@@ -118,7 +121,8 @@ test('mobile viewport smoke keeps the primary content usable', async ({ page }) 
   await page.goto('/', { waitUntil: 'domcontentloaded' });
 
   await expect(page.locator('main h1')).toBeVisible();
-  expect(await page.locator(`a[href="${DISCORD_URL}"]`).count()).toBeGreaterThanOrEqual(3);
+  expect(await page.locator(`a[href="${DISCORD_URL}"]`).count()).toBe(3);
+  await expect(page.locator('[data-home-primary-action]')).toHaveCount(1);
   await expect(page.locator('body')).toBeVisible();
 });
 

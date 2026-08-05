@@ -17,6 +17,7 @@ const NAV_ITEMS = [
   { key: 'programs', path: '/programs' },
   { key: 'events', path: '/events' },
   { key: 'volunteer', path: '/volunteer' },
+  { key: 'stories', path: '/stories' },
 ] as const;
 
 function localizedPath(locale: Locale, path: string): string {
@@ -86,17 +87,14 @@ export function Navbar({ locale = 'id', currentPath = '/' }: NavbarProps) {
 
           <div className="kad-nav-actions">
             <LanguageSwitcher currentLocale={locale} currentPath={currentPath} />
-            <a className="kad-button kad-button--outline" href={localizedPath(locale, '/support')}>
-              {t('nav.support')}
-            </a>
             <a
               href={DISCORD_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="kad-button kad-button--primary"
+              className="kad-nav-discord"
               aria-label={`${t('nav.join_discord')} KaburAjaDulu`}
             >
-              {t('nav.join_discord')}
+              {t('nav.join_discord')} <span aria-hidden="true">↗</span>
             </a>
           </div>
         </div>

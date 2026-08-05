@@ -97,6 +97,7 @@ for (const file of runtimeFiles) runtime.set(relative(distDir, file), await read
 const html = [...runtime.entries()].filter(([file]) => file.endsWith('.html'));
 const htmlText = html.map(([, content]) => content).join('\n');
 const communityHtml = runtime.get('community/index.html') ?? routeContents[1];
+const homeHtml = runtime.get('index.html') ?? routeContents[0];
 const programsHtml = runtime.get('programs/index.html') ?? routeContents[2];
 const agendaHtml = runtime.get('events/index.html') ?? routeContents[3];
 const volunteerHtml = runtime.get('volunteer/index.html') ?? routeContents[4];
@@ -110,13 +111,17 @@ const component = (id) => ir.components?.find((item) => item.id === id);
 const irChecks = [
   ['kind=interface-ir', ir.kind === 'interface-ir'],
   ['schema_version=1.0', ir.schema_version === '1.0'],
-  ['no absolute local paths', !/\/(?:Users|home)\/[^/]+\//i.test(irRaw)],
+  ['no absolute local paths', !/(?:^|["'])\/(?:Users\/[^/]+|home\/[^/]+)\//m.test(irRaw)],
   ['community order', JSON.stringify(component('community_overview')?.props?.content_order) === JSON.stringify(['current', 'programs', 'agenda', 'people', 'sources'])],
   ['program structure contract', component('program_catalogue')?.props?.structure === 'Program -> optional Series -> Session'],
   ['staging Agenda union counts', component('agenda_index')?.props?.staging_kind_counts?.session === 3 && component('agenda_index')?.props?.staging_kind_counts?.event === 1],
   ['volunteer organization counts', component('volunteer_directory')?.props?.positions === 4 && component('volunteer_directory')?.props?.divisions === 7 && component('volunteer_directory')?.props?.openings === 3],
   ['profile no impact score', component('volunteer_profile')?.props?.personal_impact_score === false],
   ['compact inner page contract', component('page_heading')?.props?.inner_page_max_rem === 3 && component('page_status_summary')?.props?.landing_hero_only === true],
+  ['Field Station paper token', ir.tokens?.color?.paper?.value === '#f5f1e9'],
+  ['Field Station cobalt token', ir.tokens?.color?.cobalt?.value === '#155bff'],
+  ['Field Station panel radius', ir.tokens?.radius?.panel?.value === 12],
+  ['canonical Discord handoff', ir.actions?.some((action) => action.id === 'open_discord' && action.params?.canonical_url === 'https://discord.gg/RUFFbEaeDx')],
   ['safe Discord media boundary', ir.media?.some((media) => media.id === 'discord_private_media' && media.implementation_safe === false)],
 ];
 for (const [label, passed] of irChecks) if (!passed) fail(`IR missing ${label}`);
@@ -135,13 +140,22 @@ for (const [label, passed] of publicContentChecks) if (!passed) fail(`public con
 const communitySections = [...communityHtml.matchAll(/data-community-section=["']([^"']+)["']/g)].map((match) => match[1]);
 const communityChecks = [
   ['Community surface', has(communityHtml, 'data-community-surface="overview"')],
+  ['Community Field Station marker', has(communityHtml, 'data-field-station="community"')],
   ['Community exact section order', JSON.stringify(communitySections) === JSON.stringify(['current', 'programs', 'agenda', 'people', 'sources'])],
-  ['Community heading', has(communityHtml, 'KAD saat ini')],
+  ['Community heading', has(communityHtml, 'Lihat apa yang sedang dijalankan bersama.')],
   ['Community metric count', count(communityHtml, /data-community-metric=/g) === 3],
   ['Community Program preview count', count(communityHtml, /data-program-record=/g) === 3],
   ['No forbidden legacy labels', !/Pulse|Denyut komunitas/i.test(communityHtml)],
 ];
 for (const [label, passed] of communityChecks) if (!passed) fail(`Community runtime missing ${label}`);
+
+const homeChecks = [
+  ['Home Field Station marker', has(homeHtml, 'data-field-station="home"')],
+  ['Home one primary action', count(homeHtml, /data-home-primary-action/g) === 1],
+  ['Home static canonical Discord handoffs', count(homeHtml, /href="https:\/\/discord\.gg\/RUFFbEaeDx"/g) === 2],
+  ['Home city atlas', has(homeHtml, 'data-testid="destination-showcase"')],
+];
+for (const [label, passed] of homeChecks) if (!passed) fail(`Home runtime missing ${label}`);
 
 const detailHtml = [...runtime.values()].filter((text) => text.includes('data-page-family="program-detail"'))[0] ?? '';
 const agendaDetailHtml = [...runtime.values()].filter((text) => text.includes('data-page-header="event-record"'))[0] ?? '';

@@ -42,7 +42,7 @@ const contentLanguage = locale === 'id' ? 'id' : 'en';
   <main id="main-content" class="kad-page" lang={contentLanguage} data-requested-locale={locale} data-fixtures={fixturesEnabled ? 'enabled' : 'disabled'}>
     <div class="kad-container">
       {fallbackText && <p class="kad-translation-notice" lang="en" role="status">{fallbackText}</p>}
-      <DemoBanner locale={locale} />
+      {kind !== 'community' && <DemoBanner locale={locale} />}
 
       {kind === 'community' && <CommunityOverviewPage locale={locale} href={href} />}
       {(kind === 'stories' || kind === 'story') && <StoriesPage locale={locale} href={href} slug={kind === 'story' ? slug : undefined} />}

@@ -6,7 +6,6 @@ import DestinationShowcase from '../components/home/DestinationShowcase'
 import CommunityGateway from '../components/home/CommunityGateway'
 import LandingDirection from '../components/home/LandingDirection'
 import AboutSection from '../components/home/AboutSection'
-import CTASection from '../components/home/CTASection'
 import { BlogSection } from '../components/blog/BlogSection'
 import Footer from '../components/layout/Footer'
 import { getCollection } from 'astro:content'
@@ -78,13 +77,12 @@ const gscVerification = import.meta.env.GOOGLE_SITE_VERIFICATION;
   
   <Navbar client:only="react" locale={locale} currentPath={currentPath} />
   <main id="main-content" tabindex="-1">
-    <HeroSection client:only="react" locale={locale} />
+    <HeroSection locale={locale} />
     <CommunityGateway locale={locale} />
-    <DestinationShowcase client:only="react" locale={locale} />
+    <DestinationShowcase client:load locale={locale} />
     <LandingDirection direction="field-notes" locale={locale} showFallbackNotice={false} />
-    <AboutSection client:only="react" locale={locale} />
+    <AboutSection locale={locale} />
     {blogPosts.length > 0 && <BlogSection client:only="react" posts={blogPosts} locale={locale} />}
-    <CTASection client:only="react" locale={locale} />
   </main>
-  <Footer client:only="react" locale={locale} />
+  <Footer locale={locale} />
 </Layout>
