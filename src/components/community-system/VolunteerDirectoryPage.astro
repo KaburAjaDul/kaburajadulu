@@ -48,23 +48,32 @@ const positionNotes: Record<VolunteerPosition, [string, string]> = {
         <div>
           <p class="kad-eyebrow">{isEnglish ? 'Volunteer directory' : 'Direktori relawan'}</p>
           <h1 id="volunteer-page-title">{isEnglish ? 'How the work is organized.' : 'Cara kerja relawan.'}</h1>
-          <p class="kad-volunteer-intro__description">{isEnglish ? 'A three-month reorganization horizon keeps responsibilities clear without making contribution permanent.' : 'Horizon reorganisasi tiga bulan menjaga tanggung jawab tetap jelas tanpa membuat kontribusi menjadi permanen.'}</p>
+          <p class="kad-volunteer-intro__description">{isEnglish ? 'Join one bounded responsibility, learn how the cycle works, and leave a record that the next cycle can use.' : 'Ambil satu tanggung jawab dengan lingkup jelas, pahami cara kerja siklus, dan tinggalkan catatan yang bisa dipakai siklus berikutnya.'}</p>
         </div>
         <div class="kad-index-intro__record" data-volunteer-cycle>
           <strong>{data.cycle ? fixtureText(data.cycle.name, locale) : (isEnglish ? 'Current cycle: evidence placeholder' : 'Siklus berjalan: placeholder bukti')}</strong>
           <span>{isEnglish ? '3-month cycle' : 'Siklus 3 bulan'}</span>
-          <span>{data.cycle ? `${formatDate(data.cycle.startsOn)} — ${formatDate(data.cycle.endsOn)}` : (isEnglish ? 'The public roster is not published yet.' : 'Daftar publik belum dipublikasikan.')}</span>
+          <span>{data.cycle ? `${formatDate(data.cycle.startsOn)} · ${formatDate(data.cycle.endsOn)}` : (isEnglish ? 'The public roster is not published yet.' : 'Daftar publik belum dipublikasikan.')}</span>
           <span>{data.cycle ? cycleStatus : (isEnglish ? 'Ask in Discord for the current intake.' : 'Tanyakan penerimaan terbaru di Discord.')}</span>
+          {data.enabled && <a class="kad-button kad-button--primary" href={DISCORD_URL} target="_blank" rel="noopener noreferrer">{isEnglish ? 'Start volunteering' : 'Mulai proses relawan'}</a>}
         </div>
       </header>
 
       {!data.enabled && (
         <section class="kad-volunteer-placeholder" data-volunteer-state="evidence-placeholder" aria-labelledby="volunteer-placeholder-title">
           <StatePanel state="pending" locale={locale} statusLabel={isEnglish ? 'Evidence placeholder' : 'Placeholder bukti'} title={isEnglish ? 'The public roster is not published yet.' : 'Daftar relawan publik belum dipublikasikan.'} description={isEnglish ? 'The structure is ready, but names, assignments, and contribution records need explicit consent and source review before they can appear here.' : 'Strukturnya siap, tetapi nama, penugasan, dan rekaman kontribusi memerlukan izin eksplisit serta tinjauan sumber sebelum tampil di sini.'}>
-            <a class="kad-button kad-button--primary" href={DISCORD_URL} target="_blank" rel="noopener noreferrer">{isEnglish ? 'Ask about current intake' : 'Tanyakan penerimaan terbaru'}</a>
+            <a class="kad-button kad-button--primary" href={DISCORD_URL} target="_blank" rel="noopener noreferrer">{isEnglish ? 'Ask the volunteer team' : 'Tanya tim relawan'}</a>
           </StatePanel>
         </section>
       )}
+
+      {data.enabled && <section id="volunteer-openings" class="kad-volunteer-section kad-volunteer-section--openings" data-volunteer-section="openings" aria-labelledby="volunteer-openings-title">
+        <div class="kad-section-heading kad-section-heading--compact">
+          <div><p class="kad-kicker">{isEnglish ? 'Current intake' : 'Penerimaan saat ini'}</p><h2 id="volunteer-openings-title">{isEnglish ? 'Start with one useful scope.' : 'Mulai dari satu lingkup yang berguna.'}</h2></div>
+          <p class="kad-note">{isEnglish ? 'For now, intake starts in Discord. The volunteer team will route you to QA, intake, or an interview.' : 'Untuk saat ini, penerimaan dimulai di Discord. Tim relawan akan mengarahkanmu ke QA, intake, atau interview.'}</p>
+        </div>
+        <div class="kad-volunteer-opening-list">{data.openings.map((opening) => <article data-volunteer-opening data-opening-state={opening.state}><div class="kad-volunteer-opening__meta"><StatusBadge state={opening.state} locale={locale} /><span>{fixtureText(opening.divisionName, locale)}</span></div><h3>{fixtureText(opening.title, locale)}</h3><p>{fixtureText(opening.outcome, locale)}</p><dl><div><dt>{isEnglish ? 'Commitment' : 'Komitmen'}</dt><dd>{fixtureText(opening.commitment, locale)}</dd></div><div><dt>{isEnglish ? 'Owner' : 'Penanggung jawab'}</dt><dd>{fixtureText(opening.owner, locale)}</dd></div><div><dt>{isEnglish ? 'Entry path' : 'Jalur masuk'}</dt><dd data-opening-application>{fixtureText(opening.applicationPath, locale)}</dd></div></dl><a class="kad-source-link kad-volunteer-opening__apply" data-opening-apply href={DISCORD_URL} target="_blank" rel="noopener noreferrer">{isEnglish ? 'Ask the volunteer team ↗' : 'Tanya tim relawan ↗'}</a></article>)}</div>
+      </section>}
 
       <section class="kad-volunteer-section" data-volunteer-section="positions" aria-labelledby="volunteer-positions-title">
         <div class="kad-section-heading kad-section-heading--compact">
@@ -86,21 +95,17 @@ const positionNotes: Record<VolunteerPosition, [string, string]> = {
         </section>
 
         <section class="kad-volunteer-section" data-volunteer-section="people" aria-labelledby="volunteer-people-title">
-          <div class="kad-section-heading kad-section-heading--compact"><div><p class="kad-kicker">{isEnglish ? 'Public attribution' : 'Atribusi publik'}</p><h2 id="volunteer-people-title">{isEnglish ? 'People can be named—or kept anonymous.' : 'Nama dapat ditampilkan—atau tetap anonim.'}</h2></div><p class="kad-note">{isEnglish ? 'These are fictional staging records. Production starts with an empty ledger.' : 'Ini adalah rekaman fiktif untuk staging. Produksi dimulai dengan buku kontribusi kosong.'}</p></div>
+          <div class="kad-section-heading kad-section-heading--compact"><div><p class="kad-kicker">{isEnglish ? 'Public attribution' : 'Atribusi publik'}</p><h2 id="volunteer-people-title">{isEnglish ? 'People can be named or kept anonymous.' : 'Nama dapat ditampilkan atau tetap anonim.'}</h2></div><p class="kad-note">{isEnglish ? 'Only contributors who opt in are identified publicly.' : 'Hanya kontributor yang memberi izin yang ditampilkan identitasnya.'}</p></div>
           <div class="kad-volunteer-people-grid">
             {data.people.map((person) => <a class="kad-volunteer-person" data-volunteer-person data-visibility={person.visibility} href={href(`/volunteer/${person.slug}`)}><span class="kad-volunteer-avatar" aria-hidden="true">{person.visibility === 'anonymous-stub' ? '?' : fixtureText(person.displayName, locale).slice(0, 1)}</span><div><span class="kad-volunteer-person__role">{volunteerPositionLabel(person.position, locale)}</span><h3>{fixtureText(person.displayName, locale)}</h3><p>{person.visibility === 'anonymous-stub' ? (isEnglish ? 'Identity not shared publicly.' : 'Identitas tidak ditampilkan ke publik.') : fixtureText(person.role, locale)}</p><small>{person.contributions.length} {isEnglish ? 'program contributions' : 'kontribusi program'}</small></div><span class="kad-volunteer-arrow" aria-hidden="true">↗</span></a>)}
           </div>
         </section>
 
-        <section class="kad-volunteer-section" data-volunteer-section="openings" aria-labelledby="volunteer-openings-title">
-          <div class="kad-section-heading kad-section-heading--compact"><div><p class="kad-kicker">{isEnglish ? 'Current openings' : 'Posisi terbuka'}</p><h2 id="volunteer-openings-title">{isEnglish ? 'Small scopes are easier to join.' : 'Lingkup kecil lebih mudah untuk dimulai.'}</h2></div><a class="kad-button kad-button--outline" href={DISCORD_URL} target="_blank" rel="noopener noreferrer">{isEnglish ? 'Ask before applying' : 'Tanyakan sebelum mendaftar'}</a></div>
-          <div class="kad-volunteer-opening-list">{data.openings.map((opening) => <article data-volunteer-opening data-opening-state={opening.state}><div class="kad-volunteer-opening__meta"><StatusBadge state={opening.state} locale={locale} /><span>{fixtureText(opening.divisionName, locale)}</span></div><h3>{fixtureText(opening.title, locale)}</h3><p>{fixtureText(opening.outcome, locale)}</p><dl><div><dt>{isEnglish ? 'Commitment' : 'Komitmen'}</dt><dd>{fixtureText(opening.commitment, locale)}</dd></div><div><dt>{isEnglish ? 'Handoff' : 'Penanggung jawab'}</dt><dd>{fixtureText(opening.owner, locale)}</dd></div><div><dt>{isEnglish ? 'Application path' : 'Cara mendaftar'}</dt><dd data-opening-application>{fixtureText(opening.applicationPath, locale)}</dd></div></dl><a class="kad-source-link kad-volunteer-opening__apply" data-opening-apply href={DISCORD_URL} target="_blank" rel="noopener noreferrer">{isEnglish ? 'Ask about this opening ↗' : 'Tanyakan posisi ini ↗'}</a></article>)}</div>
-        </section>
       </> : <section class="kad-volunteer-section kad-volunteer-structure-note" data-volunteer-section="structure" aria-labelledby="volunteer-structure-title"><div class="kad-section-heading kad-section-heading--compact"><div><p class="kad-kicker">{isEnglish ? 'Public boundary' : 'Batas publik'}</p><h2 id="volunteer-structure-title">{isEnglish ? 'The ledger stays consent-led.' : 'Buku kontribusi mengikuti izin.'}</h2></div></div><p>{isEnglish ? 'When a roster is published, it will show the person’s chosen display name, role, program contributions, responsibility, evidence, and review state. No personal impact score or ranking is planned.' : 'Saat roster dipublikasikan, yang tampil adalah nama pilihan, peran, kontribusi per program, tanggung jawab, bukti, dan status tinjauan. Tidak ada skor dampak atau peringkat pribadi.'}</p></section>}
 
       <aside class="kad-volunteer-consent" data-volunteer-consent>
-        <div><p class="kad-kicker">{isEnglish ? 'Identity and verification' : 'Identitas dan verifikasi'}</p><h2>{isEnglish ? 'Public credit is opt-in by design.' : 'Kredit publik memang opt-in.'}</h2><p>{isEnglish ? 'An anonymous stub can still hold a complete contribution ledger. An owner-controlled recruiter verification link may be added later; it is not live on this preview.' : 'Kontributor anonim tetap dapat memiliki buku kontribusi lengkap. Tautan verifikasi perekrut yang dikendalikan pemilik dapat ditambahkan nanti; fitur itu belum aktif di preview ini.'}</p></div>
-        <a class="kad-button kad-button--primary" href={DISCORD_URL} target="_blank" rel="noopener noreferrer">{isEnglish ? 'Ask about volunteering' : 'Tanyakan tentang relawan'}</a>
+        <div><p class="kad-kicker">{isEnglish ? 'Identity and verification' : 'Identitas dan verifikasi'}</p><h2>{isEnglish ? 'Public credit is opt-in by design.' : 'Kredit publik memang opt-in.'}</h2><p>{isEnglish ? 'An anonymous profile can still hold a complete contribution ledger. Recruiter verification is planned, but is not available yet.' : 'Profil anonim tetap dapat memiliki buku kontribusi lengkap. Verifikasi untuk perekrut sudah direncanakan, tetapi belum tersedia.'}</p></div>
+        <a class="kad-button kad-button--outline" href={DISCORD_URL} target="_blank" rel="noopener noreferrer">{isEnglish ? 'Ask the volunteer team' : 'Tanya tim relawan'}</a>
       </aside>
     </div>
   </main>
@@ -114,6 +119,7 @@ const positionNotes: Record<VolunteerPosition, [string, string]> = {
   .kad-volunteer-intro__description { color: var(--volunteer-muted); max-width: 42rem; margin: 1rem 0 0; }
   .kad-volunteer-intro .kad-index-intro__record { max-width: 20rem; border-left: 3px solid var(--color-primary, #135dff); padding-left: 1.25rem; }
   .kad-volunteer-intro .kad-index-intro__record span { display: block; margin-top: .35rem; color: var(--volunteer-muted); }
+  .kad-volunteer-intro .kad-index-intro__record .kad-button { display: inline-flex; margin-top: 1rem; }
   .kad-volunteer-placeholder { margin: 2rem 0 1rem; }
   .kad-volunteer-section { padding: 4rem 0 0; }
   .kad-volunteer-section--split { border-top: 1px solid var(--volunteer-line); margin-top: 4rem; padding-top: 3rem; }

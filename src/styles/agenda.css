@@ -4,6 +4,10 @@
   gap: clamp(28px, 5vw, 52px);
 }
 
+.kad-subpage-intro--events + .kad-operational-section {
+  padding-block-start: 24px;
+}
+
 .kad-agenda-day-heading {
   display: flex;
   align-items: baseline;

@@ -3,8 +3,10 @@
 ## Audience and task
 
 People in Indonesia looking for a practical first step into study, work, or
-community learning abroad should be able to tell what is known, what is
-simulated, what needs confirmation, and what action is safe to take next.
+community learning abroad should be able to tell what is happening, what is
+simulated, what remains uncertain, and how to continue in Discord. Public KAD
+Sessions and Events are open community activities: the website does not ask a
+visitor to register, reserve a place, or confirm attendance.
 
 Indonesian (`id`) is the source voice. English (`en`) is the complete fallback
 for public and shell surfaces until a full translation exists. Other locales
@@ -39,7 +41,7 @@ komunitas`, `Cara kerja relawan`, and `Cerita dan dokumentasi`.
 | --- | --- | --- | --- |
 | Community | Understand participation | Three public ways to find a room, follow a routine, and contribute | Private channels and moderation workflows |
 | Programs catalogue/detail | Choose an activity | Five source-backed records, known facts, confirmation questions, source, and next action | Live availability, capacity, recurrence, registration, archive freshness |
-| Events schedule/detail | Check or read a public event | Date/timezone/status/source only for approved public records | Public projection owner, freshness, corrections, registrations |
+| Events schedule/detail | Decide what to attend and enter Discord | Date/timezone/status/source only for approved public records; no registration is required for public KAD activities | Public projection owner, freshness, correction path, approved Discord event/invite URL |
 | Volunteer | Find useful work now | Intake path, current cycle, open work, handover expectation | Owner, opening count, expiry, personal identity |
 | Stories | Read a record | Approved title/body, date, topic, source, revision, editorial state | Editorial approval, media rights, withdrawal SLA |
 | History | Assess a historical claim | Evidence-review status and correction invitation | Dated corroboration, owner, attribution, revocation policy |
@@ -51,13 +53,13 @@ komunitas`, `Cara kerja relawan`, and `Cerita dan dokumentasi`.
 
 | Route/component | Product copy | Primary action | Required fallback/state copy |
 | --- | --- | --- | --- |
-| Community intro | `Komunitas bukan cuma server` plus the three-step orientation | `Lihat cara ikut` / `Gabung Discord` | Public expectations and safe-source explanation |
+| Community intro | `KAD saat ini` plus a compact current snapshot | `Gabung ke Discord KAD` / `Lihat program komunitas` | Public expectations and safe-source explanation |
 | Staging metadata | `Data simulasi — hanya untuk review` | None | Never a hero, modal, or promotional CTA |
 | Programs catalogue | `Program komunitas` and filter/result language | `Buka program` / `Lihat sumber publik` | `Memuat program`, `Belum ada program di kategori ini`, `Program sedang tidak tersedia` |
-| Program detail | `Yang sudah diketahui` / `Yang perlu dikonfirmasi` | `Konfirmasi di Discord` / `Buka sumber publik` | Poster fallback keeps title, status, and source visible |
+| Program detail | Purpose, structure, Series/Sessions, and current public record | `Ikut melalui Discord` / `Buka sumber publik` | Poster fallback keeps title, status, and source visible |
 | Events schedule | `Agenda komunitas` with date, timezone, and status | `Buka detail acara` | `Belum ada agenda publik`, `Jadwal sedang dimuat`, `Agenda perlu ditinjau ulang` |
-| Event detail | Record title, status, time, revision, correction path | `Buka pendaftaran` only when present | `Belum dipublikasikan`, `Data acara belum tersedia`, `Catatan ini ditarik` |
-| Volunteer | `Cara kerja relawan`; intake, cycle, open work | `Isi minat relawan` | `Siklus berikutnya belum dibuka`, `Pekerjaan ini sudah ditutup` |
+| Event detail | Record title, status, time, participation note, revision, correction path | `Gabung KAD untuk ikut`; `Masuk ke ruang live` only with an approved live-room URL | `Belum dipublikasikan`, `Data acara belum tersedia`, `Acara dibatalkan`, `Catatan ini ditarik` |
+| Volunteer | Current intake/openings first, then cycle, roles, divisions, people, and attribution | `Mulai proses relawan`; contextual `Tanya tim relawan` or `Isi formulir minat` only when its URL exists | `Siklus berikutnya belum dibuka`, `Pekerjaan ini sudah ditutup`, `Intake sedang tidak tersedia` |
 | Stories | `Cerita dan dokumentasi`; title, excerpt, date, topic | `Baca cerita` / `Buka sumber` | `Cerita menunggu persetujuan`, `Cerita ini ditarik` |
 | History | `Riwayat yang sedang diverifikasi` | `Kirim koreksi` | `Bukti belum cukup untuk timeline publik` |
 | Impact | `Dampak dan cara menghitungnya` | `Lihat metode` | `Metode metrik belum disetujui`; no invented total |
@@ -74,7 +76,7 @@ or a generic `Pelajari lebih lanjut` when the consequence is known.
 | Default/ready | Show route task, certainty, metadata, and one dominant action | Continue to record, source, or intake |
 | Loading | Keep heading and route context; say what is loading | Wait or retry when available |
 | Empty | Explain why no record is shown; do not imply a broken system | Change filter, open Discord, or return to catalogue |
-| Partial/unknown | Separate known facts from confirmation questions | Confirm against the named public source |
+| Partial/unknown | Separate known facts from unresolved source fields | Open the named public source or correction path; never turn evidence review into attendance confirmation |
 | Stale | Keep record readable but label last update and review need | Open source or correction path |
 | Error | Say records are unavailable without exposing private fallback | `Coba lagi` or use the public contact path |
 | Pending/blocked | Explain the approval/readiness gate | Correction, source review, or wait for owner |
@@ -98,13 +100,15 @@ dominance, canonical validator commands, and approved SHA-256 values.
 - **Session**: one occurrence of a program.
 - **Event**: a session or gathering approved as a public record.
 - **Data simulasi / Demo data**: deterministic fictional staging content.
-- **Konfirmasi / Confirm**: the latest status still needs a public source or community confirmation.
+- **Gabung KAD / Join KAD**: enter the public Discord community; this is the participant conversion action.
+- **Ikut melalui Discord / Continue in Discord**: open an approved server or Event Server Invite; it is not registration.
+- **Konfirmasi / Confirm**: reserved for editorial/source verification language, never attendance or registration.
 - **Atribusi / Attribution**: naming a contributor only within the consented scope.
 - **Tombstone**: a neutral withdrawal record that supersedes an older public revision.
 
 ## Claims requiring verification
 
-Availability, capacity, registration, dates, participation totals, impact
+Availability, capacity, dates, participation totals, impact
 metrics, historical timelines, personal identity, attribution, and funding
 claims require a dated public source, an owner, a revision, and a correction or
 withdrawal path before production copy can state them as fact. Unknowns listed

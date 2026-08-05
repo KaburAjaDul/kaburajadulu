@@ -25,12 +25,12 @@ export type CommunityCopy = {
 
 const COPY: Record<'id' | 'en', Record<CommunityPageKind, CommunityCopy>> = {
   id: {
-    community: { eyebrow: 'KaburAjaDulu · komunitas', title: 'Orang, program, dan kerja yang membuat KAD berjalan.', description: 'Lihat program yang tercatat, status agenda, dan kontribusi yang memang dipilih untuk ditampilkan.', actions: { discord: 'Gabung ke Discord', support: 'Dukung KAD', back: 'Kembali', detail: 'Lihat detail' }, states: { empty: 'Belum tersedia', pending: 'Menunggu persetujuan', notPublished: 'Belum dipublikasikan', demo: 'Data simulasi' } },
-    programs: { eyebrow: 'Direktori program', title: 'Program komunitas', description: 'Bandingkan topik, sumber, dan status setiap program sebelum memilih langkah berikutnya.', actions: { discord: 'Tanyakan jadwal terbaru', support: 'Dukung KAD', back: 'Kembali', detail: 'Baca rincian' }, states: { empty: 'Belum tersedia', pending: 'Perlu konfirmasi', notPublished: 'Belum dipublikasikan', demo: 'Data simulasi' } },
-    program: { eyebrow: 'Catatan program', title: 'Program', description: 'Baca sumber, pahami kegiatannya, lalu periksa apa yang masih perlu dikonfirmasi.', actions: { discord: 'Tanyakan status terbaru', support: 'Dukung KAD', back: 'Kembali ke program', detail: 'Baca rincian' }, states: { empty: 'Belum tersedia', pending: 'Perlu konfirmasi', notPublished: 'Belum dipublikasikan', demo: 'Data simulasi' } },
-    events: { eyebrow: 'Jadwal dan status', title: 'Agenda', description: 'Periksa waktu, durasi, status publikasi, dan cara mengonfirmasi jadwal terbaru.', actions: { discord: 'Tanyakan jadwal terbaru', support: 'Dukung KAD', back: 'Kembali', detail: 'Baca rincian' }, states: { empty: 'Belum ada agenda publik', pending: 'Sedang diperiksa', notPublished: 'Belum dipublikasikan', demo: 'Data simulasi' } },
-    event: { eyebrow: 'Rincian agenda', title: 'Agenda ini belum dipublikasikan.', description: 'Halaman agenda baru dibuka setelah waktu, jalur ikut, sumber, dan catatan perubahannya lengkap.', actions: { discord: 'Tanyakan di Discord', support: 'Dukung KAD', back: 'Kembali ke agenda', detail: 'Baca rincian' }, states: { empty: 'Belum tersedia', pending: 'Sedang diperiksa', notPublished: 'Belum dipublikasikan', demo: 'Data simulasi' } },
-    volunteer: { eyebrow: 'Siklus dan pembagian kerja', title: 'Cara kerja relawan', description: 'Lihat tahap siklus, cara pekerjaan dibagi, dan aturan atribusi kontribusi.', actions: { discord: 'Lihat cara mulai', support: 'Dukung KAD', back: 'Kembali', detail: 'Baca rincian' }, states: { empty: 'Belum tersedia', pending: 'Menunggu izin', notPublished: 'Belum dipublikasikan', demo: 'Data simulasi' } },
+    community: { eyebrow: 'KaburAjaDulu · komunitas', title: 'KAD saat ini', description: 'Lihat program, agenda terdekat, dan kontribusi yang sengaja dibuka untuk publik.', actions: { discord: 'Gabung ke Discord KAD', support: 'Dukung KAD', back: 'Kembali', detail: 'Lihat detail' }, states: { empty: 'Belum tersedia', pending: 'Menunggu persetujuan', notPublished: 'Belum dipublikasikan', demo: 'Data contoh' } },
+    programs: { eyebrow: 'Direktori program', title: 'Program komunitas', description: 'Pilih topik dan ritme yang cocok, lalu lanjutkan ke Discord untuk ikut.', actions: { discord: 'Gabung ke Discord', support: 'Dukung KAD', back: 'Kembali', detail: 'Buka program' }, states: { empty: 'Belum tersedia', pending: 'Perlu ditinjau', notPublished: 'Belum dipublikasikan', demo: 'Data simulasi' } },
+    program: { eyebrow: 'Catatan program', title: 'Program', description: 'Pahami tujuan, rangkaian, dan sesi yang tercatat sebelum bergabung ke Discord.', actions: { discord: 'Ikuti di Discord', support: 'Dukung KAD', back: 'Kembali ke program', detail: 'Buka program' }, states: { empty: 'Belum tersedia', pending: 'Perlu ditinjau', notPublished: 'Belum dipublikasikan', demo: 'Data simulasi' } },
+    events: { eyebrow: 'Waktu dan kegiatan', title: 'Agenda', description: 'Temukan sesi dan acara yang akan berlangsung. Tidak perlu mendaftar: bergabunglah melalui Discord.', actions: { discord: 'Gabung ke Discord', support: 'Dukung KAD', back: 'Kembali', detail: 'Lihat detail' }, states: { empty: 'Belum ada agenda publik', pending: 'Sedang diperiksa', notPublished: 'Belum dipublikasikan', demo: 'Data simulasi' } },
+    event: { eyebrow: 'Rincian agenda', title: 'Agenda ini belum dipublikasikan.', description: 'Rekaman publik muncul setelah waktu, sumber, dan jalur ikutnya siap dibaca.', actions: { discord: 'Gabung untuk ikut', support: 'Dukung KAD', back: 'Kembali ke agenda', detail: 'Lihat detail' }, states: { empty: 'Belum tersedia', pending: 'Sedang diperiksa', notPublished: 'Belum dipublikasikan', demo: 'Data simulasi' } },
+    volunteer: { eyebrow: 'Siklus dan pembagian kerja', title: 'Cara kerja relawan', description: 'Lihat posisi yang dibuka, tahap siklus, pembagian kerja, dan cara kontribusi dicatat.', actions: { discord: 'Mulai proses relawan', support: 'Dukung KAD', back: 'Kembali', detail: 'Baca detail' }, states: { empty: 'Belum tersedia', pending: 'Menunggu izin', notPublished: 'Belum dipublikasikan', demo: 'Data contoh' } },
     stories: { eyebrow: 'Arsip komunitas', title: 'Cerita dan dokumentasi', description: 'Cerita tampil setelah isi, media, dan cara menyebut kontributor mendapat persetujuan.', actions: { discord: 'Bagikan bahan cerita', support: 'Dukung KAD', back: 'Kembali', detail: 'Baca rincian' }, states: { empty: 'Belum ada cerita terbit', pending: 'Menunggu persetujuan', notPublished: 'Belum dipublikasikan', demo: 'Data simulasi' } },
     story: { eyebrow: 'Catatan komunitas', title: 'Cerita belum tersedia', description: 'Catatan publik hanya menampilkan bahan yang telah melewati pemeriksaan editorial dan privasi.', actions: { discord: 'Bagikan bahan cerita', support: 'Dukung KAD', back: 'Kembali ke cerita', detail: 'Baca cerita' }, states: { empty: 'Belum ada cerita terbit', pending: 'Menunggu persetujuan', notPublished: 'Belum dipublikasikan', demo: 'Data simulasi' } },
     history: { eyebrow: 'Sejarah komunitas', title: 'Sejarah yang bisa ditelusuri, bukan sekadar diingat.', description: 'Setiap tonggak membutuhkan tanggal, sumber, penanggung jawab, dan jalur koreksi sebelum masuk ke halaman publik.', actions: { discord: 'Kirim sumber', support: 'Dukung KAD', back: 'Kembali', detail: 'Baca rincian' }, states: { empty: 'Belum tersedia', pending: 'Sedang meninjau bukti', notPublished: 'Belum dipublikasikan', demo: 'Data simulasi' } },
@@ -39,12 +39,12 @@ const COPY: Record<'id' | 'en', Record<CommunityPageKind, CommunityCopy>> = {
     credits: { eyebrow: 'Jejak kontribusi', title: 'Setiap kerja punya jejak. Setiap nama tetap pilihan.', description: 'Kontributor memilih apakah namanya ditampilkan, bagian kerja yang disebut, dan kapan izin itu berakhir.', actions: { discord: 'Tanyakan cara berkontribusi', support: 'Dukung KAD', back: 'Kembali', detail: 'Baca rincian' }, states: { empty: 'Belum ada kredit publik', pending: 'Menunggu izin', notPublished: 'Belum dipublikasikan', demo: 'Data simulasi' } },
   },
   en: {
-    community: { eyebrow: 'KaburAjaDulu · community', title: 'People, programs, and work that keep KAD moving.', description: 'See recorded programs, schedule status, and contributions that people explicitly chose to show.', actions: { discord: 'Join Discord', support: 'Support KAD', back: 'Back', detail: 'View details' }, states: { empty: 'Not available yet', pending: 'Pending approval', notPublished: 'Not published', demo: 'Demo data' } },
-    programs: { eyebrow: 'Program directory', title: 'Community programs', description: 'Compare each program’s topic, source, and status before choosing your next step.', actions: { discord: 'Ask for the latest schedule', support: 'Support KAD', back: 'Back', detail: 'Read details' }, states: { empty: 'Not available yet', pending: 'Needs confirmation', notPublished: 'Not published', demo: 'Demo data' } },
-    program: { eyebrow: 'Program', title: 'Program', description: 'A public-source record with readable status.', actions: { discord: 'Confirm on Discord', support: 'Support KAD', back: 'Back to programs', detail: 'View details' }, states: { empty: 'Not available yet', pending: 'Latest confirmation', notPublished: 'Not published', demo: 'Demo data' } },
-    events: { eyebrow: 'Schedule and status', title: 'Agenda', description: 'Check the time, duration, publication status, and where to confirm the latest schedule.', actions: { discord: 'Ask for the latest schedule', support: 'Support KAD', back: 'Back', detail: 'Read details' }, states: { empty: 'No public agenda yet', pending: 'Under review', notPublished: 'Not published', demo: 'Demo data' } },
-    event: { eyebrow: 'Agenda record', title: 'This agenda item is not published.', description: 'The public record has not cleared source, time, registration, and recap review.', actions: { discord: 'Ask on Discord', support: 'Support KAD', back: 'Back to agenda', detail: 'View details' }, states: { empty: 'Not available yet', pending: 'Pending review', notPublished: 'Not published', demo: 'Demo data' } },
-    volunteer: { eyebrow: 'Cycle and work structure', title: 'How volunteering works', description: 'See the cycle stages, how work is assigned, and how contribution attribution is handled.', actions: { discord: 'See how to start', support: 'Support KAD', back: 'Back', detail: 'Read details' }, states: { empty: 'Not available yet', pending: 'Permission required', notPublished: 'Not published', demo: 'Demo data' } },
+    community: { eyebrow: 'KaburAjaDulu · community', title: 'KAD today', description: 'See programs, the next agenda item, and contributions that people explicitly chose to show.', actions: { discord: 'Join KAD on Discord', support: 'Support KAD', back: 'Back', detail: 'View details' }, states: { empty: 'Not available yet', pending: 'Pending approval', notPublished: 'Not published', demo: 'Sample data' } },
+    programs: { eyebrow: 'Program directory', title: 'Community programs', description: 'Choose a topic and rhythm that fits, then continue to Discord to take part.', actions: { discord: 'Join Discord', support: 'Support KAD', back: 'Back', detail: 'Open program' }, states: { empty: 'Not available yet', pending: 'Needs review', notPublished: 'Not published', demo: 'Demo data' } },
+    program: { eyebrow: 'Program record', title: 'Program', description: 'Understand the purpose, optional series, and recorded sessions before joining Discord.', actions: { discord: 'Join on Discord', support: 'Support KAD', back: 'Back to programs', detail: 'Open program' }, states: { empty: 'Not available yet', pending: 'Needs review', notPublished: 'Not published', demo: 'Demo data' } },
+    events: { eyebrow: 'Time and activity', title: 'Agenda', description: 'Find upcoming sessions and events. No registration is required: join through Discord.', actions: { discord: 'Join Discord', support: 'Support KAD', back: 'Back', detail: 'View details' }, states: { empty: 'No public agenda yet', pending: 'Under review', notPublished: 'Not published', demo: 'Demo data' } },
+    event: { eyebrow: 'Agenda record', title: 'This agenda item is not published.', description: 'A public record appears when its time, source, and joining path are ready to read.', actions: { discord: 'Join to take part', support: 'Support KAD', back: 'Back to agenda', detail: 'View details' }, states: { empty: 'Not available yet', pending: 'Pending review', notPublished: 'Not published', demo: 'Demo data' } },
+    volunteer: { eyebrow: 'Cycle and work structure', title: 'How volunteering works', description: 'See current openings, cycle stages, work ownership, and how contributions are recorded.', actions: { discord: 'Start volunteering', support: 'Support KAD', back: 'Back', detail: 'Read details' }, states: { empty: 'Not available yet', pending: 'Permission required', notPublished: 'Not published', demo: 'Sample data' } },
     stories: { eyebrow: 'Community archive', title: 'Stories and documentation', description: 'Stories appear after the content, media, and contributor attribution have been approved.', actions: { discord: 'Share context', support: 'Support KAD', back: 'Back', detail: 'View details' }, states: { empty: 'No published stories yet', pending: 'Pending approval', notPublished: 'Not published', demo: 'Demo data' } },
     story: { eyebrow: 'Community note', title: 'Story not available', description: 'Public notes show only material that has passed editorial and privacy review.', actions: { discord: 'Share story material', support: 'Support KAD', back: 'Back to stories', detail: 'Read story' }, states: { empty: 'No published stories yet', pending: 'Pending approval', notPublished: 'Not published', demo: 'Demo data' } },
     history: { eyebrow: 'Community history', title: 'History people can trace, not just remember.', description: 'Every milestone needs a date, source, owner, and correction path before it reaches the public timeline.', actions: { discord: 'Send a source', support: 'Support KAD', back: 'Back', detail: 'Read details' }, states: { empty: 'Not available yet', pending: 'Reviewing evidence', notPublished: 'Not published', demo: 'Demo data' } },
@@ -69,25 +69,25 @@ const PROGRAM_ENGLISH_COPY: Record<string, ProgramEnglishCopy> = {
   'french-club-trial': {
     summary: 'A beginner trial covering the French alphabet, pronunciation, introductions, and basic grammar.',
     known: ['The public announcement describes this as a trial session.', 'The listed topics cover beginner French foundations.'],
-    confirm: ['Current availability and capacity', 'Registration path and what follows the trial'],
+    confirm: ['Whether the session is still current', 'How to join the next session in Discord'],
     media: [{ alt: 'Yellow French Study Club poster for a beginner La Classe du Français trial on 2 August 2026 at 4:00 PM Jakarta time.', caption: 'Public French Study Club trial announcement published by KADSocialHub.' }],
   },
   'mandarin-study-club-transport': {
     summary: 'A beginner-friendly Mandarin session focused on transport vocabulary.',
     known: ['The public announcement names transport as the topic.', 'The session is described as beginner-friendly.'],
-    confirm: ['Latest schedule and capacity', 'Registration path and available documentation'],
+    confirm: ['Latest schedule and capacity', 'How to join and where documentation appears'],
     media: [{ alt: 'Mandarin Study Club poster for a beginner transport session on 1 August 2026 at 6:30 PM Jakarta time in the KaburAjaDulu Discord.', caption: 'Public Mandarin Study Club transport announcement published by KADSocialHub.' }],
   },
   'apple-developer-academy-batch-2027': {
     summary: 'An online information session and learner conversation about Apple Developer Academy Batch 2027.',
     known: ['The public announcement lists an information session and learner sharing.', 'The session focuses on the 2027 batch.'],
-    confirm: ['Official eligibility and application window', 'Recording, application sources, and archive status'],
+    confirm: ['Official eligibility and application window', 'Recording, application sources, and Discord joining path'],
     media: [{ alt: 'Apple Developer Academy 2027 information-session poster for 31 July 2026 from 7:00 to 8:30 PM Jakarta time.', caption: 'Public Apple Developer Academy 2027 session announcement published by KADSocialHub.' }],
   },
   'english-mandarin-weekly-clubs': {
     summary: 'Weekly English and Mandarin study clubs designed to feel approachable for beginners.',
     known: ['The public announcement promotes both English and Mandarin clubs.', 'The format emphasizes beginner-friendly peer learning.'],
-    confirm: ['Whether the weekly rhythm is still active', 'Current capacity and joining path'],
+    confirm: ['Whether the weekly rhythm is still active', 'The current joining path in Discord'],
     media: [
       { alt: 'English Study Club poster for a beginner weekly session about hobbies on 25 July 2026 at 7:30 PM Jakarta time.', caption: 'Public weekly English Study Club announcement published by KADSocialHub.' },
       { alt: 'Mandarin Study Club poster for a third-batch weekly session about hobbies and monologue practice on Fridays at 8:30 PM Jakarta time.', caption: 'Public weekly Mandarin Study Club announcement published by KADSocialHub.' },
@@ -96,7 +96,7 @@ const PROGRAM_ENGLISH_COPY: Record<string, ProgramEnglishCopy> = {
   'gks-preparation': {
     summary: 'Scholarship preparation ranging from GKS foundations to practical life after arriving in Korea.',
     known: ['The public source names GKS foundations as part of the scope.', 'It also mentions practical context for living in Korea.'],
-    confirm: ['Date, time, and eligibility', 'Official scholarship links and archive status'],
+    confirm: ['Date, time, and eligibility', 'Official scholarship links and Discord joining path'],
     media: [],
   },
 };
@@ -159,7 +159,7 @@ export const PROGRAMS: readonly ProgramSource[] = [
     category: 'Klub bahasa',
     summary: 'Uji coba latihan alfabet, pelafalan, perkenalan, dan tata bahasa dasar Prancis.',
     known: ['Formatnya disebut sebagai sesi trial.', 'Topik yang disebut mencakup dasar-dasar bahasa Prancis.'],
-    confirm: ['Ketersediaan dan kapasitas saat ini', 'Jalur pendaftaran dan status setelah sesi trial'],
+    confirm: ['Apakah sesi masih berlangsung', 'Cara bergabung ke sesi berikutnya di Discord'],
     sourceUrl: 'https://x.com/KADSocialHub/status/2083791105590784033',
     sourceLabel: 'Sumber publik di X',
     media: [{
@@ -182,7 +182,7 @@ export const PROGRAMS: readonly ProgramSource[] = [
     category: 'Klub bahasa',
     summary: 'Sesi Mandarin bertema transportasi yang disebut gratis dan ramah pemula.',
     known: ['Sumber menyebut tema transportasi.', 'Sumber menyebut sesi ramah pemula.'],
-    confirm: ['Jadwal dan kapasitas terbaru', 'Jalur pendaftaran dan dokumentasi'],
+    confirm: ['Jadwal dan kapasitas terbaru', 'Cara bergabung dan lokasi dokumentasi'],
     sourceUrl: 'https://x.com/KADSocialHub/status/2083159775362302137',
     sourceLabel: 'Sumber publik di X',
     media: [{
@@ -205,7 +205,7 @@ export const PROGRAMS: readonly ProgramSource[] = [
     category: 'Pendidikan & karier',
     summary: 'Sesi info daring dan berbagi pengalaman belajar tentang Apple Developer Academy.',
     known: ['Sumber menyebut sesi info daring dan learner sharing.', 'Sesi ditujukan untuk membahas Batch 2027.'],
-    confirm: ['Kelayakan dan jendela pendaftaran resmi', 'Rekaman, sumber aplikasi, dan status arsip'],
+    confirm: ['Kelayakan dan jendela pendaftaran resmi', 'Rekaman, sumber aplikasi, dan jalur ikut di Discord'],
     sourceUrl: 'https://x.com/KADSocialHub/status/2082436751105388905',
     sourceLabel: 'Sumber publik di X',
     media: [{
@@ -228,7 +228,7 @@ export const PROGRAMS: readonly ProgramSource[] = [
     category: 'Klub bahasa',
     summary: 'Klub belajar mingguan bahasa Inggris dan Mandarin dengan pendekatan aman untuk pemula.',
     known: ['Sumber mempromosikan klub English dan Mandarin.', 'Sumber menekankan pembelajaran sebaya yang ramah pemula.'],
-    confirm: ['Apakah ritme mingguan masih berjalan', 'Kapasitas dan jalur ikut terbaru'],
+    confirm: ['Apakah ritme mingguan masih berjalan', 'Jalur ikut terbaru di Discord'],
     sourceUrl: 'https://x.com/KADSocialHub/status/2080532059408490846',
     sourceLabel: 'Sumber publik di X',
     media: [
@@ -266,7 +266,7 @@ export const PROGRAMS: readonly ProgramSource[] = [
     category: 'Pendidikan & karier',
     summary: 'Persiapan beasiswa yang disebut membentang dari GKS 101 hingga kehidupan praktis di Korea.',
     known: ['Sumber menyebut cakupan GKS 101.', 'Sumber menyebut konteks kehidupan setelah tiba di Korea.'],
-    confirm: ['Tanggal, waktu, dan kelayakan sesi', 'Tautan beasiswa resmi dan status arsip'],
+    confirm: ['Tanggal, waktu, dan kelayakan sesi', 'Tautan beasiswa resmi dan jalur ikut di Discord'],
     sourceUrl: 'https://x.com/KADSocialHub/status/2080283341807604175',
     sourceLabel: 'Sumber publik di X',
     media: [],

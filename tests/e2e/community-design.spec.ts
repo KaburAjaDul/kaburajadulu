@@ -43,9 +43,9 @@ const DESIGN_PREVIEWS = [
 ] as const;
 
 const SUBPAGE_HEADERS = [
-  ['/events/', 'schedule', '0 item terjadwal'],
+  ['/events/', 'schedule', '0 rekaman publik'],
   ['/volunteer/', 'volunteer-cycle', 'Siklus 3 bulan'],
-  ['/stories/', 'story-index', 'Cerita dengan konteks.'],
+  ['/stories/', 'story-index', 'Catatan dari kegiatan.'],
   ['/about/history/', 'history-review', 'Tinjauan bukti'],
   ['/community/impact/', 'impact-ledger', 'rekaman metrik terbit'],
   ['/support/', 'support-readiness', 'Belum menerima pembayaran'],
@@ -114,16 +114,16 @@ test.describe('route-specific first viewport', () => {
     await expect(page.locator('[data-community-section="current"] dl > div')).toHaveCount(3);
     await expect(page.locator('[data-community-section="current"] .kad-community-information__metric-value')).toHaveText(['—', '—', '—']);
     await expect(page.locator('[data-community-section="current"] .kad-community-information__metric-detail')).toHaveCount(3);
-    await expect(page.locator('[data-community-section="programs"] [data-program-record]')).toHaveCount(5);
+    await expect(page.locator('[data-community-section="programs"] [data-program-record]')).toHaveCount(3);
     await expect(page.locator('[data-community-section="agenda"]')).toBeVisible();
     await expect(page.locator('[data-community-section="people"]')).toBeVisible();
     await expect(page.locator('.kad-journey-card, .kad-band, [data-community-section="social"]')).toHaveCount(0);
     const headingOrder = await page.locator('[data-community-section] > .kad-community-information__section-heading h2').allTextContents();
     expect(headingOrder.slice(0, 4)).toEqual([
       'KAD saat ini',
-      'Program adalah kerja yang berkelanjutan.',
-      'Langkah berikutnya, bukan janji.',
-      'Orang dapat menunjukkan kerja tanpa kehilangan privasi.',
+      'Program yang bisa dijelajahi',
+      'Agenda terdekat',
+      'Kontribusi relawan',
     ]);
   });
 
@@ -237,10 +237,10 @@ test.describe('staging landing direction review', () => {
     });
   }
 
-  test('Field Notes is the normal-home candidate and renders all five approved posters', async ({ page }) => {
+  test('Field Notes is the normal-home candidate and renders the selected program posters', async ({ page }) => {
     await page.goto('/', { waitUntil: 'networkidle' });
     await expect(page.locator('[data-design-direction="field-notes"]')).toBeVisible();
-    await expect(page.locator('[data-interface-slice="community-home"] img[src^="/images/programs/"]')).toHaveCount(5);
+    await expect(page.locator('[data-interface-slice="community-home"] img[src^="/images/programs/"]')).toHaveCount(4);
     await expect(page.locator('.kad-direction-tabs')).toHaveCount(0);
   });
 
@@ -264,7 +264,7 @@ test('program catalogue uses an information-first index backed by public records
   await expect(records).toHaveCount(5);
   await expect(records.locator('[data-program-availability="needs_confirmation"]')).toHaveCount(5);
   expect(await records.locator('[data-program-availability="needs_confirmation"]').allTextContents()).toEqual(
-    new Array(5).fill('Konfirmasi terbaru diperlukan'),
+    new Array(5).fill('Sesi berikutnya belum dipastikan'),
   );
 
   const links = records.locator(`a[href^="https://x.com/KADSocialHub/status/"]`);
@@ -360,7 +360,7 @@ test('GKS remains a text-only fallback and English + Mandarin detail has two pos
   await expect(gksCard).toHaveCount(1);
   await expect(gksCard.locator('img')).toHaveCount(0);
   await expect(gksCard.locator('.kad-source-link')).toHaveCount(1);
-  await expect(gksCard.locator('[data-program-availability]')).toContainText('Konfirmasi terbaru diperlukan');
+  await expect(gksCard.locator('[data-program-availability]')).toContainText('Sesi berikutnya belum dipastikan');
 
   await page.goto('/programs/english-mandarin-weekly-clubs/', { waitUntil: 'networkidle' });
   await expect(page.locator('[data-page-family="program-detail"]')).toBeVisible();
@@ -406,15 +406,15 @@ test('program documentation keeps a descriptive fallback when local posters fail
   await expect(records.locator('[data-program-availability]')).toHaveCount(5);
 });
 
-test('program detail puts Discord confirmation before documentation on mobile', async ({ page }) => {
+test('program detail puts the Discord handoff before documentation on mobile', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/programs/english-mandarin-weekly-clubs/', { waitUntil: 'domcontentloaded' });
 
-  const confirmation = page.locator('.kad-program-detail-intro__action[href*="discord"]').filter({ hasText: /Konfirmasi di Discord|Confirm on Discord/i });
-  await expect(confirmation).toHaveCount(1);
-  await expect(confirmation).toBeVisible();
-  const confirmationBox = await confirmation.boundingBox();
-  expect(confirmationBox?.y ?? Number.POSITIVE_INFINITY, 'Discord confirmation should appear in the first mobile viewport').toBeLessThan(900);
+  const handoff = page.locator('.kad-program-detail-intro__action[href*="discord"]').filter({ hasText: /Gabung KAD di Discord|Join KAD on Discord/i });
+  await expect(handoff).toHaveCount(1);
+  await expect(handoff).toBeVisible();
+  const handoffBox = await handoff.boundingBox();
+  expect(handoffBox?.y ?? Number.POSITIVE_INFINITY, 'Discord handoff should appear in the first mobile viewport').toBeLessThan(900);
 
   await expect(page.locator('.kad-program-documentation')).toHaveCount(1);
   const precedesDocumentation = await page.evaluate(() => {
@@ -422,7 +422,7 @@ test('program detail puts Discord confirmation before documentation on mobile', 
     const documentation = document.querySelector('.kad-program-documentation');
     return action !== null && documentation !== null && Boolean(action.compareDocumentPosition(documentation) & Node.DOCUMENT_POSITION_FOLLOWING);
   });
-  expect(precedesDocumentation, 'Discord confirmation must precede documentation in DOM order').toBe(true);
+  expect(precedesDocumentation, 'Discord handoff must precede documentation in DOM order').toBe(true);
 });
 
 test('events begin with an honest zero-count empty state', async ({ page }) => {
@@ -496,12 +496,12 @@ test('production excludes staging fixtures and keeps language fallback explicit'
   await expect(page.locator('html')).toHaveAttribute('lang', 'ja');
   await expect(page.locator('main')).toHaveAttribute('lang', 'en');
   await expect(page.getByText('This community surface is available in English while a full translation is prepared.')).toBeVisible();
-  await expect(page.getByRole('heading', { name: 'A clear view of KAD today.' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'KAD today' })).toBeVisible();
 
   await page.goto('/ja/', { waitUntil: 'domcontentloaded' });
   await expect(page.locator('html')).toHaveAttribute('lang', 'ja');
-  await expect(page.getByText('This page is available in English while a full translation is prepared.')).toBeVisible();
-  await expect(page.getByRole('heading', { name: 'Kabur Aja Dulu' })).toBeVisible();
+  await expect(page.getByText('Some community sections remain in English while their full translation is prepared.')).toBeVisible();
+  await expect(page.getByRole('heading', { name: '本当の疑問から始めよう。' })).toBeVisible();
   await expect(page.getByText('コミュニティの公開スペース', { exact: true })).toHaveCount(0);
 });
 

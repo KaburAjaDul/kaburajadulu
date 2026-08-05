@@ -4,7 +4,7 @@ import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import DemoBanner from '@/components/community-system/DemoBanner.astro';
 import StatePanel from '@/components/community-system/StatePanel.astro';
-import { DISCORD_URL, localizedPath } from '@/content/community-site';
+import { localizedPath } from '@/content/community-site';
 import { stagingFixturesEnabled } from '@/content/staging-fixtures';
 import { programDisplayState, type ProgramCategoryId, type RepositoryResult, type PublicProgram } from '@/content/public-content';
 import type { Locale } from '@/i18n/constants';
@@ -38,14 +38,14 @@ const reviewedLabel = result.updatedAt
   : null;
 const title = isIndonesian ? 'Program komunitas — KaburAjaDulu' : 'Community programs — KaburAjaDulu';
 const description = isIndonesian
-  ? 'Telusuri program belajar dan karier berdasarkan sumber publik, topik, dan status konfirmasi terbaru.'
-  : 'Browse learning and career programs by public source, topic, and latest confirmation status.';
+  ? 'Pilih topik dan ritme yang cocok, lalu lanjutkan ke Discord untuk ikut.'
+  : 'Choose a topic and rhythm that fits, then continue to Discord to take part.';
 const countLabel = isIndonesian
-  ? `${programs.length} program ditampilkan`
-  : `${programs.length} ${programs.length === 1 ? 'program' : 'programs'} shown`;
+  ? `${programs.length} program`
+  : `${programs.length} ${programs.length === 1 ? 'program' : 'programs'}`;
 const statusLabels = {
   active: isIndonesian ? 'Aktif' : 'Active',
-  needs_confirmation: isIndonesian ? 'Konfirmasi terbaru diperlukan' : 'Latest confirmation required',
+  needs_confirmation: isIndonesian ? 'Sesi berikutnya belum dipastikan' : 'Next session not published',
   archived: isIndonesian ? 'Diarsipkan' : 'Archived',
   aging: isIndonesian ? 'Segera ditinjau ulang' : 'Review due soon',
   stale: isIndonesian ? 'Perlu ditinjau ulang' : 'Review overdue',
@@ -62,7 +62,7 @@ const statusLabels = {
 
       <header class="kad-index-intro" aria-labelledby="programs-page-title">
         <div>
-          <p class="kad-eyebrow">{isIndonesian ? 'Direktori program' : 'Program directory'}</p>
+          <p class="kad-eyebrow">{isIndonesian ? 'Belajar dan berbagi' : 'Learn and share'}</p>
           <h1 id="programs-page-title">{isIndonesian ? 'Program komunitas' : 'Community programs'}</h1>
         </div>
         <p class="kad-index-intro__record" data-program-count={String(programs.length)}>
@@ -74,7 +74,7 @@ const statusLabels = {
       <section id="catalogue" class="kad-program-index" aria-labelledby="program-catalogue-title" data-program-catalogue>
         <div class="kad-program-index__toolbar">
           <div>
-            <h2 id="program-catalogue-title">{isIndonesian ? 'Catatan program' : 'Program records'}</h2>
+            <h2 id="program-catalogue-title">{isIndonesian ? 'Jelajahi berdasarkan minat' : 'Browse by interest'}</h2>
             <p data-program-result-count aria-live="polite">{countLabel}</p>
           </div>
           <nav class="kad-program-filters" aria-label={isIndonesian ? 'Saring program' : 'Filter programs'}>
@@ -136,6 +136,7 @@ const statusLabels = {
                           <a class="kad-source-link" href={source.url} target="_blank" rel="noopener noreferrer">{source.label} <span aria-hidden="true">↗</span></a>
                         </div>
                       )}
+                      <a class="kad-button kad-button--outline" href={href(`/programs/${program.slug}`)}>{isIndonesian ? 'Buka program' : 'Open program'}</a>
                     </div>
                     {cover ? (
                       <div class="kad-program-row__media">
@@ -145,7 +146,7 @@ const statusLabels = {
                     ) : (
                       <div class="kad-program-row__media kad-program-row__media--fallback" aria-label={isIndonesian ? 'Program tanpa poster publik' : 'Program without a public poster'}>
                         <span aria-hidden="true">KAD</span>
-                        <small>{isIndonesian ? 'Catatan sumber' : 'Source record'}</small>
+                        <small>{isIndonesian ? 'Tanpa poster' : 'No poster'}</small>
                       </div>
                     )}
                   </article>
@@ -159,10 +160,10 @@ const statusLabels = {
       {programs.length > 0 && (
         <section class="kad-program-next" aria-labelledby="program-next-title">
           <div>
-            <p class="kad-eyebrow">{isIndonesian ? 'Jadwal dan kapasitas' : 'Schedule and capacity'}</p>
-            <h2 id="program-next-title">{isIndonesian ? 'Status terbaru tetap dikonfirmasi oleh komunitas.' : 'The community still confirms the latest status.'}</h2>
+            <p class="kad-eyebrow">{isIndonesian ? 'Langkah berikutnya' : 'Next step'}</p>
+            <h2 id="program-next-title">{isIndonesian ? 'Lihat sesi dan acara yang akan datang.' : 'See the sessions and events coming up.'}</h2>
           </div>
-          <a class="kad-button kad-button--primary" href={DISCORD_URL} target="_blank" rel="noopener noreferrer">{isIndonesian ? 'Tanyakan di Discord' : 'Ask on Discord'}</a>
+          <a class="kad-button kad-button--primary" href={href('/events')}>{isIndonesian ? 'Buka agenda' : 'Open agenda'}</a>
         </section>
       )}
     </div>

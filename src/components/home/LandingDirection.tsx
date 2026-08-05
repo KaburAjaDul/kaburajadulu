@@ -28,27 +28,15 @@ function posterLabel(mediaId: string, fallback: string): string {
 }
 
 const STEPS_ID = [
-  {
-    number: '01',
-    title: 'Bawa satu pertanyaan',
-    summary: 'Mulai dari hal yang ingin kamu pelajari, bukan dari daftar benefit.',
-  },
-  {
-    number: '02',
-    title: 'Temukan ritme yang pas',
-    summary: 'Baca sumber publik, lalu konfirmasi jadwal dan kapasitas di Discord.',
-  },
-  {
-    number: '03',
-    title: 'Tinggalkan jejak untuk orang lain',
-    summary: 'Ikut, bantu satu siklus, dan dokumentasikan konteks yang boleh dibagikan.',
-  },
+  { number: '01', title: 'Pilih program', summary: 'Mulai dari topik yang ingin kamu pelajari atau bahas bersama.' },
+  { number: '02', title: 'Gabung ke Discord', summary: 'Website memberi konteks. Percakapan dan event berlangsung di Discord.' },
+  { number: '03', title: 'Ikut saat sesi dimulai', summary: 'Tidak perlu daftar untuk event publik. Datang, ikut, dan bantu bila siap.' },
 ] as const;
 
 const STEPS_EN = [
-  { number: '01', title: 'Bring one question', summary: 'Start with what you want to learn, not a list of benefits.' },
-  { number: '02', title: 'Find a rhythm that fits', summary: 'Read the public source, then confirm schedule and capacity on Discord.' },
-  { number: '03', title: 'Leave something useful behind', summary: 'Join a cycle and document the context that may be shared.' },
+  { number: '01', title: 'Choose a program', summary: 'Start with a topic you want to learn or discuss with others.' },
+  { number: '02', title: 'Join Discord', summary: 'The website gives context. Conversations and events happen on Discord.' },
+  { number: '03', title: 'Join when it starts', summary: 'Public events do not require registration. Show up and take part.' },
 ] as const;
 
 function PreviewNavigation({ direction }: { direction: LandingDirectionId }) {
@@ -82,7 +70,9 @@ function PreviewNavigation({ direction }: { direction: LandingDirectionId }) {
 }
 
 function PosterRail({ locale }: { locale: Locale }) {
-  const items = POSTERS.filter(({ program }) => program.slug !== 'apple-developer-academy-batch-2027');
+  const items = POSTERS
+    .filter(({ program }) => program.slug !== 'apple-developer-academy-batch-2027')
+    .slice(0, 3);
   const isEnglish = locale !== 'id';
 
   return (
@@ -111,7 +101,7 @@ function PosterRail({ locale }: { locale: Locale }) {
           ) : null;
         })}
       </div>
-      <p className="kad-field-posters__hint">{isEnglish ? '4 posters · swipe to see all →' : '4 poster · geser untuk melihat semua →'}</p>
+      <p className="kad-field-posters__hint">{isEnglish ? 'Selected public records · open a program for details →' : 'Pilihan catatan publik · buka program untuk detail →'}</p>
     </>
   );
 }
@@ -129,18 +119,18 @@ function FieldNotes({ locale }: { locale: Locale }) {
         <div className="kad-container">
           <div className="kad-field-story__topline">
             <div>
-              <p className="kad-eyebrow">02 · Field Notes</p>
+              <p className="kad-eyebrow">03 · Program notes</p>
               <h2 id="field-notes-heading">
-                {isEnglish ? <>Small things that make a city feel <em>closer.</em></> : <>Hal-hal kecil yang membuat kota terasa <em>dekat.</em></>}
+                {isEnglish ? <>Start with a program you can <em>follow.</em></> : <>Mulai dari program yang bisa kamu <em>ikuti.</em></>}
               </h2>
             </div>
-            <p>{isEnglish ? 'A journal rhythm for curiosity, not a benefits catalogue.' : 'Ritme jurnal untuk rasa penasaran, bukan katalog manfaat.'}</p>
+            <p>{isEnglish ? 'Read the public context, then continue the conversation on Discord.' : 'Baca konteks publiknya, lalu lanjutkan percakapan di Discord.'}</p>
           </div>
 
           <div className="kad-field-story__layout">
             <div>
               <p className="kad-field-story__lede">
-                {isEnglish ? 'Start with the question you bring. Then find people, programs, and conversations that help you move.' : 'Mulai dari pertanyaan yang kamu bawa. Lalu temukan orang, program, dan percakapan yang membantu kamu melangkah.'}
+                {isEnglish ? 'These are selected program records, not a complete archive. Open one to see what is known and what still needs a live Discord update.' : 'Ini pilihan catatan program, bukan arsip lengkap. Buka salah satunya untuk melihat apa yang sudah diketahui dan apa yang masih perlu diperbarui di Discord.'}
               </p>
               <ol className="kad-journal-steps">
                 {steps.map((step) => (
@@ -178,11 +168,14 @@ function FieldNotes({ locale }: { locale: Locale }) {
           <PosterRail locale={locale} />
 
           <div className="kad-evidence-band" data-event-count="0" data-event-state="empty">
-            <strong>{isEnglish ? 'The public schedule is not synced yet.' : 'Agenda publik belum disinkronkan.'}</strong>
+            <strong>{isEnglish ? 'Public schedule sync is still being built.' : 'Sinkronisasi agenda publik masih dibangun.'}</strong>
             <p>
-              {isEnglish ? 'The posters above are approved program documentation, not a promise that each session is still active. Confirm schedule, capacity, and registration on Discord.' : 'Poster di atas adalah dokumentasi program yang disetujui, bukan janji bahwa sesinya masih aktif. Jadwal, kapasitas, dan pendaftaran dikonfirmasi di Discord.'}
+              {isEnglish ? 'The records above are approved documentation, not a promise that each session is still active. Join KAD on Discord to take part when an event starts.' : 'Catatan di atas adalah dokumentasi yang disetujui, bukan janji bahwa setiap sesi masih aktif. Gabung ke Discord KAD untuk ikut saat acaranya dimulai.'}
             </p>
-            <a href={localizedPath(locale, '/events')}>{isEnglish ? 'Check schedule status' : 'Lihat status agenda'}</a>
+            <div className="flex flex-wrap gap-4">
+              <a href={localizedPath(locale, '/events')}>{isEnglish ? 'Browse the public agenda' : 'Buka agenda publik'}</a>
+              <a href={localizedPath(locale, '/stories')}>{isEnglish ? 'Read community stories' : 'Baca cerita komunitas'}</a>
+            </div>
           </div>
         </div>
       </section>

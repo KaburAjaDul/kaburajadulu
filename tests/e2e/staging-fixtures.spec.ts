@@ -16,12 +16,13 @@ test('community staging exposes qualified current metrics, agenda, and consent-s
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', 'noindex, nofollow');
   await expect(page.locator('[data-community-section="current"] [data-community-metric^="demo-metric-"]')).toHaveCount(3);
   await expect(page.locator('[data-community-section="current"] .kad-community-information__metric-value')).toHaveText(['12', '8', '3']);
+  await expect(page.locator('[data-community-section="current"] [data-community-metric="demo-metric-contributions-2026-08"]')).toContainText('Kontribusi program tercatat');
+  await expect(page.locator('[data-community-section="current"]')).not.toContainText('Kontributor aktif');
   await expect(page.locator('[data-community-section="current"] .kad-community-information__metric-detail')).toHaveCount(3);
-  await expect(page.locator('[data-community-section="programs"] [data-program-record]')).toHaveCount(5);
-  await expect(page.locator('[data-community-section="agenda"] [data-agenda-kind="session"]')).toHaveCount(3);
-  await expect(page.locator('[data-community-section="agenda"] [data-agenda-kind="event"]')).toHaveCount(1);
+  await expect(page.locator('[data-community-section="programs"] [data-program-record]')).toHaveCount(3);
+  await expect(page.locator('[data-community-section="agenda"] [data-agenda-kind]')).toHaveCount(1);
   await expect(page.locator('[data-community-section="people"] [data-attribution="opt-in-demo"]')).toHaveCount(1);
-  await expect(page.locator('[data-community-section="people"] [data-attribution="anonymous-stub"]')).toHaveCount(3);
+  await expect(page.locator('[data-community-section="people"] [data-attribution="anonymous-stub"]')).toHaveCount(2);
   await expect(page.getByText('Nara (fiktif)', { exact: true })).toBeVisible();
   await expect(page.getByText('Bima (fiktif)', { exact: true })).toHaveCount(0);
   await expect(page.getByText('Sari (fiktif)', { exact: true })).toHaveCount(0);
@@ -55,14 +56,8 @@ test('Agenda mixes canonical sessions and one standalone event', async ({ page }
   await expect(page.locator('[data-agenda-list] [data-agenda-state="upcoming"]')).toHaveCount(4);
   await expect(page.locator('[data-agenda-kind="session"]').first()).toContainText(/Program session|Sesi program/);
   await expect(page.locator('[data-agenda-kind="event"]').first()).toContainText(/One-off event|Acara satu kali/);
-  await expect(page.locator('[data-discord-join-path]')).toHaveCount(4);
+  await expect(page.locator('[data-discord-join-path]')).toHaveCount(0);
   await expect(page.locator('[data-agenda-freshness="demo"]')).toHaveCount(4);
-  expect(await page.locator('[data-discord-join-path]').evaluateAll((links) => links.map((link) => link.getAttribute('href')))).toEqual([
-    'https://discord.gg/RUFFbEaeDx',
-    'https://discord.gg/RUFFbEaeDx',
-    'https://discord.gg/RUFFbEaeDx',
-    'https://discord.gg/RUFFbEaeDx',
-  ]);
   await expect(page.locator('body')).not.toContainText(/Pulse|Denyut/i);
   const directSession = page.locator('[data-agenda-kind="session"]').filter({ hasText: 'English Study Club' });
   await expect(directSession.locator('p').first()).not.toContainText(/series|seri program|rangkaian/i);

@@ -70,15 +70,14 @@ const agendaGroups = records.reduce<{ key: string; label: string; timezone: stri
         <p>{copy.description}</p>
       </div>
       <div class="kad-subpage-intro__aside">
-        <strong>{records.length} {isEnglish ? 'scheduled items' : 'item terjadwal'}</strong>
-        <span>{isEnglish ? 'Sessions and one-off events share one view.' : 'Sesi dan acara satu kali ada dalam satu tampilan.'}</span>
-        <a class="kad-button kad-button--primary" href={DISCORD_URL} target="_blank" rel="noopener noreferrer">{copy.discord}</a>
+        <strong>{records.length} {isEnglish ? 'public records' : 'rekaman publik'}</strong>
+        <span>{isEnglish ? 'No registration. Open a record, then join through Discord.' : 'Tidak perlu mendaftar. Buka rekaman, lalu bergabung melalui Discord.'}</span>
       </div>
     </header>
     <section class="kad-operational-section" aria-labelledby="agenda-list-title">
       <div class="kad-section-heading kad-section-heading--compact">
         <div><p class="kad-kicker">{isEnglish ? 'Agenda' : 'Agenda'}</p><h2 id="agenda-list-title">{isEnglish ? 'What is happening next.' : 'Yang berlangsung berikutnya.'}</h2></div>
-        <p class="kad-note">{isEnglish ? 'Times use Jakarta time. Discord is the safe path to confirm the current room.' : 'Waktu memakai WIB. Discord adalah jalur aman untuk mengonfirmasi ruang terbaru.'}</p>
+        <p class="kad-note">{isEnglish ? 'Times use Jakarta time. Open a record for its joining path.' : 'Waktu memakai WIB. Buka rekaman untuk melihat jalur ikutnya.'}</p>
       </div>
       {records.length > 0 ? (
         <div class="kad-agenda-groups" data-agenda-list>
@@ -93,10 +92,9 @@ const agendaGroups = records.reduce<{ key: string; label: string; timezone: stri
                     <p>{item.summary}</p>
                     <p class="kad-agenda-context"><span><strong>{isEnglish ? 'Program' : 'Program'}:</strong> {item.programTitle ?? (isEnglish ? 'Standalone event' : 'Acara berdiri sendiri')}</span><span><strong>{isEnglish ? 'Series' : 'Seri'}:</strong> {item.seriesTitle ?? (item.kind === 'session' ? (isEnglish ? 'Direct session' : 'Sesi langsung') : '—')}</span></p>
                     <div class="kad-card-actions">
-                      <small>{item.kind === 'session' ? (isEnglish ? 'Program session' : 'Sesi program') : (isEnglish ? 'One-off event' : 'Acara satu kali')} · {isEnglish ? 'Revision' : 'Revisi'} {item.sourceRevision}</small>
-                      <small class="kad-agenda-freshness" data-agenda-freshness={item.freshness}>{item.freshness === 'demo' ? (isEnglish ? 'Staging fixture' : 'Fixture staging') : (isEnglish ? 'Published record' : 'Rekaman terbit')}</small>
-                      <a class="kad-text-link" href={href(`/events/${item.id}`)}>{isEnglish ? 'View details' : 'Lihat detail'}</a>
-                      <a class="kad-button kad-button--outline kad-agenda-join" data-discord-join-path href={item.joinHref} target="_blank" rel="noopener noreferrer">{item.joinLabel}</a>
+                      <small>{item.kind === 'session' ? (isEnglish ? 'Program session' : 'Sesi program') : (isEnglish ? 'One-off event' : 'Acara satu kali')}</small>
+                      <small class="kad-agenda-freshness" data-agenda-freshness={item.freshness}>{isEnglish ? 'Details reviewed' : 'Rincian ditinjau'}</small>
+                      <a class="kad-button kad-button--outline" href={href(`/events/${item.id}`)}>{isEnglish ? 'View details' : 'Lihat detail'}</a>
                     </div>
                   </article>
                 </li>
@@ -116,7 +114,7 @@ const agendaGroups = records.reduce<{ key: string; label: string; timezone: stri
 ) : record ? (
   <>
     <nav class="kad-breadcrumb" aria-label={isEnglish ? 'Breadcrumb' : 'Jejak halaman'}><a href={href('/events')}>{isEnglish ? 'Agenda' : 'Agenda'}</a><span aria-hidden="true">/</span><span aria-current="page">{record.title}</span></nav>
-    <header class="kad-record-intro" aria-labelledby="page-title" data-page-header="event-record" data-agenda-kind={record.kind} data-agenda-id={record.id} data-agenda-state={record.lifecycle}>
+    <header class="kad-record-intro" aria-labelledby="page-title" data-page-header="event-record" data-agenda-kind={record.kind} data-agenda-id={record.id} data-agenda-state={record.lifecycle} data-participation-model={record.participationModel} data-registration-required={String(record.registrationRequired)}>
       <div><StatusBadge state={record.lifecycle} locale={locale} /><p class="kad-eyebrow">{copy.eyebrow}</p><h1 id="page-title">{record.title}</h1><p>{record.summary}</p></div>
       <dl class="kad-record-facts">
         <div><dt>{isEnglish ? 'Status' : 'Status'}</dt><dd>{statusCopy(record.lifecycle)}</dd></div>
@@ -124,12 +122,12 @@ const agendaGroups = records.reduce<{ key: string; label: string; timezone: stri
         <div><dt>{isEnglish ? 'Duration' : 'Durasi'}</dt><dd>{record.durationMinutes} {isEnglish ? 'minutes' : 'menit'}</dd></div>
         <div><dt>{isEnglish ? 'Program' : 'Program'}</dt><dd>{record.programHref && record.programTitle ? <a href={record.programHref}>{record.programTitle}</a> : (isEnglish ? 'Standalone event' : 'Acara berdiri sendiri')}</dd></div>
         <div><dt>{isEnglish ? 'Series' : 'Seri'}</dt><dd>{record.seriesTitle ?? (record.kind === 'session' ? (isEnglish ? 'Direct session' : 'Sesi langsung') : '—')}</dd></div>
-        <div><dt>{isEnglish ? 'Source revision' : 'Revisi sumber'}</dt><dd>{record.sourceRevision} · {record.freshness === 'demo' ? (isEnglish ? 'Staging fixture' : 'Fixture staging') : (isEnglish ? 'Published record' : 'Rekaman terbit')}</dd></div>
+        <div><dt>{isEnglish ? 'Source revision' : 'Revisi sumber'}</dt><dd>{record.sourceRevision} · {record.freshness === 'demo' ? (isEnglish ? 'Sample record' : 'Data contoh') : (isEnglish ? 'Published record' : 'Rekaman terbit')}</dd></div>
       </dl>
     </header>
     <section class="kad-record-actions" aria-labelledby="agenda-next-title">
-      <div><p class="kad-kicker">{isEnglish ? 'Joining information' : 'Informasi keikutsertaan'}</p><h2 id="agenda-next-title">{isEnglish ? 'Confirm the current room in Discord.' : 'Konfirmasikan ruang terbaru di Discord.'}</h2><p>{isEnglish ? 'This page shows the public time and context. Discord remains the current place to confirm access.' : 'Halaman ini menampilkan waktu dan konteks publik. Discord tetap menjadi tempat untuk mengonfirmasi akses terbaru.'}</p></div>
-      <div class="kad-actions"><a class="kad-button kad-button--primary" href={record.joinHref} target="_blank" rel="noopener noreferrer">{record.joinLabel}</a><a class="kad-button kad-button--outline" href={href('/events')}>{copy.back}</a></div>
+      <div><p class="kad-kicker">{isEnglish ? 'How to take part' : 'Cara ikut'}</p><h2 id="agenda-next-title">{record.lifecycle === 'upcoming' ? (isEnglish ? 'Join KAD, then show up in Discord.' : 'Gabung KAD, lalu hadir di Discord.') : record.lifecycle === 'live' ? (isEnglish ? 'This activity is live in Discord.' : 'Kegiatan ini sedang berlangsung di Discord.') : (isEnglish ? 'This record is complete.' : 'Rekaman ini sudah selesai.')}</h2><p>{record.lifecycle === 'completed' ? (record.recapHref ? (isEnglish ? 'A recap is available below.' : 'Dokumentasi tersedia di bawah.') : (isEnglish ? 'No public recap has been published yet.' : 'Belum ada dokumentasi publik yang diterbitkan.')) : (isEnglish ? 'No registration or confirmation is required. Use the Discord handoff to join.' : 'Tidak perlu mendaftar atau mengonfirmasi. Gunakan jalur Discord untuk bergabung.')}</p></div>
+      <div class="kad-actions">{record.joinHref && record.joinLabel && <a class="kad-button kad-button--primary" data-discord-join-path href={record.joinHref} target="_blank" rel="noopener noreferrer">{record.joinLabel}</a>}{record.recapHref && <a class="kad-button kad-button--primary" href={record.recapHref}>{isEnglish ? 'Read the recap' : 'Lihat dokumentasi'}</a>}<a class="kad-button kad-button--outline" href={href('/events')}>{copy.back}</a></div>
     </section>
   </>
 ) : (

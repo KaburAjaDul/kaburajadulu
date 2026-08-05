@@ -36,9 +36,10 @@ const reviewedLabel = program
   : null;
 const publicSource = program?.publicProvenance[0];
 const displayState = program ? programDisplayState(program) : null;
+const canJoin = Boolean(program && program.archiveState !== 'archived');
 const availabilityLabels = {
   active: isIndonesian ? 'Aktif' : 'Active',
-  needs_confirmation: isIndonesian ? 'Perlu konfirmasi terbaru' : 'Latest confirmation required',
+  needs_confirmation: isIndonesian ? 'Sesi berikutnya belum dipastikan' : 'Next session not published',
   archived: isIndonesian ? 'Diarsipkan' : 'Archived',
 };
 const freshnessLabels = {
@@ -64,12 +65,12 @@ const freshnessLabels = {
             <span aria-current="page">{program.title}</span>
           </nav>
 
-          <header class="kad-program-detail-intro" aria-labelledby="program-title">
+          <header class="kad-program-detail-intro" aria-labelledby="program-title" data-program-join-available={String(canJoin)}>
             <div>
               <p class="kad-eyebrow">{program.category}</p>
               <h1 id="program-title">{program.title}</h1>
               <p class="kad-program-detail-intro__summary">{program.summary}</p>
-              <a class="kad-button kad-button--primary kad-program-detail-intro__action" href={DISCORD_URL} target="_blank" rel="noopener noreferrer">{isIndonesian ? 'Konfirmasi di Discord' : 'Confirm on Discord'}</a>
+              {canJoin && <a class="kad-button kad-button--primary kad-program-detail-intro__action" data-discord-join-path href={DISCORD_URL} target="_blank" rel="noopener noreferrer">{isIndonesian ? 'Gabung KAD di Discord' : 'Join KAD on Discord'}</a>}
             </div>
             <dl class="kad-program-record-meta">
               <div>
@@ -102,11 +103,11 @@ const freshnessLabels = {
             </article>
             <article>
               <p class="kad-eyebrow">{isIndonesian ? 'Sebelum ikut' : 'Before joining'}</p>
-              <h2>{isIndonesian ? 'Yang perlu dikonfirmasi' : 'What to confirm'}</h2>
+              <h2>{isIndonesian ? 'Yang perlu diketahui' : 'What to know'}</h2>
               <ul class="kad-check-list">
                 {program.needsConfirmation.map((item) => <li>{item}</li>)}
               </ul>
-              <p class="kad-program-confirmation-note">{isIndonesian ? 'Gunakan tombol konfirmasi di atas untuk menanyakan status terbaru.' : 'Use the confirmation action above to ask for the latest status.'}</p>
+              <p class="kad-program-confirmation-note">{canJoin ? (isIndonesian ? 'Tidak perlu mendaftar. Bergabunglah ke Discord untuk ikut saat sesi tersedia.' : 'No registration is required. Join Discord to take part when a session is available.') : (isIndonesian ? 'Program ini sudah diarsipkan dan tidak memiliki jalur ikut aktif.' : 'This program is archived and has no active joining path.')}</p>
             </article>
           </section>
 
@@ -148,19 +149,22 @@ const freshnessLabels = {
           </section>
 
           <section class="kad-program-metrics" aria-labelledby="program-metrics-title" data-program-metrics>
-            <p class="kad-eyebrow">{isIndonesian ? 'Kontrak metrik program' : 'Program metric contract'}</p>
-            <h2 id="program-metrics-title">{isIndonesian ? 'Empat metrik dengan konteks' : 'Four metrics with context'}</h2>
+            <p class="kad-eyebrow">{isIndonesian ? 'Aktivitas program' : 'Program activity'}</p>
+            <h2 id="program-metrics-title">{isIndonesian ? 'Angka yang tersedia' : 'Available figures'}</h2>
             <div class="kad-program-metrics__list">
               {program.metrics.map((metric) => (
                 <article data-program-metric data-metric-key={metric.key}>
                   <h3>{metric.label}</h3>
                   <p class="kad-program-metrics__value" data-metric-value>{metric.value ?? (isIndonesian ? 'Belum terdokumentasi' : 'Not documented')}</p>
-                  <dl>
-                    <div><dt>{isIndonesian ? 'Periode' : 'Period'}</dt><dd>{metric.period}</dd></div>
-                    <div><dt>{isIndonesian ? 'Definisi' : 'Definition'}</dt><dd>{metric.definition}</dd></div>
-                    <div><dt>{isIndonesian ? 'Metode' : 'Method'}</dt><dd>{metric.method}</dd></div>
-                    <div><dt>{isIndonesian ? 'Sumber' : 'Source'}</dt><dd>{metric.sourceLabel}</dd></div>
-                  </dl>
+                  <p>{metric.period}</p>
+                  <details>
+                    <summary>{isIndonesian ? 'Cara membaca angka ini' : 'How to read this figure'}</summary>
+                    <dl>
+                      <div><dt>{isIndonesian ? 'Definisi' : 'Definition'}</dt><dd>{metric.definition}</dd></div>
+                      <div><dt>{isIndonesian ? 'Metode' : 'Method'}</dt><dd>{metric.method}</dd></div>
+                      <div><dt>{isIndonesian ? 'Sumber' : 'Source'}</dt><dd>{metric.sourceLabel}</dd></div>
+                    </dl>
+                  </details>
                 </article>
               ))}
             </div>

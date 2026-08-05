@@ -1,22 +1,22 @@
 'use client';
 
-import { useMemo } from 'react';
 import { DISCORD_URL } from '@/constants/urls';
-import { translate } from '@/i18n/dictionaries';
+import { localizedPath } from '@/content/community-site';
 import type { Locale } from '@/i18n/constants';
+import { translate } from '@/i18n/dictionaries';
 
 interface HeroSectionProps {
   locale?: Locale;
 }
 
 export function HeroSection({ locale = 'id' }: HeroSectionProps) {
-  const contentLocale = locale === 'id' ? 'id' : 'en';
-  const t = useMemo(() => {
-    return (key: string) => translate(contentLocale, key);
-  }, [contentLocale]);
+  const t = (key: string) => translate(locale, key);
+  const eventNote = locale === 'id'
+    ? 'Event publik tidak memerlukan pendaftaran. Masuk ke Discord saat acaranya dimulai.'
+    : 'Public events do not require registration. Open Discord when the event starts.';
 
   return (
-    <section className="kad-home-hero py-10 md:py-16 lg:py-24" lang={contentLocale} data-requested-locale={locale}>
+    <section className="kad-home-hero py-10 md:py-16 lg:py-24" lang={locale} data-requested-locale={locale}>
       <div className="kad-home-hero__ornaments" aria-hidden="true">
         <div className="kad-home-hero__dither">
           <img src="/images/seoul.webp" alt="" width="720" height="480" />
@@ -46,17 +46,13 @@ export function HeroSection({ locale = 'id' }: HeroSectionProps) {
             {t('hero.cta_primary')}
           </a>
           <a
-            href={`${locale === 'id' ? '' : `/${locale}`}/programs`}
+            href={localizedPath(locale, '/programs')}
             className="text-blue-600 hover:underline font-medium mt-2 sm:mt-0"
           >
             {t('hero.cta_secondary')}
           </a>
         </div>
-        <div className="mt-6">
-          <span className="inline-block px-3 py-1 text-sm font-medium text-blue-700 bg-blue-50 rounded-full">
-            {t('hero.badge')}
-          </span>
-        </div>
+        <p className="mt-6 text-sm text-gray-500" lang={locale === 'id' ? 'id' : 'en'}>{eventNote}</p>
       </div>
     </section>
   );

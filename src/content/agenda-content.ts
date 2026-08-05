@@ -32,8 +32,12 @@ export interface AgendaRecord {
   sourceRevision: string;
   freshness: 'demo' | 'published';
   demo: boolean;
-  joinHref: typeof DISCORD_URL;
-  joinLabel: string;
+  /** Public events are open Discord handoffs; no registration or confirmation is required. */
+  participationModel: 'open_discord';
+  registrationRequired: false;
+  joinHref: string | null;
+  joinLabel: string | null;
+  recapHref: string | null;
 }
 
 const localize = (value: LocalizedText, locale: Locale): string => fixtureText(value, locale);
@@ -52,6 +56,13 @@ function toAgendaRecord(item: StagingAgendaItem, locale: Locale): AgendaRecord {
     ? activeStagingSeries().find((candidate) => candidate.id === item.seriesId)
     : undefined;
 
+  const lifecycle = item.state as AgendaRecord['lifecycle'];
+  const joinLabel = lifecycle === 'upcoming'
+    ? locale === 'id' ? 'Gabung KAD untuk ikut' : 'Join KAD to take part'
+    : lifecycle === 'live'
+      ? locale === 'id' ? 'Masuk ke Discord' : 'Enter Discord'
+      : null;
+
   return {
     id: item.id,
     kind: item.kind,
@@ -65,7 +76,7 @@ function toAgendaRecord(item: StagingAgendaItem, locale: Locale): AgendaRecord {
     endsAt: session ? new Date(Date.parse(session.startsAt) + durationMinutes * 60000).toISOString() : event!.endsAt,
     durationMinutes,
     timezone: item.timezone,
-    lifecycle: item.state as AgendaRecord['lifecycle'],
+    lifecycle,
     programId,
     programTitle: stagingProgram
       ? localize(stagingProgram.title, locale)
@@ -76,8 +87,11 @@ function toAgendaRecord(item: StagingAgendaItem, locale: Locale): AgendaRecord {
     sourceRevision: item.revision,
     freshness: item.demo ? 'demo' : 'published',
     demo: item.demo,
-    joinHref: DISCORD_URL,
-    joinLabel: locale === 'id' ? 'Konfirmasi di Discord' : 'Confirm on Discord',
+    participationModel: 'open_discord',
+    registrationRequired: false,
+    joinHref: lifecycle === 'completed' ? null : DISCORD_URL,
+    joinLabel,
+    recapHref: null,
   };
 }
 

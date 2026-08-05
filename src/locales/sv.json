@@ -8,11 +8,11 @@
     "language": "Språk"
   },
   "hero": {
-    "headline": "Kabur Aja Dulu",
-    "subheadline": "Upptäck möjligheter till studier och arbete utomlands. Vi hjälper indonesier att studera och arbeta utomlands.",
-    "cta_primary": "Kom igång",
+    "headline": "Börja med en verklig fråga.",
+    "subheadline": "KaburAjaDulu är en öppen community för dig som funderar på studier, arbete eller ett liv utomlands. Ta med din fråga, läs andras erfarenheter och välj nästa steg i din egen takt.",
+    "cta_primary": "Anslut till KAD på Discord",
     "cta_secondary": "Utforska program",
-    "badge": "Offentlig communityyta"
+    "badge": "Öppen KAD-community"
   },
   "about": {
     "headline": "Om KaburAjaDulu",
@@ -32,10 +32,10 @@
     "github_contributor": "GitHub Contributor"
   },
   "destinations": {
-    "headline": "Populära resmål",
-    "subheadline": "Utforska de länder som indonesiska arbetare oftast söker sig till.",
-    "view_all": "Visa alla resmål",
-    "learn_more": "Läs mer",
+    "headline": "Börja med en stad du vill förstå.",
+    "subheadline": "Utforska frågor, berättelser och program som hör ihop med varje stad. Det här är ingångar till samtal, inte en ranking.",
+    "view_all": "Se samtalen",
+    "learn_more": "Utforska staden",
     "show": "Visa",
     "pause": "Pausa rotationen",
     "resume": "Återuppta rotationen",
@@ -47,10 +47,10 @@
     }
   },
   "cta": {
-    "headline": "Redo att påbörja din resa?",
-    "subheadline": "Upptäck program, samtal och ditt nästa steg tillsammans med communityn.",
-    "cta_primary": "Gå med oss",
-    "cta_secondary": "Kontakta oss"
+    "headline": "Osäker på var du ska börja?",
+    "subheadline": "Ta med en verklig fråga till KAD. Hitta rätt samtal och välj sedan ditt nästa steg.",
+    "cta_primary": "Anslut till KAD på Discord",
+    "cta_secondary": "Utforska program"
   },
   "blog": {
     "headline": "Blogg & Artiklar",

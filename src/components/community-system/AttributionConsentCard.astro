@@ -36,5 +36,5 @@ const labels = {
       <p>{fixtureText(consent.scope, locale)}</p>
     </>
   )}
-  <small>{isRevoked ? (isIndonesian ? 'Pencabutan tercatat' : 'Withdrawal recorded') : (isIndonesian ? 'Ruang lingkup izin' : 'Consent scope')}</small>
+  <small data-consent-boundary>{isRevoked ? (isIndonesian ? 'Pencabutan tercatat' : 'Withdrawal recorded') : (isIndonesian ? 'Opt-in · dapat dicabut' : 'Opt-in · revocable')}</small>
 </article>

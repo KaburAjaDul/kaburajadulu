@@ -22,11 +22,11 @@
     "detected": "detected"
   },
   "hero": {
-    "headline": "Kabur Aja Dulu",
-    "subheadline": "Planning to study, work, or build a life abroad? Start with sources you can inspect and people who have faced similar questions.",
-    "cta_primary": "Enter the community",
-    "cta_secondary": "Explore Programs",
-    "badge": "Public Community Space"
+    "headline": "Start with a real question.",
+    "subheadline": "KaburAjaDulu is a public community for people figuring out study, work, or life abroad. Bring your question, check what others have learned, and take the next step with care.",
+    "cta_primary": "Join KAD on Discord",
+    "cta_secondary": "Explore programs",
+    "badge": "Public KAD community"
   },
   "about": {
     "headline": "Ask first, then take the bigger step.",
@@ -46,10 +46,10 @@
     "github_contributor": "Help build the website"
   },
   "destinations": {
-    "headline": "Popular Destinations",
-    "subheadline": "Explore the countries most sought after by Indonesian workers.",
-    "view_all": "View All Destinations",
-    "learn_more": "Learn More",
+    "headline": "Start with a city you want to understand.",
+    "subheadline": "Explore the questions, stories, and programs connected to each city. These are conversation starters, not a ranking.",
+    "view_all": "See the conversations",
+    "learn_more": "Explore this city",
     "show": "Show",
     "pause": "Pause rotation",
     "resume": "Resume rotation",
@@ -61,10 +61,10 @@
     }
   },
   "cta": {
-    "headline": "Not sure where to begin?",
-    "subheadline": "Bring one question to the community. Find the right room, listen to lived experience, then choose your own next step.",
-    "cta_primary": "Open KAD Discord",
-    "cta_secondary": "Contact Us"
+    "headline": "Not sure where to start?",
+    "subheadline": "Bring one real question to KAD. Find the right conversation, then choose your next step.",
+    "cta_primary": "Join KAD on Discord",
+    "cta_secondary": "Explore programs"
   },
   "blog": {
     "headline": "Blog & Articles",

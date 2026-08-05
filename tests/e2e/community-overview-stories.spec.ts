@@ -14,6 +14,12 @@ test.describe('community information architecture', () => {
     await expect(page.locator('body')).not.toContainText(/Pulse|Denyut/);
   });
 
+  test('English community headings stay in English', async ({ page }) => {
+    await page.goto('/en/community/', { waitUntil: 'domcontentloaded' });
+    await expect(page.locator('[data-community-section="current"] h2')).toHaveText('KAD today');
+    await expect(page.locator('[data-community-section="current"] h2')).not.toContainText('saat ini');
+  });
+
   test('production uses evidence placeholders for unpublished community facts', async ({ page }) => {
     test.skip(stagingRun, 'production-only assertion');
     await page.goto('/community/', { waitUntil: 'domcontentloaded' });
@@ -34,17 +40,16 @@ test.describe('community information architecture', () => {
 test.describe('staging community information', () => {
   test.skip(!stagingRun, 'run with KAD_E2E_STAGING=true against the staging preview');
 
-  test('staging exposes three qualified metrics, four agenda items, and fictional people', async ({ page }) => {
+  test('staging exposes qualified metrics and compact program, agenda, and people previews', async ({ page }) => {
     await page.goto('/community/', { waitUntil: 'domcontentloaded' });
     await expect(page.locator('[data-community-section="current"] [data-community-metric]')).toHaveCount(3);
     await expect(page.locator('[data-community-section="current"] .kad-community-information__metric-detail')).toHaveCount(3);
     await expect(page.locator('[data-community-section="current"] .kad-community-information__metric-detail')).toContainText(['Metode', 'Ditinjau']);
-    await expect(page.locator('[data-community-section="agenda"] [data-agenda-kind="session"]')).toHaveCount(3);
-    await expect(page.locator('[data-community-section="agenda"] [data-agenda-kind="event"]')).toHaveCount(1);
-    await expect(page.locator('[data-community-section="agenda"] [data-discord-join-path]')).toHaveCount(4);
-    await expect(page.locator('[data-community-section="agenda"] [data-discord-join-path]').first()).toHaveAttribute('href', 'https://discord.gg/RUFFbEaeDx');
+    await expect(page.locator('[data-community-section="programs"] [data-program-record]')).toHaveCount(3);
+    await expect(page.locator('[data-community-section="agenda"] [data-agenda-kind]')).toHaveCount(1);
+    await expect(page.locator('[data-community-section="agenda"] [data-discord-join-path]')).toHaveCount(0);
     await expect(page.locator('[data-community-section="people"] [data-attribution="opt-in-demo"]')).toHaveCount(1);
-    await expect(page.locator('[data-community-section="people"] [data-attribution="anonymous-stub"]')).toHaveCount(3);
+    await expect(page.locator('[data-community-section="people"] [data-attribution="anonymous-stub"]')).toHaveCount(2);
     await expect(page.locator('[data-community-section="people"] [data-attribution="opt-in-demo"] h3')).toHaveText('Nara (fiktif)');
     await expect(page.locator('body')).toContainText(/fiktif|fictional/i);
   });

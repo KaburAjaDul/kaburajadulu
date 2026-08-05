@@ -143,7 +143,7 @@
     {"id": "change_category", "type": "activate", "targets": ["category_filter"], "provenance": {"status": "observed", "source": "src/components/programs/ProgramsPage.astro", "note": "Category link navigates to a static filtered result."}},
     {"id": "activate_program", "type": "activate", "targets": ["program_list", "program_row"], "provenance": {"status": "observed", "source": "src/pages/programs/[slug].astro", "note": "Program records have stable detail routes."}},
     {"id": "activate_source", "type": "activate", "targets": ["program_row", "program_detail"], "provenance": {"status": "observed", "source": "src/content/community-site.ts", "note": "Each source-backed program has a public source URL."}},
-    {"id": "activate_discord", "type": "activate", "targets": ["program_detail"], "provenance": {"status": "inferred", "source": "public-content-contract.md", "note": "Discord is a confirmation action, not the public data source."}},
+    {"id": "activate_discord", "type": "activate", "targets": ["program_detail"], "provenance": {"status": "inferred", "source": "approved hierarchy A18-A24", "note": "Discord is the open community participation handoff, not registration and not the public data source."}},
     {"id": "retry_load", "type": "retry", "targets": ["state_panel"], "provenance": {"status": "inferred", "source": "engineer-interfaces verification contract", "note": "Error state has a recoverable action."}}
   ],
   "actions": [
@@ -153,7 +153,7 @@
     {"id": "apply_category_filter", "type": "navigate", "targets": ["category_filter"], "params": {"route": "/programs/category/{category}"}, "provenance": {"status": "observed", "source": "src/pages/programs/category/[category].astro", "note": "Category filter is shareable static URL state."}},
     {"id": "navigate_program", "type": "navigate", "targets": ["program_list", "program_row"], "params": {"to": "program-detail"}, "provenance": {"status": "observed", "source": "src/pages/programs/[slug].astro", "note": "Open a stable program detail route."}},
     {"id": "open_source", "type": "external-navigate", "targets": ["program_row", "program_detail"], "params": {"new_context": true}, "provenance": {"status": "observed", "source": "src/content/community-site.ts", "note": "Open the canonical public source."}},
-    {"id": "open_discord", "type": "external-navigate", "targets": ["program_detail"], "params": {"purpose": "confirm-latest-status"}, "provenance": {"status": "inferred", "source": "public-content-contract.md", "note": "Discord remains a confirmation and community action."}},
+    {"id": "open_discord", "type": "external-navigate", "targets": ["program_detail"], "params": {"purpose": "join-community", "registration_required": false}, "provenance": {"status": "inferred", "source": "approved hierarchy A18-A24", "note": "Discord remains the participation/community handoff; source verification remains a separate action."}},
     {"id": "retry_programs", "type": "retry-load", "targets": ["state_panel"], "params": {}, "provenance": {"status": "inferred", "source": "engineer-interfaces verification contract", "note": "Retry uses the repository adapter again."}},
     {"id": "navigate_internal", "type": "navigate", "targets": ["footer_links"], "params": {}, "provenance": {"status": "observed", "source": "src/layouts/Layout.astro", "note": "Footer routes remain ordinary links."}}
   ],

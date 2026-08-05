@@ -2397,7 +2397,7 @@ main[data-fixtures='enabled'] .kad-section + .kad-section {
 }
 
 .kad-program-metrics__value {
-  margin: 14px 0 18px;
+  margin: 14px 0 8px;
   color: var(--kad-cobalt-deep);
   font-size: clamp(1.45rem, 3vw, 2.2rem);
   font-weight: 800;
@@ -2405,12 +2405,30 @@ main[data-fixtures='enabled'] .kad-section + .kad-section {
   line-height: 1;
 }
 
+[data-program-metric] > p:not(.kad-program-metrics__value) {
+  margin: 0 0 16px;
+  color: var(--kad-muted);
+  font-size: .78rem;
+}
+
+[data-program-metric] details {
+  border-block-start: 1px solid var(--kad-line);
+  padding-block-start: 12px;
+}
+
+[data-program-metric] summary {
+  cursor: pointer;
+  color: var(--kad-cobalt-deep);
+  font-size: .72rem;
+  font-weight: 800;
+  list-style-position: outside;
+}
+
 [data-program-metric] dl {
   display: grid;
   gap: 10px;
   margin: 0;
   padding-block-start: 14px;
-  border-block-start: 1px solid var(--kad-line);
 }
 
 [data-program-metric] dl > div {

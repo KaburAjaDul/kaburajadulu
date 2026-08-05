@@ -138,7 +138,7 @@ const communityChecks = [
   ['Community exact section order', JSON.stringify(communitySections) === JSON.stringify(['current', 'programs', 'agenda', 'people', 'sources'])],
   ['Community heading', has(communityHtml, 'KAD saat ini')],
   ['Community metric count', count(communityHtml, /data-community-metric=/g) === 3],
-  ['Community Program count', count(communityHtml, /data-program-record=/g) === 5],
+  ['Community Program preview count', count(communityHtml, /data-program-record=/g) === 3],
   ['No forbidden legacy labels', !/Pulse|Denyut komunitas/i.test(communityHtml)],
 ];
 for (const [label, passed] of communityChecks) if (!passed) fail(`Community runtime missing ${label}`);
@@ -194,7 +194,8 @@ if (stagingMode) {
     ['staging disclosure', /Pratinjau · data contoh|Preview · sample data/i.test(htmlText)],
     ['staging Agenda has three Sessions', count(agendaHtml, /data-agenda-kind="session"/g) === 3],
     ['staging Agenda has one standalone Event', count(agendaHtml, /data-agenda-kind="event"/g) === 1],
-    ['staging Agenda join paths', count(agendaHtml, /data-discord-join-path/g) === 4],
+    ['staging Agenda index has no direct join paths', count(agendaHtml, /data-discord-join-path/g) === 0],
+    ['staging Agenda detail owns the Discord handoff', count(stagedAgendaText, /data-discord-join-path/g) >= 1],
     ['staging volunteer people', count(volunteerHtml, /data-volunteer-person/g) >= 3],
     ['staging fictional IDs exist', fixtureIdPattern.test(htmlText)],
     ['staging all pages noindex', html.every(([, content]) => /<meta\s+name=["']robots["']\s+content=["']noindex, nofollow["']/i.test(content))],

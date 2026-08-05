@@ -13,8 +13,8 @@ an evidence-safe production build.
 | `/programs` | Choose a continuing offering | Program purpose, status, structure, and next known Session | Five records; URL filters; source/readiness state |
 | `/programs/{slug}` | Understand one Program | Purpose → Series or direct Sessions → metrics → contributors → documentation → provenance | Optional Series; four Program metric slots; no fabricated repository |
 | `/events` | See what will happen | Agenda rows grouped by date with status, time, and join action | Union of Sessions and Events; production empty state; staging 3 Sessions + 1 Event |
-| `/events/{id}` | Confirm one scheduled item | Kind, status, time, timezone, Program/Series relationship, revision, join path | Textual lifecycle; safe Discord action; no private Discord identifiers |
-| `/volunteer` | Decide whether and how to contribute | Current Cycle, positions, divisions, openings, people | 3-month Cycle; 4 Positions; 7 Divisions; 3 openings; consent boundary |
+| `/events/{id}` | Decide whether to attend one scheduled item | Kind, status, time, timezone, Program/Series relationship, participation model, join path | No registration/attendance confirmation; textual lifecycle; safe Discord action; no private Discord identifiers |
+| `/volunteer` | Decide whether and how to contribute | Current intake/openings, then Cycle, positions, divisions, and people | 3-month Cycle; 4 Positions; 7 Divisions; 3 openings; consent boundary |
 | `/volunteer/{slug}` | Review one contributor’s work | Identity visibility → assignments → contributions grouped by Program | Anonymous stub or opt-in identity; evidence/review state; no impact score/ranking |
 | `/stories` | Read documented context | Story title, date, summary, state, related records | Documentation index; stories never replace Agenda or the ledger |
 | `/stories/{slug}` | Read one documented record | Body, review/date, related Program/Session/Event/contributor links | Source, consent, and editorial state remain visible |
@@ -28,14 +28,16 @@ can I do next?” before secondary narrative or decorative media.
 `/community` renders exactly five `data-community-section` regions in this
 order:
 
-1. `current`: three qualified metrics. Every metric carries period, definition,
-   method, source, review state, and reviewed date. Production uses an Evidence
+1. `current`: three compact qualified metrics. The scan layer shows value,
+   period, and a short definition/source state. Full method and review metadata
+   move into one disclosure or the Impact route. Production uses an Evidence
    Placeholder when a number is not approved. Staging values are deterministic,
    fictional, and explicitly labelled.
-2. `programs`: the five Program records and their next known step. The list links
-   to the catalogue; it does not duplicate the full Program detail view.
-3. `agenda`: a preview of the next Sessions and standalone Events. The index
-   links to `/events`; joining always uses the safe public Discord invite.
+2. `programs`: at most three Program links and their next known step. The list
+   links to the catalogue; it does not duplicate the full Program directory.
+3. `agenda`: one next Session or standalone Event preview plus a link to
+   `/events`. Public activities require no registration or attendance
+   confirmation; the approved Discord handoff is the participation path.
 4. `people`: opt-in public profiles plus anonymous contributor stubs. The public
    surface never exposes private IDs, raw Discord links, or consent authority
    fields.
@@ -61,9 +63,11 @@ Agenda is a view over two kinds of scheduled records:
 - `event`: a bounded standalone collaboration, with no required Program.
 
 Every row has start/end time, timezone, lifecycle text (`Akan datang`,
-`Berlangsung`, `Selesai`), revision/freshness, a detail link, and one safe
-Discord confirmation/join path. Discord Scheduled Events are a join path only;
-the domain record remains the reviewed public projection.
+`Berlangsung`, `Selesai`, `Dibatalkan`), revision/freshness, and a detail link.
+The detail surface owns one safe Discord participation path. Public activities
+do not register, reserve, or confirm attendance on the website. Discord
+Scheduled Events are a join path only; the domain record remains the reviewed
+public projection.
 
 ### Volunteer organization
 
@@ -77,7 +81,13 @@ The current organization map is ordered by responsibility:
 Divisions are Study Club, Tech/Coding Club, Event, Design, Content,
 Partnership, and Data. A Volunteer Cycle is a three-month reorganization
 horizon. Recruitment can remain continuous while the Cycle is open. The index
-shows openings as bounded scopes rather than promising a role.
+shows intake status and openings before role/division definitions. Openings are
+bounded scopes rather than promises of acceptance.
+
+Volunteer handoffs are explicit: a reviewed role invite may start intake, a QA
+channel may answer questions, and a form link appears only when that form is
+live. Invite-assigned roles are low-privilege interest/candidate roles, never
+staff or moderation roles.
 
 ### Contribution Ledger
 
@@ -143,7 +153,7 @@ The runtime guard uses stable selectors rather than copy-only matching:
 - `data-program-record`, `data-program-series`, `data-program-metric`, and
   `data-program-session` prove Program structure;
 - `data-agenda-kind`, `data-agenda-state`, and `data-discord-join-path` prove
-  Agenda union and safe joining;
+  Agenda union and safe joining without registration/confirmation copy;
 - `data-volunteer-cycle`, `data-volunteer-position`,
   `data-volunteer-division`, and `data-volunteer-opening` prove organization
   counts;

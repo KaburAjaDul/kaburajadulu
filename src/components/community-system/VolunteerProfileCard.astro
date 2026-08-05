@@ -6,9 +6,14 @@ interface Props { profile: VolunteerProfile; locale?: string; }
 const { profile, locale = 'id' } = Astro.props;
 ---
 
-<article class="kad-card kad-volunteer-card" data-fixture-id={profile.id} data-fixture-state={profile.state}>
+<article class="kad-card kad-volunteer-card" data-fixture-id={profile.id} data-fixture-state={profile.state} data-attribution={profile.attribution}>
   <div class="kad-card-top"><StatusBadge state={profile.state} locale={locale} /></div>
   <h3>{fixtureText(profile.displayName, locale)}</h3>
   <p>{fixtureText(profile.role, locale)}</p>
   <small>{fixtureText(profile.cycle, locale)}</small>
+  <span class="kad-volunteer-card__privacy">{locale === 'id' ? 'Nama contoh ditampilkan dengan izin opt-in.' : 'Example name shown with opt-in consent.'}</span>
 </article>
+
+<style>
+  .kad-volunteer-card__privacy { color: #687081; display: block; font-size: .78rem; line-height: 1.45; margin-top: .7rem; }
+</style>

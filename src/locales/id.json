@@ -22,11 +22,11 @@
     "detected": "terdeteksi"
   },
   "hero": {
-    "headline": "Kabur Aja Dulu",
-    "subheadline": "Punya rencana studi, kerja, atau hidup di luar negeri? Mulai dari sumber yang bisa diperiksa dan orang yang pernah melewati pertanyaan serupa.",
-    "cta_primary": "Masuk ke komunitas",
+    "headline": "Mulai dari pertanyaan yang nyata.",
+    "subheadline": "KaburAjaDulu adalah ruang publik bagi kamu yang sedang mencari tahu soal studi, kerja, atau hidup di luar negeri. Bawa pertanyaanmu, periksa pengalaman yang sudah dibagikan, lalu pilih langkah berikutnya dengan tenang.",
+    "cta_primary": "Gabung ke Discord KAD",
     "cta_secondary": "Lihat program",
-    "badge": "Ruang Publik Komunitas"
+    "badge": "Ruang publik KAD"
   },
   "about": {
     "headline": "Bertanya dulu sebelum melangkah jauh.",
@@ -46,10 +46,10 @@
     "github_contributor": "Ikut membangun website"
   },
   "destinations": {
-    "headline": "Destinasi Populer",
-    "subheadline": "Jelajahi negara-negara yang paling banyak dicari oleh tenaga kerja Indonesia.",
-    "view_all": "Lihat Semua Destinasi",
-    "learn_more": "Pelajari Lebih Lanjut",
+    "headline": "Mulai dari kota yang ingin kamu pahami.",
+    "subheadline": "Lihat pertanyaan, cerita, dan program yang terkait dengan tiap kota. Ini adalah pintu masuk percakapan, bukan peringkat.",
+    "view_all": "Lihat percakapannya",
+    "learn_more": "Jelajahi kota ini",
     "show": "Tampilkan",
     "pause": "Jeda rotasi",
     "resume": "Lanjutkan rotasi",
@@ -61,10 +61,10 @@
     }
   },
   "cta": {
-    "headline": "Masih bingung mulai dari mana?",
-    "subheadline": "Bawa satu pertanyaan ke komunitas. Cari ruang yang tepat, dengarkan pengalaman orang lain, lalu tentukan langkahmu sendiri.",
-    "cta_primary": "Buka Discord KAD",
-    "cta_secondary": "Hubungi Kami"
+    "headline": "Belum tahu harus mulai dari mana?",
+    "subheadline": "Bawa satu pertanyaan nyata ke KAD. Temukan percakapan yang tepat, lalu pilih langkahmu sendiri.",
+    "cta_primary": "Gabung ke Discord KAD",
+    "cta_secondary": "Lihat program"
   },
   "blog": {
     "headline": "Blog & Artikel",

@@ -42,11 +42,11 @@ const collageSlots = [
 ] as const;
 
 export default function DestinationShowcase({ locale = 'id' }: DestinationShowcaseProps) {
-  const contentLocale = locale === 'id' ? 'id' : 'en';
-  const t = (key: string) => translate(contentLocale, key);
+  const t = (key: string) => translate(locale, key);
   const [activeIndex, setActiveIndex] = useState(0);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
+  const [isChanging, setIsChanging] = useState(false);
 
   useEffect(() => {
     const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -63,10 +63,17 @@ export default function DestinationShowcase({ locale = 'id' }: DestinationShowca
 
     const interval = window.setInterval(() => {
       setActiveIndex((currentIndex) => (currentIndex + 1) % destinations.length);
+      setIsChanging(true);
     }, AUTO_ADVANCE_MS);
 
     return () => window.clearInterval(interval);
   }, [isPaused, prefersReducedMotion]);
+
+  useEffect(() => {
+    if (!isChanging) return;
+    const frame = window.requestAnimationFrame(() => setIsChanging(false));
+    return () => window.cancelAnimationFrame(frame);
+  }, [activeIndex, isChanging]);
 
   const activeDestination = destinations[activeIndex];
   const activeLocation = t(activeDestination.locationKey);
@@ -78,6 +85,7 @@ export default function DestinationShowcase({ locale = 'id' }: DestinationShowca
 
   const selectDestination = (index: number) => {
     setActiveIndex(index);
+    setIsChanging(true);
     setIsPaused(true);
   };
 
@@ -90,10 +98,18 @@ export default function DestinationShowcase({ locale = 'id' }: DestinationShowca
       className="py-12"
       data-testid="destination-showcase"
       data-requested-locale={locale}
-      lang={contentLocale}
+      lang={locale}
       aria-labelledby="destinations-heading"
     >
       <div className="container mx-auto px-4">
+        <span
+          className="sr-only"
+          data-testid="destination-live-status"
+          aria-live={autoplayPaused ? 'polite' : 'off'}
+          aria-atomic="true"
+        >
+          {activeLocation}
+        </span>
         <h2 id="destinations-heading" className="text-3xl font-bold text-center mb-2">
           {t('destinations.headline')}
         </h2>
@@ -106,11 +122,13 @@ export default function DestinationShowcase({ locale = 'id' }: DestinationShowca
           {/* The featured card rotates while the surrounding cards stay as a visual collage. */}
           <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] sm:w-[90%] h-auto aspect-[2/1] z-0">
             <div
-              key={activeDestination.id}
               data-testid="featured-destination"
               data-destination={activeDestination.id}
-              aria-live="polite"
-              aria-atomic="true"
+              className={cn(
+                'transition-all duration-500 ease-out',
+                isChanging ? 'opacity-0 translate-y-3 scale-[0.99]' : 'opacity-100 translate-y-0 scale-100',
+              )}
+              aria-live="off"
             >
               <DestinationCard
                 imageUrl={activeDestination.imageUrl}
@@ -189,8 +207,11 @@ export default function DestinationShowcase({ locale = 'id' }: DestinationShowca
           <div
             data-testid="featured-destination"
             data-destination={activeDestination.id}
-            aria-live="polite"
-            aria-atomic="true"
+            className={cn(
+              'transition-all duration-500 ease-out',
+              isChanging ? 'opacity-0 translate-y-3 scale-[0.99]' : 'opacity-100 translate-y-0 scale-100',
+            )}
+            aria-live="off"
           >
             <DestinationCard
               imageUrl={activeDestination.imageUrl}

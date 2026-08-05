@@ -97,22 +97,22 @@ export const VOLUNTEER_POSITIONS: readonly VolunteerPositionDefinition[] = [
   {
     id: 'advisor',
     label: { id: 'Advisor', en: 'Advisor' },
-    description: { id: 'Peran non-eksekutif untuk memberi arah dan konteks.', en: 'A non-executive role for guidance and context.' },
+    description: { id: 'Peran non-eksekutif yang menjaga arah, konteks, dan kesinambungan.', en: 'A non-executive role that protects direction, context, and continuity.' },
   },
   {
     id: 'community-manager',
     label: { id: 'Community Manager', en: 'Community Manager' },
-    description: { id: 'Kepala eksekutif yang menjaga ritme lintas divisi.', en: 'The executive head who keeps cross-division work moving.' },
+    description: { id: 'Kepala eksekutif yang menjaga ritme kerja lintas divisi.', en: 'The executive head who keeps work moving across divisions.' },
   },
   {
     id: 'division-lead',
     label: { id: 'Admin / Division Lead', en: 'Admin / Division Lead' },
-    description: { id: 'Memimpin satu divisi dan menyepakati lingkup kerja.', en: 'Leads one division and agrees its working scope.' },
+    description: { id: 'Memimpin satu divisi dan menjaga lingkup kerja tetap jelas.', en: 'Leads one division and keeps its working scope clear.' },
   },
   {
     id: 'individual-volunteer',
     label: { id: 'Individual Volunteer', en: 'Individual Volunteer' },
-    description: { id: 'Menyelesaikan lingkup kecil bersama tim program.', en: 'Delivers a bounded piece of work with a program team.' },
+    description: { id: 'Menyelesaikan satu lingkup kerja bersama tim program.', en: 'Delivers one bounded piece of work with a program team.' },
   },
 ] as const;
 
@@ -141,6 +141,7 @@ function toContributionRecord(volunteerId: string): VolunteerContributionRecord[
   const records: VolunteerContributionRecord[] = [];
   for (const [programId, contributions] of grouped) {
     for (const contribution of contributions) {
+      if (contribution.reviewState === 'revoked') continue;
       const attribution = contribution.attributions.find((item) => item.volunteerId === volunteerId);
       if (!attribution) continue;
       records.push({
