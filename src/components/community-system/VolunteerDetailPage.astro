@@ -69,7 +69,7 @@ const statusText = (state: VolunteerDirectoryRecord['contributions'][number]['re
       </> : <section data-volunteer-state="evidence-placeholder" class="kad-volunteer-detail-placeholder"><StatePanel state={fixturesEnabled ? 'empty' : 'pending'} locale={locale} statusLabel={fixturesEnabled ? (isEnglish ? 'Profile not found' : 'Profil tidak ditemukan') : (isEnglish ? 'Evidence placeholder' : 'Placeholder bukti')} title={fixturesEnabled ? (isEnglish ? 'This contributor record is not available.' : 'Rekaman kontributor ini tidak tersedia.') : (isEnglish ? 'Public volunteer profiles are not published yet.' : 'Profil relawan publik belum dipublikasikan.')} description={fixturesEnabled ? (isEnglish ? 'Check the directory for an anonymous or opt-in record.' : 'Periksa direktori untuk rekaman anonim atau opt-in.') : (isEnglish ? 'Names and contribution ledgers will appear only after explicit consent and source review.' : 'Nama dan buku kontribusi hanya tampil setelah izin eksplisit dan tinjauan sumber.' )}><a class="kad-button kad-button--primary" href={href('/volunteer')}>{isEnglish ? 'Back to directory' : 'Kembali ke direktori'}</a></StatePanel></section>}
     </div>
   </main>
-  <Footer client:only="react" locale={locale} />
+  <Footer locale={locale} />
 </Layout>
 
 <style>

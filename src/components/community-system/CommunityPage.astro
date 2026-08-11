@@ -115,7 +115,7 @@ const contentLanguage = locale === 'id' ? 'id' : 'en';
       {kind === 'program' && !localized && <section class="kad-section"><StatePanel state="not-published" locale={locale} statusLabel={copy.states.notPublished} title={isEnglish ? 'Program not found.' : 'Program tidak ditemukan.'} description={isEnglish ? 'This program has no public page.' : 'Program ini belum memiliki halaman publik.'} /></section>}
     </div>
   </main>
-  <Footer client:only="react" locale={locale} />
+  <Footer locale={locale} />
 </Layout>
 
 <script>
