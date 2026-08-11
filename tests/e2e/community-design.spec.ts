@@ -43,8 +43,8 @@ const DESIGN_PREVIEWS = [
 ] as const;
 
 const SUBPAGE_HEADERS = [
-  ['/events/', 'schedule', '0 rekaman publik'],
-  ['/volunteer/', 'volunteer-cycle', 'Siklus 3 bulan'],
+  ['/events/', 'schedule', 'Tidak perlu mendaftar'],
+  ['/volunteer/', 'volunteer-cycle', 'siklus 3 bulan'],
   ['/stories/', 'story-index', 'Catatan dari kegiatan.'],
   ['/about/history/', 'history-review', 'Tinjauan bukti'],
   ['/community/impact/', 'impact-ledger', 'rekaman metrik terbit'],
@@ -200,7 +200,7 @@ test.describe('route-specific first viewport', () => {
 
           const metrics = await header.evaluate((element) => {
             const title = element.querySelector('h1');
-            const summary = element.querySelector('.kad-subpage-intro__aside, .kad-index-intro__record, .kad-community-information__header-note');
+            const summary = element.querySelector('.kad-subpage-intro__aside, .kad-index-intro__record, .kad-community-information__header-note, .kad-live-agenda__header-summary');
             const rect = element.getBoundingClientRect();
             const titleStyle = title ? getComputedStyle(title) : null;
             return {
@@ -427,12 +427,12 @@ test('program detail puts the Discord handoff before documentation on mobile', a
   expect(precedesDocumentation, 'Discord handoff must precede documentation in DOM order').toBe(true);
 });
 
-test('events begin with an honest zero-count empty state', async ({ page }) => {
+test('events use the live agenda boundary and fail honestly when the API is unavailable', async ({ page }) => {
   await page.goto('/events/', { waitUntil: 'domcontentloaded' });
-  await expect(page.locator('[data-event-count="0"]')).toBeVisible();
-  await expect(page.locator('[data-evidence-placeholder="agenda-empty"]')).toBeVisible();
-  await expect(page.locator('[data-event-state="empty"]')).toBeVisible();
-  await expect(page.locator('[data-event-count="0"] .kad-status')).toContainText('0');
+  await expect(page.locator('[data-agenda-app]')).toHaveCount(1);
+  await expect(page.locator('[data-agenda-state="error"]')).toBeVisible();
+  await expect(page.locator('[data-agenda-state="error"]')).toContainText('Agenda belum dapat dimuat.');
+  await expect(page.locator('[data-agenda-state="error"] a[href="https://discord.gg/RUFFbEaeDx"]')).toBeVisible();
   await expect(page.locator('.kad-event-card, [data-event-state="published"]')).toHaveCount(0);
 });
 

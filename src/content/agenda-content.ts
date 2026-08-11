@@ -105,5 +105,5 @@ export function agendaById(id: string, locale: Locale): AgendaRecord | undefined
 }
 
 export function agendaFixtureIds(): readonly string[] {
-  return listStagingAgenda().map((item) => item.id);
+  return stagingFixturesEnabled() ? listStagingAgenda().map((item) => item.id) : [];
 }

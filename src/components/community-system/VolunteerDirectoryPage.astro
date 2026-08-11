@@ -25,8 +25,8 @@ const data = volunteerDirectory(locale);
 const href = (path: string) => localizedPath(locale, path);
 const title = isEnglish ? 'Volunteer structure — KaburAjaDulu' : 'Struktur relawan — KaburAjaDulu';
 const description = isEnglish
-  ? 'See the current cycle, work structure, openings, and the privacy-safe contribution ledger.'
-  : 'Lihat siklus berjalan, struktur kerja, posisi yang terbuka, dan buku kontribusi yang aman untuk publik.';
+  ? 'See how volunteer work is organized, where intake starts, and how contribution records stay privacy-safe.'
+  : 'Lihat cara kerja relawan diatur, jalur awal untuk bergabung, dan cara rekaman kontribusi tetap aman untuk publik.';
 const formatDate = (value: string) => new Intl.DateTimeFormat(isEnglish ? 'en-GB' : 'id-ID', { dateStyle: 'medium', timeZone: 'Asia/Jakarta' }).format(new Date(value));
 const cycleStatus = data.cycle?.recruitment === 'continuous' ? (isEnglish ? 'Intake stays open during the cycle' : 'Penerimaan tetap terbuka selama siklus') : (isEnglish ? 'Intake is closed' : 'Penerimaan ditutup');
 const positionNotes: Record<VolunteerPosition, [string, string]> = {
@@ -48,13 +48,12 @@ const positionNotes: Record<VolunteerPosition, [string, string]> = {
         <div>
           <p class="kad-eyebrow">{isEnglish ? 'Volunteer directory' : 'Direktori relawan'}</p>
           <h1 id="volunteer-page-title">{isEnglish ? 'How the work is organized.' : 'Cara kerja relawan.'}</h1>
-          <p class="kad-volunteer-intro__description">{isEnglish ? 'Join one bounded responsibility, learn how the cycle works, and leave a record that the next cycle can use.' : 'Ambil satu tanggung jawab dengan lingkup jelas, pahami cara kerja siklus, dan tinggalkan catatan yang bisa dipakai siklus berikutnya.'}</p>
+          <p class="kad-volunteer-intro__description">{isEnglish ? 'Take one clear responsibility. Your contribution becomes a record the next cycle can continue.' : 'Ambil satu tanggung jawab yang jelas. Kontribusimu dicatat agar dapat dilanjutkan pada siklus berikutnya.'}</p>
         </div>
         <div class="kad-index-intro__record" data-volunteer-cycle>
-          <strong>{data.cycle ? fixtureText(data.cycle.name, locale) : (isEnglish ? 'Current cycle: evidence placeholder' : 'Siklus berjalan: placeholder bukti')}</strong>
-          <span>{isEnglish ? '3-month cycle' : 'Siklus 3 bulan'}</span>
-          <span>{data.cycle ? `${formatDate(data.cycle.startsOn)} · ${formatDate(data.cycle.endsOn)}` : (isEnglish ? 'The public roster is not published yet.' : 'Daftar publik belum dipublikasikan.')}</span>
-          <span>{data.cycle ? cycleStatus : (isEnglish ? 'Ask in Discord for the current intake.' : 'Tanyakan penerimaan terbaru di Discord.')}</span>
+          <strong>{data.cycle ? fixtureText(data.cycle.name, locale) : (isEnglish ? 'Cycle data pending review' : 'Data siklus belum terbit')}</strong>
+          <span>{isEnglish ? 'Working model · 3-month cycle' : 'Model kerja · siklus 3 bulan'}</span>
+          <span>{data.cycle ? `${formatDate(data.cycle.startsOn)} · ${formatDate(data.cycle.endsOn)} · ${cycleStatus}` : (isEnglish ? 'Public roster pending · ask the team in Discord' : 'Daftar publik belum tersedia · tanya tim di Discord')}</span>
           {data.enabled && <a class="kad-button kad-button--primary" href={DISCORD_URL} target="_blank" rel="noopener noreferrer">{isEnglish ? 'Start volunteering' : 'Mulai proses relawan'}</a>}
         </div>
       </header>
@@ -164,9 +163,9 @@ const positionNotes: Record<VolunteerPosition, [string, string]> = {
     .kad-volunteer-position-grid, .kad-volunteer-opening-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   }
   @media (max-width: 640px) {
-    .kad-volunteer-intro { align-items: start; padding-block: .75rem .65rem; }
-    .kad-volunteer-intro__description { line-height: 1.45; margin-top: .65rem; }
-    .kad-volunteer-intro .kad-index-intro__record { gap: .15rem; line-height: 1.35; margin-top: 0; max-width: none; padding-top: .55rem; }
+    .kad-volunteer-intro { align-items: start; padding-block: .55rem .5rem; row-gap: .65rem; }
+    .kad-volunteer-intro__description { line-height: 1.4; margin-top: .45rem; }
+    .kad-volunteer-intro .kad-index-intro__record { gap: .1rem; font-size: .9rem; line-height: 1.3; margin-top: 0; max-width: none; padding-block: .25rem; }
     .kad-volunteer-position-grid, .kad-volunteer-division-list, .kad-volunteer-people-grid, .kad-volunteer-opening-list { grid-template-columns: 1fr; }
     .kad-volunteer-section { padding-top: 3rem; }
     .kad-volunteer-consent { display: block; }

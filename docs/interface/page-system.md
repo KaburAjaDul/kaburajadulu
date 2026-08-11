@@ -1,9 +1,9 @@
 # KAD community page system
 
 This document is the content and hierarchy companion to
-`kad-community-interface.ir.json`. It describes the public contract, not a
-future backend. The current release is a fixture-backed staging prototype with
-an evidence-safe production build.
+`kad-community-interface.ir.json`. It describes the public contract. The
+current staging release uses a signed, allow-listed Agenda projection; other
+page families retain their evidence-safe static records or placeholders.
 
 ## Route jobs and information order
 
@@ -12,7 +12,7 @@ an evidence-safe production build.
 | `/community` | Orient quickly | `KAD saat ini`, then programs, agenda, people, sources | Five ordered sections; Discord and internal links; production placeholders where evidence is absent |
 | `/programs` | Choose a continuing offering | Program purpose, status, structure, and next known Session | Five records; URL filters; source/readiness state |
 | `/programs/{slug}` | Understand one Program | Purpose → Series or direct Sessions → metrics → contributors → documentation → provenance | Optional Series; four Program metric slots; no fabricated repository |
-| `/events` | See what will happen | Agenda rows grouped by date with status, time, and join action | Union of Sessions and Events; production empty state; staging 3 Sessions + 1 Event |
+| `/events` | See what will happen | Agenda rows grouped by date with status, time, and join action | Signed public Sessions from Discord Scheduled Events; loading, ready, empty, stale, and error states |
 | `/events/{id}` | Decide whether to attend one scheduled item | Kind, status, time, timezone, Program/Series relationship, participation model, join path | No registration/attendance confirmation; textual lifecycle; safe Discord action; no private Discord identifiers |
 | `/volunteer` | Decide whether and how to contribute | Current intake/openings, then Cycle, positions, divisions, and people | 3-month Cycle; 4 Positions; 7 Divisions; 3 openings; consent boundary |
 | `/volunteer/{slug}` | Review one contributor’s work | Identity visibility → assignments → contributions grouped by Program | Anonymous stub or opt-in identity; evidence/review state; no impact score/ranking |
@@ -113,20 +113,22 @@ Production (`PUBLIC_STAGING_FIXTURES` unset):
   evidence is not ready;
 - has no indexable fixture profile or story pages.
 
-Staging (`PUBLIC_STAGING_FIXTURES=true`):
+Staging (`PUBLIC_STAGING_FIXTURES=false`, `PUBLIC_STAGING_BUILD=true`):
 
-- uses deterministic records marked `data-fixtures="enabled"` and a quiet
-  `Pratinjau · data contoh` disclosure;
-- includes the mixed Agenda fixture (three Sessions and one standalone Event),
-  five Programs, optional Series, four Positions, seven Divisions, three
-  openings, opt-in profiles, and anonymous stubs;
+- keeps fictional fixture records disabled;
+- serves Agenda from the signed, sanitized Kaddy → D1 projection, with
+  Program and optional Series labels derived from an exact allow-list;
+- keeps volunteer identities, contribution records, and unsupported Program
+  metrics in pending or evidence-placeholder states;
 - is `noindex, nofollow` on every generated page;
 - never carries private Discord IDs, private media, or secret verification links.
 
-The future live path is KAD-Agent/Discord bot → reviewed public projection →
-Astro repository. The website does not scrape Discord or read the private bot
-database. Program metrics and contributions remain manually attested in the
-first live iteration.
+The live Agenda path is Discord Scheduled Events → Kaddy allow-list and
+sanitizer → signed full snapshot → Cloudflare D1 public read model → same-origin
+website API. The website does not scrape Discord or read the private bot
+database. Unknown active event classes fail closed and retain the last known
+good snapshot. Program metrics, volunteer identity, and contributions remain
+manually attested until their own approved projection slices exist.
 
 ## Responsive, interaction, and content rules
 

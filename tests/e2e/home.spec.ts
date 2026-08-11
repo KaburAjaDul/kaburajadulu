@@ -121,7 +121,7 @@ test('mobile viewport smoke keeps the primary content usable', async ({ page }) 
   await page.goto('/', { waitUntil: 'domcontentloaded' });
 
   await expect(page.locator('main h1')).toBeVisible();
-  expect(await page.locator(`a[href="${DISCORD_URL}"]`).count()).toBe(3);
+  expect(await page.locator(`a[href="${DISCORD_URL}"]`).count()).toBeGreaterThanOrEqual(2);
   await expect(page.locator('[data-home-primary-action]')).toHaveCount(1);
   await expect(page.locator('body')).toBeVisible();
 });

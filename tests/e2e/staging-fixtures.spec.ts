@@ -4,6 +4,47 @@ async function expectNoHorizontalOverflow(page: Page): Promise<void> {
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBe(true);
 }
 
+const liveAgendaPayload = {
+  schemaVersion: 'v1',
+  generatedAt: '2026-08-11T12:00:00.000Z',
+  observedAt: '2026-08-11T12:00:00.000Z',
+  revision: 1723377600000,
+  sourceStatus: 'fresh',
+  staleAt: '2026-08-11T12:45:00.000Z',
+  entries: [
+    {
+      id: `agenda_${'A'.repeat(43)}`,
+      title: 'Japanese Study Club — N5',
+      summary: 'A welcoming Japanese practice session for N5 learners.',
+      startAt: '2026-08-12T12:00:00.000Z',
+      endAt: '2026-08-12T13:00:00.000Z',
+      timezone: 'Asia/Jakarta',
+      status: 'scheduled',
+      program: 'Japanese Study Club',
+      series: 'N5',
+      joinUrl: 'https://discord.gg/RUFFbEaeDx',
+      source: 'discord_scheduled_event',
+    },
+    {
+      id: `agenda_${'B'.repeat(43)}`,
+      title: 'English Study Club',
+      summary: 'A supportive English practice session for learners.',
+      startAt: '2026-08-13T12:00:00.000Z',
+      endAt: null,
+      timezone: 'Asia/Jakarta',
+      status: 'scheduled',
+      program: 'English Study Club',
+      series: null,
+      joinUrl: 'https://discord.gg/RUFFbEaeDx',
+      source: 'discord_scheduled_event',
+    },
+  ],
+};
+
+async function mockLiveAgenda(page: Page): Promise<void> {
+  await page.route('**/api/v1/agenda', (route) => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(liveAgendaPayload) }));
+}
+
 test('staging is noindex and visibly labels fictional data', async ({ page }) => {
   await page.goto('/events/', { waitUntil: 'domcontentloaded' });
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', 'noindex, nofollow');
@@ -60,30 +101,23 @@ test('staging uses one compact page-level preview notice', async ({ page }) => {
   }
 });
 
-test('Agenda mixes canonical sessions and one standalone event', async ({ page }) => {
+test('Agenda fixture exercises the signed public shape without static schedule records', async ({ page }) => {
+  await mockLiveAgenda(page);
   await page.goto('/events/', { waitUntil: 'domcontentloaded' });
-  await expect(page.locator('[data-agenda-state="ready"]')).toBeVisible();
-  await expect(page.locator('[data-agenda-kind="session"]')).toHaveCount(3);
-  await expect(page.locator('[data-agenda-kind="event"]')).toHaveCount(1);
-  await expect(page.locator('[data-agenda-date]')).toHaveCount(4);
-  await expect(page.locator('[data-agenda-date] h3')).toHaveCount(4);
-  await expect(page.locator('[data-agenda-list] [data-agenda-state="upcoming"]')).toHaveCount(4);
-  await expect(page.locator('[data-agenda-kind="session"]').first()).toContainText(/Program session|Sesi program/);
-  await expect(page.locator('[data-agenda-kind="event"]').first()).toContainText(/One-off event|Acara satu kali/);
-  await expect(page.locator('[data-discord-join-path]')).toHaveCount(0);
-  await expect(page.locator('[data-agenda-freshness="demo"]')).toHaveCount(4);
+  await expect(page.locator('[data-agenda-phase="ready"]')).toBeVisible();
+  await expect(page.locator('[data-agenda-entry]')).toHaveCount(2);
+  await expect(page.locator('[data-discord-join-path]')).toHaveCount(2);
+  await expect(page.locator('[data-agenda-freshness]')).toContainText(/Revisi sumber|Source revision/);
   await expect(page.locator('body')).not.toContainText(/Pulse|Denyut/i);
-  const directSession = page.locator('[data-agenda-kind="session"]').filter({ hasText: 'English Study Club' });
-  await expect(directSession.locator('p').first()).not.toContainText(/series|seri program|rangkaian/i);
+  const directSession = page.locator('[data-agenda-entry]').filter({ hasText: 'English Study Club' });
+  await expect(directSession.locator('dt')).not.toContainText(/series|seri/i);
 
   await page.goto('/events/not-published/', { waitUntil: 'domcontentloaded' });
   await expect(page.locator('[data-state-panel="not-published"]')).toBeVisible();
 });
 
-test('Agenda detail exposes status, Program, Series, and safe Discord join path', async ({ page }) => {
-  await page.goto('/events/', { waitUntil: 'domcontentloaded' });
-  const sessionCard = page.locator('[data-agenda-kind="session"]').first();
-  await sessionCard.locator('h2 a').click();
+test('legacy Agenda fixture detail remains evidence-safe while live rows hand off directly', async ({ page }) => {
+  await page.goto('/events/demo-session-japanese-n5-01/', { waitUntil: 'domcontentloaded' });
   const detail = page.locator('.kad-record-intro, .kad-record-actions');
   await expect(page.locator('.kad-record-intro')).toBeVisible();
   await expect(page.locator('.kad-record-actions')).toBeVisible();
@@ -135,7 +169,7 @@ test('staging Programs expose optional Series, direct Sessions, metrics, respons
 test('volunteer staging shows the current cycle, privacy-safe structure, and contribution path', async ({ page }) => {
   await page.goto('/volunteer/', { waitUntil: 'domcontentloaded' });
   await expect(page.locator('[data-fixtures="enabled"]')).toBeVisible();
-  await expect(page.locator('[data-volunteer-cycle]')).toContainText('Siklus 3 bulan');
+  await expect(page.locator('[data-volunteer-cycle]')).toContainText('siklus 3 bulan');
   await expect(page.locator('[data-volunteer-position]')).toHaveCount(4);
   await expect(page.locator('[data-volunteer-division]')).toHaveCount(7);
   await expect(page.locator('[data-volunteer-opening]')).toHaveCount(3);
@@ -207,7 +241,7 @@ test('English and fallback locale surfaces do not mix Indonesian fixture copy', 
   await page.goto('/en/events/', { waitUntil: 'domcontentloaded' });
   await expect(page.locator('main')).toHaveAttribute('lang', 'en');
   await expect(page.locator('.kad-demo-banner summary')).toHaveText('Preview · sample data');
-  await expect(page.getByRole('heading', { name: 'Agenda' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Agenda', exact: true, level: 1 })).toBeVisible();
   await expect(page.getByText('Data simulasi', { exact: true })).toHaveCount(0);
 
   await page.goto('/ja/volunteer/', { waitUntil: 'domcontentloaded' });
