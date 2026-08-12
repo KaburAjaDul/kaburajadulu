@@ -1,0 +1,241 @@
+{
+  "$schema": "../../../.codex/skills/engineer-interfaces/assets/interface-system.schema.json",
+  "schema_version": "1.0",
+  "kind": "interface-ir",
+  "name": "KAD Field Station community information system",
+  "description": "A warm-paper, evidence-led community dispatch. Home uses a departure atlas while Community uses a compact current briefing; later route families retain their existing domain contracts until their own redesign slices.",
+  "platform": "web",
+  "provenance": {
+    "status": "inferred",
+    "source": "docs/superpowers/specs/2026-08-04-kad-community-information-system-design.md",
+    "note": "The domain and page order are approved design decisions; rendered selectors are the runtime evidence for this contract."
+  },
+  "tokens": {
+    "color": {
+      "paper": {"type": "color", "value": "#f5f1e9", "unit": null, "provenance": {"status": "inferred", "source": "docs/interface/kad-field-station-ascii-redesign-draft.md", "note": "Approved PR A canvas direction; runtime evidence is collected after implementation."}},
+      "paper_bright": {"type": "color", "value": "#fffdf8", "unit": null, "provenance": {"status": "inferred", "source": "docs/interface/kad-field-station-ascii-redesign-draft.md", "note": "Readable inset surface."}},
+      "ink": {"type": "color", "value": "#152132", "unit": null, "provenance": {"status": "inferred", "source": "docs/interface/kad-field-station-ascii-redesign-draft.md", "note": "Field Station primary text and strong rules."}},
+      "cobalt": {"type": "color", "value": "#155bff", "unit": null, "provenance": {"status": "inferred", "source": "docs/interface/kad-field-station-ascii-redesign-draft.md", "note": "Reserved for actions and active selection."}},
+      "signal_orange": {"type": "color", "value": "#f26a3d", "unit": null, "provenance": {"status": "inferred", "source": "docs/interface/kad-field-station-ascii-redesign-draft.md", "note": "Reinforces textual live or changed states."}},
+      "verified_mint": {"type": "color", "value": "#b7d9b0", "unit": null, "provenance": {"status": "inferred", "source": "docs/interface/kad-field-station-ascii-redesign-draft.md", "note": "Reviewed reinforcement, never proof by color alone."}},
+      "archive_blue": {"type": "color", "value": "#dce8f8", "unit": null, "provenance": {"status": "inferred", "source": "docs/interface/kad-field-station-ascii-redesign-draft.md", "note": "Calm record surface."}},
+      "line": {"type": "color", "value": "#c8c5bc", "unit": null, "provenance": {"status": "inferred", "source": "docs/interface/kad-field-station-ascii-redesign-draft.md", "note": "Ruled editorial boundary."}},
+      "muted": {"type": "color", "value": "#5c6470", "unit": null, "provenance": {"status": "inferred", "source": "docs/interface/kad-field-station-ascii-redesign-draft.md", "note": "Secondary copy remains readable and does not carry state by color alone."}}
+    },
+    "type": {
+      "body": {"type": "font-size", "value": 17, "unit": "px", "provenance": {"status": "inferred", "source": "src/styles/global.css", "note": "Reading size for evidence-led rows."}},
+      "page_heading": {"type": "font-size", "value": 48, "unit": "px", "provenance": {"status": "inferred", "source": "docs/interface/kad-field-station-ascii-redesign-draft.md", "note": "Compact inner-page heading; inner pages do not use a landing-scale hero."}},
+      "landing_display": {"type": "font-size", "value": 96, "unit": "px", "provenance": {"status": "inferred", "source": "docs/interface/kad-field-station-ascii-redesign-draft.md", "note": "Home promise only; mobile recomposes to a smaller scale."}}
+    },
+    "space": {
+      "page_gutter": {"type": "space", "value": 24, "unit": "px", "provenance": {"status": "observed", "source": "src/styles/global.css", "note": "Shared page gutter."}},
+      "section": {"type": "space", "value": 64, "unit": "px", "provenance": {"status": "inferred", "source": "src/styles/community-information.css", "note": "Compact rhythm for information sections."}}
+    },
+    "radius": {
+      "control": {"type": "radius", "value": 8, "unit": "px", "provenance": {"status": "inferred", "source": "docs/interface/kad-field-station-ascii-redesign-draft.md", "note": "Rectangular action language replaces generic pills."}},
+      "panel": {"type": "radius", "value": 12, "unit": "px", "provenance": {"status": "inferred", "source": "docs/interface/kad-field-station-ascii-redesign-draft.md", "note": "Quiet record boundary; rows and rules remain the default grammar."}}
+    },
+    "motion": {
+      "feedback": {"type": "duration", "value": 180, "unit": "ms", "provenance": {"status": "inferred", "source": "docs/interface/kad-field-station-ascii-redesign-draft.md", "note": "Finite link and disclosure feedback."}},
+      "city_change": {"type": "duration", "value": 500, "unit": "ms", "provenance": {"status": "inferred", "source": "docs/interface/kad-field-station-ascii-redesign-draft.md", "note": "Opacity and transform only; removed under reduced motion."}}
+    },
+    "provenance": {"status": "inferred", "source": "docs/interface/kad-field-station-ascii-redesign-draft.md", "note": "PR A tokens are approved planning decisions until rendered browser evidence promotes them to observed."}
+  },
+  "capabilities": {
+    "route-family-composition": {
+      "support": {"web": "native", "webapp": "native", "tui": "adapted"},
+      "mapping_provenance": {
+        "web": {"status": "inferred", "source": "docs/interface/kad-field-station-ascii-redesign-draft.md", "note": "PR A maps Home to a departure atlas and Community to a current briefing."},
+        "webapp": {"status": "inferred", "source": "web adapter", "note": "The same semantic regions can accept future live projections."},
+        "tui": {"status": "inferred", "source": "interface contract", "note": "A linear text adaptation is possible but no TUI is in scope."}
+      },
+      "fallback": "Preserve the same task and semantic order as a linear document when the editorial grid cannot render.",
+      "requirement": "required",
+      "provenance": {"status": "inferred", "source": "approved KAD Field Station draft", "note": "The redesign fails if Home and Community remain the same generic card composition."}
+    },
+    "evidence-led-media": {
+      "support": {"web": "native", "webapp": "native", "tui": "adapted"},
+      "mapping_provenance": {
+        "web": {"status": "observed", "source": "src/content/community-site.ts and public/images", "note": "Approved posters and local city images already have implementation-safe paths or textual fallbacks."},
+        "webapp": {"status": "inferred", "source": "public content contract", "note": "Future live records retain source and review fields."},
+        "tui": {"status": "inferred", "source": "interface contract", "note": "Text captions and source labels preserve meaning without images."}
+      },
+      "fallback": "Render a typographic Catatan menunggu block with title, status, and source state.",
+      "requirement": "required",
+      "provenance": {"status": "observed", "source": "docs/interface/kad-field-station-ascii-redesign-draft.md and src/content/community-site.ts", "note": "Media is evidence, never decoration presented as community proof."}
+    },
+    "canonical-discord-handoff": {
+      "support": {"web": "native", "webapp": "native", "tui": "adapted"},
+      "mapping_provenance": {
+        "web": {"status": "observed", "source": "src/constants/urls.ts", "note": "Generic Discord actions resolve through one constant."},
+        "webapp": {"status": "inferred", "source": "web adapter", "note": "The same external handoff remains valid for a live adapter."},
+        "tui": {"status": "inferred", "source": "interface contract", "note": "A plain URL preserves the handoff."}
+      },
+      "fallback": "Show literal unavailable copy when no approved public invite exists; never emit a dead or retired invite.",
+      "requirement": "required",
+      "provenance": {"status": "observed", "source": "src/constants/urls.ts", "note": "The canonical public invite is https://discord.gg/RUFFbEaeDx."}
+    },
+    "semantic-navigation": {
+      "support": {"web": "native", "webapp": "native", "tui": "adapted"},
+      "mapping_provenance": {
+        "web": {"status": "observed", "source": "src/components/layout/Navbar.tsx", "note": "Page-family links are ordinary anchors."},
+        "webapp": {"status": "inferred", "source": "web adapter", "note": "The same anchors remain valid if data becomes live."},
+        "tui": {"status": "inferred", "source": "interface contract", "note": "No TUI adapter is planned."}
+      },
+      "fallback": "Every page and source action remains a crawlable anchor.",
+      "requirement": "required",
+      "provenance": {"status": "observed", "source": "approved page map", "note": "Visitors must be able to move between page families without client JavaScript."}
+    },
+    "evidence-provenance": {
+      "support": {"web": "native", "webapp": "native", "tui": "adapted"},
+      "mapping_provenance": {
+        "web": {"status": "observed", "source": "src/content/public-content.ts", "note": "Public records carry source, review, revision, and freshness metadata."},
+        "webapp": {"status": "inferred", "source": "public content repository contract", "note": "A future projection can preserve the same envelope."},
+        "tui": {"status": "inferred", "source": "interface contract", "note": "Text labels can carry readiness but no TUI adapter is implemented."}
+      },
+      "fallback": "Use Evidence Placeholder, pending, or not-published copy when a public record is not approved.",
+      "requirement": "required",
+      "provenance": {"status": "observed", "source": "approved information model", "note": "Unknown claims stay visible as unknowns."}
+    },
+    "responsive-recomposition": {
+      "support": {"web": "native", "webapp": "native", "tui": "adapted"},
+      "mapping_provenance": {
+        "web": {"status": "observed", "source": "src/styles/community-information.css", "note": "Columns collapse while DOM order remains stable."},
+        "webapp": {"status": "inferred", "source": "web adapter", "note": "Browser layout primitives remain usable for a future live adapter."},
+        "tui": {"status": "inferred", "source": "interface contract", "note": "A linear list would preserve the task but is not implemented."}
+      },
+      "fallback": "At 390px every information group becomes one readable column with the same heading and action order.",
+      "requirement": "required",
+      "provenance": {"status": "observed", "source": "approved responsive acceptance", "note": "No horizontal scrolling or hidden primary action is allowed."}
+    },
+    "keyboard-focus": {
+      "support": {"web": "native", "webapp": "native", "tui": "unsupported"},
+      "mapping_provenance": {
+        "web": {"status": "observed", "source": "tests/e2e/community-design.spec.ts", "note": "Skip link, native focus order, and visible focus are browser-tested."},
+        "webapp": {"status": "inferred", "source": "web adapter", "note": "The same native controls are retained."},
+        "tui": {"status": "unknown", "source": "interface contract", "note": "No TUI surface is in scope."}
+      },
+      "fallback": "Use browser-native links and the expanded mobile navigation when script is unavailable.",
+      "requirement": "required",
+      "provenance": {"status": "inferred", "source": "engineer-interfaces web verification", "note": "Focus order follows the content order."}
+    },
+    "staging-fixtures": {
+      "support": {"web": "adapted", "webapp": "adapted", "tui": "unsupported"},
+      "mapping_provenance": {
+        "web": {"status": "observed", "source": "src/content/staging-fixtures.ts", "note": "PUBLIC_STAGING_FIXTURES enables deterministic demo records."},
+        "webapp": {"status": "inferred", "source": "fixture adapter", "note": "The same typed records can be replaced by a reviewed projection."},
+        "tui": {"status": "unknown", "source": "interface contract", "note": "No fixture TUI is planned."}
+      },
+      "fallback": "Production excludes fixture identities and claims and renders publication-safe empty or pending states.",
+      "requirement": "optional",
+      "provenance": {"status": "observed", "source": "staging fixture boundary", "note": "Fixture pages are explicitly noindex and labelled as fictional."}
+    },
+    "agenda-union": {
+      "support": {"web": "adapted", "webapp": "adapted", "tui": "unsupported"},
+      "mapping_provenance": {
+        "web": {"status": "observed", "source": "src/content/agenda-content.ts", "note": "Agenda is a union of Program Sessions and standalone Events."},
+        "webapp": {"status": "inferred", "source": "KAD-Agent projection boundary", "note": "A future projection must preserve kind, relationship, time, status, and join path."},
+        "tui": {"status": "unknown", "source": "interface contract", "note": "No TUI adapter is planned."}
+      },
+      "fallback": "Show a textual empty Agenda state. When an approved handoff exists, Discord is the open participation path, not a registration or attendance confirmation step.",
+      "requirement": "required",
+      "provenance": {"status": "observed", "source": "approved Agenda contract", "note": "Discord Scheduled Events are a join path, not the domain source of truth."}
+    },
+    "consent-ledger": {
+      "support": {"web": "adapted", "webapp": "adapted", "tui": "unsupported"},
+      "mapping_provenance": {
+        "web": {"status": "observed", "source": "src/content/volunteer-content.ts", "note": "Profiles are opt-in or anonymous stubs and contributions group by Program."},
+        "webapp": {"status": "inferred", "source": "Contribution Ledger ADR", "note": "A future owner surface can derive private verification from the same ledger."},
+        "tui": {"status": "unknown", "source": "interface contract", "note": "No TUI adapter is planned."}
+      },
+      "fallback": "Keep the ledger public-safe and omit identity details until opt-in is recorded; never render an individual impact score.",
+      "requirement": "required",
+      "provenance": {"status": "observed", "source": "docs/adr/0001-shared-contribution-ledger-with-opt-in-public-identity.md", "note": "Public attribution and evidence are consent-led."}
+    }
+  },
+  "regions": [
+    {"id": "site_header", "role": "banner", "label": "Site header", "children": ["skip_link", "brand_link", "primary_nav", "join_header"], "provenance": {"status": "observed", "source": "src/components/layout/Navbar.tsx", "note": "Shared navigation shell."}},
+    {"id": "page_intro", "role": "region", "label": "Compact page introduction", "children": ["route_stamp", "page_eyebrow", "page_heading", "page_summary", "page_status_summary", "staging_notice", "primary_action"], "provenance": {"status": "inferred", "source": "approved inner-page hierarchy", "note": "Only the landing page receives a large hero treatment; information pages use compact task headers."}},
+    {"id": "page_content", "role": "main", "label": "Page content", "children": ["home_atlas", "community_overview", "program_catalogue", "program_detail", "agenda_index", "agenda_detail", "volunteer_directory", "volunteer_profile", "stories_index", "story_detail", "evidence_placeholder"], "provenance": {"status": "inferred", "source": "docs/interface/page-system.md", "note": "Each route family keeps its job and content order."}},
+    {"id": "site_footer", "role": "contentinfo", "label": "Site footer", "children": ["join_footer", "footer_navigation"], "provenance": {"status": "observed", "source": "src/components/layout/Footer.tsx", "note": "Task-led Field Station handoff with one Discord action, three internal paths, and a secondary public-record index."}}
+  ],
+  "components": [
+    {"id": "skip_link", "kind": "link", "region": "site_header", "label": "Lewati ke konten", "capabilities": ["keyboard-focus"], "states": [], "events": ["activate_link"], "actions": ["navigate_internal"], "focusable": true, "provenance": {"status": "observed", "source": "src/components/layout/Navbar.tsx", "note": "Keyboard bypass."}},
+    {"id": "brand_link", "kind": "link", "region": "site_header", "label": "KaburAjaDulu", "capabilities": ["semantic-navigation", "keyboard-focus"], "states": [], "events": ["activate_link"], "actions": ["navigate_internal"], "focusable": true, "provenance": {"status": "observed", "source": "src/components/layout/Navbar.tsx", "note": "Home anchor."}},
+    {"id": "primary_nav", "kind": "navigation", "region": "site_header", "label": "Navigasi utama", "capabilities": ["semantic-navigation", "responsive-recomposition", "keyboard-focus"], "states": ["mobile_menu"], "events": ["toggle_menu", "dismiss_menu"], "actions": ["set_menu_state"], "focusable": true, "provenance": {"status": "observed", "source": "src/components/layout/Navbar.tsx", "note": "Responsive route navigation."}},
+    {"id": "join_header", "kind": "link", "region": "site_header", "label": "Gabung Discord", "capabilities": ["semantic-navigation", "keyboard-focus"], "states": [], "events": ["activate_link"], "actions": ["open_discord"], "focusable": true, "provenance": {"status": "observed", "source": "src/constants/urls.ts", "note": "Current approved invite."}},
+    {"id": "route_stamp", "kind": "metadata", "region": "page_intro", "label": "Kode rute dan status sumber", "capabilities": ["evidence-provenance", "responsive-recomposition"], "props": {"home_code": "KAD/00", "community_code": "KAD/01", "staging_disclosure": "quiet"}, "states": ["staging_notice"], "events": [], "actions": [], "focusable": false, "provenance": {"status": "inferred", "source": "docs/interface/kad-field-station-ascii-redesign-draft.md", "note": "Field Station route identity and freshness metadata remain visually quiet."}},
+    {"id": "page_eyebrow", "kind": "text", "region": "page_intro", "capabilities": [], "states": [], "events": [], "actions": [], "focusable": false, "provenance": {"status": "inferred", "source": "route page headers", "note": "Route context remains secondary to the H1."}},
+    {"id": "page_heading", "kind": "heading", "region": "page_intro", "capabilities": ["responsive-recomposition"], "props": {"level": 1, "inner_page_max_rem": 3}, "states": [], "events": [], "actions": [], "focusable": false, "provenance": {"status": "observed", "source": "src/components/community-system/TaskHeader.astro", "note": "No giant inner-page hero."}},
+    {"id": "page_summary", "kind": "paragraph", "region": "page_intro", "capabilities": ["responsive-recomposition"], "states": [], "events": [], "actions": [], "focusable": false, "provenance": {"status": "inferred", "source": "approved page jobs", "note": "States the route job in plain language."}},
+    {"id": "page_status_summary", "kind": "definition_list", "region": "page_intro", "capabilities": ["evidence-provenance", "responsive-recomposition"], "props": {"route_families": ["community", "programs", "program_detail", "agenda", "agenda_detail", "volunteer", "volunteer_detail", "stories", "story_detail"], "compact_inner_header": true, "landing_hero_only": true}, "states": ["publication_state"], "events": [], "actions": [], "focusable": false, "provenance": {"status": "inferred", "source": "approved inner-page hierarchy", "note": "Counts, lifecycle, or freshness appear before secondary content when available."}},
+    {"id": "staging_notice", "kind": "disclosure", "region": "page_intro", "label": "Pratinjau · data contoh", "capabilities": ["staging-fixtures", "responsive-recomposition"], "props": {"quiet": true, "production": "hidden", "no_modal": true}, "states": ["staging_notice"], "events": ["toggle_disclosure"], "actions": ["set_disclosure_state"], "focusable": true, "provenance": {"status": "observed", "source": "src/components/community-system/DemoBanner.astro", "note": "Fictional staging data is explicit and does not compete with page tasks."}},
+    {"id": "primary_action", "kind": "link", "region": "page_intro", "capabilities": ["semantic-navigation", "keyboard-focus"], "states": [], "events": ["activate_link"], "actions": ["navigate_internal"], "focusable": true, "provenance": {"status": "inferred", "source": "approved route jobs", "note": "One next step per page family."}},
+    {"id": "home_atlas", "kind": "media_navigation", "region": "page_content", "label": "Kota-kota KAD", "capabilities": ["route-family-composition", "evidence-led-media", "canonical-discord-handoff", "responsive-recomposition", "keyboard-focus"], "props": {"route": "/", "city_count": 4, "one_primary_action": true, "autoplay_interval_ms": 7000, "source_disclosure": true}, "states": ["city_selection"], "events": ["activate_link", "select_city"], "actions": ["navigate_internal", "open_discord", "set_city_state"], "focusable": false, "provenance": {"status": "inferred", "source": "docs/interface/kad-field-station-ascii-redesign-draft.md", "note": "Home combines one Discord conversion with a manually controllable city atlas and current community entry points."}},
+    {"id": "community_overview", "kind": "ordered_sections", "region": "page_content", "label": "Lihat apa yang sedang dijalankan bersama", "capabilities": ["route-family-composition", "evidence-provenance", "evidence-led-media", "responsive-recomposition", "semantic-navigation"], "props": {"route": "/community", "content_order": ["current", "programs", "agenda", "people", "sources"], "metric_count": {"production": 3, "staging": 3}, "program_preview_max": 3, "agenda_preview_max": 1, "people_above_first_major_fold": true, "metric_scan_fields": ["value", "period", "definition_or_source_state"]}, "states": ["publication_state", "staging_notice"], "events": ["activate_link"], "actions": ["navigate_internal", "open_source"], "focusable": false, "provenance": {"status": "inferred", "source": "approved KAD Field Station draft and src/components/community-system/CommunityOverviewPage.astro", "note": "Community is a compact briefing; canonical records remain on their owned routes."}},
+    {"id": "program_catalogue", "kind": "list", "region": "page_content", "label": "Program", "capabilities": ["semantic-navigation", "evidence-provenance", "responsive-recomposition"], "props": {"route": "/programs", "record_count": 5, "filters": "normal URL category filters", "structure": "Program -> optional Series -> Session"}, "states": ["publication_state", "staging_notice"], "events": ["activate_link"], "actions": ["navigate_internal", "open_source"], "focusable": false, "provenance": {"status": "observed", "source": "src/components/programs/ProgramsPage.astro", "note": "The directory is information-first and compact."}},
+    {"id": "program_detail", "kind": "record", "region": "page_content", "label": "Program detail", "capabilities": ["evidence-provenance", "semantic-navigation", "responsive-recomposition"], "props": {"route": "/programs/{slug}", "sections": ["purpose", "series_or_direct_sessions", "metrics", "contributors", "documentation", "provenance"], "series_optional": true, "metric_count": 4, "tech_repo_policy": "show only an actual artifact"}, "states": ["publication_state", "staging_notice"], "events": ["activate_link"], "actions": ["navigate_internal", "open_source", "open_discord"], "focusable": false, "provenance": {"status": "observed", "source": "src/components/programs/ProgramDetailPage.astro", "note": "Detail proves the domain relationship without fabricating output."}},
+    {"id": "agenda_index", "kind": "agenda", "region": "page_content", "label": "Agenda", "capabilities": ["agenda-union", "evidence-provenance", "canonical-discord-handoff", "semantic-navigation", "responsive-recomposition", "keyboard-focus"], "props": {"route": "/events", "public_label": "Agenda", "data_transport": "same_origin_api", "endpoint": "/api/v1/agenda", "registration_required": false, "card_action": "join_discord", "sort": ["active_first", "start_ascending"], "source": "discord_scheduled_event", "join_url": "https://discord.gg/RUFFbEaeDx", "end_at": "string_or_null", "privacy_exclusions": ["host_identity", "discord_snowflake", "private_channel_url", "mentions"]}, "states": ["agenda_fetch_state", "agenda_state"], "events": ["fetch_agenda", "retry_agenda", "activate_link"], "actions": ["open_discord", "retry_fetch"], "focusable": false, "provenance": {"status": "inferred", "source": "src/components/events/LiveAgenda.tsx and KAD projection contract", "note": "The index is an information-first live projection. It starts with a truthful loading state, rejects the entire payload when any entry violates its public contract, and sends every public activity directly to Discord without web registration."}},
+    {"id": "agenda_detail", "kind": "record", "region": "page_content", "label": "Agenda detail", "capabilities": ["agenda-union", "evidence-provenance", "semantic-navigation"], "props": {"route": "/events/{id}", "required_facts": ["kind", "status", "start", "end", "timezone", "program_or_standalone", "revision", "participation_model", "join_path"], "participation_model": "open_discord", "registration_required": false}, "states": ["agenda_state", "staging_notice"], "events": ["activate_link"], "actions": ["navigate_internal", "open_discord"], "focusable": false, "provenance": {"status": "inferred", "source": "approved hierarchy A18-A24 and src/components/community-system/AgendaPage.astro", "note": "The detail page owns one approved Discord participation handoff and does not invent a second schedule."}},
+    {"id": "volunteer_directory", "kind": "directory", "region": "page_content", "label": "Volunteer organization", "capabilities": ["consent-ledger", "responsive-recomposition", "semantic-navigation"], "props": {"route": "/volunteer", "content_order": ["cycle_and_intake", "openings", "positions", "divisions", "people", "consent"], "cycle_months": 3, "positions": 4, "divisions": 7, "openings": 3, "intake_handoffs": ["role_invite", "qa_channel", "form_when_live"], "invite_role_policy": "low_privilege_candidate_or_interest_only", "position_order": ["Advisor", "Community Manager", "Division Lead", "Individual Volunteer"], "division_order": ["Study Club", "Tech/Coding Club", "Event", "Design", "Content", "Partnership", "Data"]}, "states": ["publication_state", "staging_notice"], "events": ["activate_link"], "actions": ["navigate_internal", "open_discord"], "focusable": false, "provenance": {"status": "inferred", "source": "approved hierarchy A18-A24 and src/components/community-system/VolunteerDirectoryPage.astro", "note": "Current intake and openings precede organization definitions and people records."}},
+    {"id": "volunteer_profile", "kind": "record", "region": "page_content", "label": "Volunteer profile and ledger", "capabilities": ["consent-ledger", "evidence-provenance", "semantic-navigation", "responsive-recomposition"], "props": {"route": "/volunteer/{slug}", "sections": ["identity_visibility", "assignments", "contributions_grouped_by_program", "review_state", "future_owner_verification"], "personal_impact_score": false, "public_identity": "opt_in_or_anonymous_stub"}, "states": ["publication_state", "staging_notice"], "events": ["activate_link"], "actions": ["navigate_internal", "open_discord"], "focusable": false, "provenance": {"status": "observed", "source": "src/components/community-system/VolunteerDetailPage.astro", "note": "The individual page records responsibility, not Program success."}},
+    {"id": "stories_index", "kind": "list", "region": "page_content", "label": "Stories", "capabilities": ["evidence-provenance", "semantic-navigation", "responsive-recomposition"], "props": {"route": "/stories", "story_role": "documentation", "not_a_substitute_for": ["Agenda", "Contribution Ledger"]}, "states": ["publication_state", "staging_notice"], "events": ["activate_link"], "actions": ["navigate_internal", "open_source"], "focusable": false, "provenance": {"status": "observed", "source": "src/components/community-system/StoriesPage.astro", "note": "Stories add context and references."}},
+    {"id": "story_detail", "kind": "record", "region": "page_content", "label": "Story detail", "capabilities": ["evidence-provenance", "semantic-navigation", "responsive-recomposition"], "props": {"route": "/stories/{slug}", "related_records": ["Program", "Session", "Event", "Contributor"], "publication_gate": ["source", "consent", "editorial review"]}, "states": ["publication_state", "staging_notice"], "events": ["activate_link"], "actions": ["navigate_internal", "open_source"], "focusable": false, "provenance": {"status": "observed", "source": "src/components/community-system/StoriesPage.astro", "note": "A story is a context record, not a live schedule or private ledger."}},
+    {"id": "evidence_placeholder", "kind": "state_panel", "region": "page_content", "label": "Evidence Placeholder", "capabilities": ["evidence-provenance", "keyboard-focus"], "states": ["publication_state"], "events": ["activate_link"], "actions": ["open_source", "open_discord"], "focusable": false, "provenance": {"status": "observed", "source": "src/components/community-system/StatePanel.astro", "note": "Missing evidence is an explicit recoverable state."}},
+    {"id": "footer_navigation", "kind": "navigation", "region": "site_footer", "label": "Pilih langkah berikutnya", "capabilities": ["semantic-navigation", "keyboard-focus", "responsive-recomposition"], "props": {"architecture": "task-led-field-station-handoff", "content_order": ["discord", "programs", "agenda", "volunteer", "public_records", "public_sources"], "task_routes": ["/programs", "/events", "/volunteer"], "secondary_routes": ["/community", "/stories", "/about/history", "/community/impact", "/community/credits", "/support"], "primary_discord_actions": 1, "member_count_claim": false, "support_payment_claim": false}, "states": [], "events": ["activate_link"], "actions": ["navigate_internal"], "focusable": true, "provenance": {"status": "observed", "source": "src/components/layout/Footer.tsx", "note": "Three task paths outrank a complete but quiet public-record and source index."}},
+    {"id": "join_footer", "kind": "link", "region": "site_footer", "label": "Gabung ke Discord", "capabilities": ["canonical-discord-handoff", "semantic-navigation", "keyboard-focus", "responsive-recomposition"], "props": {"primary_external_action": true, "registration_required": false, "channel_promise": false}, "states": [], "events": ["activate_link"], "actions": ["open_discord"], "focusable": true, "provenance": {"status": "observed", "source": "src/components/layout/Footer.tsx and src/constants/urls.ts", "note": "One canonical Discord handoff without a member count, channel promise, or automated-role claim."}}
+  ],
+  "states": [
+    {"id": "mobile_menu", "initial": "closed", "values": ["closed", "open"], "provenance": {"status": "observed", "source": "src/components/layout/Navbar.tsx", "note": "The menu can open without changing content order."}},
+    {"id": "city_selection", "initial": "seoul", "values": ["seoul", "tokyo", "singapore", "berlin", "paused"], "provenance": {"status": "observed", "source": "src/components/home/DestinationShowcase.tsx", "note": "Manual selection is deterministic and autoplay pauses for focus or reduced motion."}},
+    {"id": "publication_state", "initial": "pending", "values": ["published", "pending", "empty", "stale", "not_published", "error"], "provenance": {"status": "observed", "source": "src/content/public-content.ts and StatePanel.astro", "note": "Production never turns missing evidence into a claim."}},
+    {"id": "agenda_fetch_state", "initial": "loading", "values": ["loading", "ready", "empty", "stale", "error"], "provenance": {"status": "observed", "source": "src/components/events/LiveAgenda.tsx", "note": "Every API state has visible copy and a recoverable next action; stale data is labelled rather than presented as current."}},
+    {"id": "agenda_state", "initial": "empty", "values": ["empty", "scheduled", "active", "withdrawn"], "provenance": {"status": "inferred", "source": "KAD projection contract", "note": "Withdrawn entries are omitted from the public list. Active entries sort before scheduled entries, then by local start time."}},
+    {"id": "staging_notice", "initial": "hidden", "values": ["hidden", "collapsed", "expanded"], "provenance": {"status": "observed", "source": "src/components/community-system/DemoBanner.astro", "note": "The notice is hidden in production and quiet in staging."}}
+  ],
+  "events": [
+    {"id": "activate_link", "type": "activate", "targets": ["brand_link", "join_header", "primary_action", "home_atlas", "community_overview", "program_catalogue", "program_detail", "agenda_index", "agenda_detail", "volunteer_directory", "volunteer_profile", "stories_index", "story_detail", "evidence_placeholder", "footer_navigation", "join_footer"], "provenance": {"status": "observed", "source": "browser anchor behavior", "note": "Native links are the primary navigation primitive."}},
+    {"id": "select_city", "type": "select", "targets": ["home_atlas"], "payload": {"key": "city_selection"}, "provenance": {"status": "observed", "source": "src/components/home/DestinationShowcase.tsx", "note": "Buttons select a city and pause autoplay."}},
+    {"id": "toggle_menu", "type": "toggle", "targets": ["primary_nav"], "payload": {"key": "mobile_menu"}, "provenance": {"status": "observed", "source": "src/components/layout/Navbar.tsx", "note": "Mobile navigation toggle."}},
+    {"id": "dismiss_menu", "type": "dismiss", "targets": ["primary_nav"], "payload": {"key": "mobile_menu"}, "provenance": {"status": "observed", "source": "src/components/layout/Navbar.tsx", "note": "Escape and destination activation close the menu."}},
+    {"id": "toggle_disclosure", "type": "toggle", "targets": ["staging_notice"], "payload": {"key": "staging_notice"}, "provenance": {"status": "observed", "source": "src/components/community-system/DemoBanner.astro", "note": "The preview notice is optional context."}}
+  ],
+  "actions": [
+    {"id": "navigate_internal", "type": "navigate", "targets": ["brand_link", "primary_action", "home_atlas", "community_overview", "program_catalogue", "program_detail", "agenda_index", "agenda_detail", "volunteer_directory", "volunteer_profile", "stories_index", "story_detail", "footer_navigation"], "params": {"transport": "anchor"}, "provenance": {"status": "observed", "source": "Astro route files", "note": "Internal paths are ordinary anchors."}},
+    {"id": "open_discord", "type": "external-navigate", "targets": ["join_header", "home_atlas", "program_detail", "agenda_detail", "volunteer_directory", "volunteer_profile", "evidence_placeholder", "join_footer"], "params": {"safe_invite": true, "canonical_url": "https://discord.gg/RUFFbEaeDx", "registration_required": false, "attendance_confirmation_required": false}, "provenance": {"status": "observed", "source": "src/constants/urls.ts", "note": "Discord is the open participation/community handoff, not a registration step or private data authority."}},
+    {"id": "open_source", "type": "external-navigate", "targets": ["program_detail", "stories_index", "story_detail", "evidence_placeholder"], "params": {"canonical_public_source": true}, "provenance": {"status": "observed", "source": "src/content/public-content.ts", "note": "Source links appear only when public and approved."}},
+    {"id": "set_menu_state", "type": "set-state", "targets": ["primary_nav"], "params": {"state": "mobile_menu"}, "provenance": {"status": "observed", "source": "src/components/layout/Navbar.tsx", "note": "Keeps focus and reading order stable."}},
+    {"id": "set_disclosure_state", "type": "set-state", "targets": ["staging_notice"], "params": {"state": "staging_notice"}, "provenance": {"status": "observed", "source": "src/components/community-system/DemoBanner.astro", "note": "No modal or hidden fixture claim."}},
+    {"id": "set_city_state", "type": "set-state", "targets": ["home_atlas"], "params": {"state": "city_selection"}, "provenance": {"status": "observed", "source": "src/components/home/DestinationShowcase.tsx", "note": "Manual controls own city state and preserve an accessible status."}}
+  ],
+  "focus": {"order": ["skip_link", "brand_link", "primary_nav", "join_header", "page_heading", "primary_action", "home_atlas", "community_overview", "program_catalogue", "program_detail", "agenda_index", "agenda_detail", "volunteer_directory", "volunteer_profile", "stories_index", "story_detail", "evidence_placeholder", "join_footer", "footer_navigation"], "trap": false, "default": "page_heading"},
+  "navigation": {"mode": "linear", "links": [{"from": "primary_nav", "to": "community_overview", "via": "Community"}, {"from": "community_overview", "to": "program_catalogue", "via": "Programs"}, {"from": "program_catalogue", "to": "program_detail", "via": "Program detail"}, {"from": "community_overview", "to": "agenda_index", "via": "Agenda"}, {"from": "agenda_index", "to": "agenda_detail", "via": "Agenda detail"}, {"from": "community_overview", "to": "volunteer_directory", "via": "Volunteer"}, {"from": "volunteer_directory", "to": "volunteer_profile", "via": "Profile"}, {"from": "community_overview", "to": "stories_index", "via": "Stories"}, {"from": "stories_index", "to": "story_detail", "via": "Story detail"}]},
+  "media": [
+    {"id": "city_atlas_images", "type": "image", "src": null, "alt": "City context image", "fallback": "Keep the city name, note, position, and source disclosure readable when an image is unavailable.", "implementation_safe": true, "provenance": {"status": "observed", "source": "public/images and src/components/home/DestinationShowcase.tsx", "note": "Local city images are atmosphere/navigation context, not proof of regional popularity."}},
+    {"id": "program_posters", "type": "image", "src": null, "alt": "Program documentation image", "fallback": "Use a local approved poster or a text-only record when media is unavailable.", "implementation_safe": true, "provenance": {"status": "observed", "source": "src/content/public-content.ts", "note": "Only approved local media may render."}},
+    {"id": "staging_record_media", "type": "image", "src": null, "alt": "Fictional staging record media", "fallback": "Keep staging records readable as text when no safe media exists.", "implementation_safe": true, "provenance": {"status": "inferred", "source": "staging fixture boundary", "note": "Fictional media never becomes production evidence."}},
+    {"id": "discord_private_media", "type": "none", "src": null, "alt": "", "fallback": "Replace private Discord media with a public source label or Evidence Placeholder.", "implementation_safe": false, "provenance": {"status": "observed", "source": "approved privacy boundary", "note": "Private Discord media and identifiers never enter the public runtime."}}
+  ],
+  "motion": {"allowed": true, "reduced_motion": "remove", "transitions": [{"id": "disclosure-feedback", "from": "collapsed", "to": "expanded", "duration": 180, "easing": "ease-out", "provenance": {"status": "inferred", "source": "docs/interface/kad-field-station-ascii-redesign-draft.md", "note": "Finite feedback only; content remains understandable without motion."}}, {"id": "city-change", "from": "city-current", "to": "city-next", "duration": 500, "easing": "ease-out", "provenance": {"status": "inferred", "source": "docs/interface/kad-field-station-ascii-redesign-draft.md", "note": "Opacity and transform only; autoplay and transition are removed under reduced motion."}}]},
+  "evaluation": {
+    "criteria": [
+      {"id": "field-station-visual-delta", "statement": "Home and Community visibly use warm paper, navy ink, ruled editorial geometry, restrained radius, and distinct atlas versus briefing compositions at desktop and mobile sizes.", "provenance": {"status": "inferred", "source": "docs/interface/kad-field-station-ascii-redesign-draft.md", "note": "Rendered screenshots and dated human review are required before acceptance."}},
+      {"id": "canonical-discord-invite", "statement": "Every generic Discord handoff resolves to https://discord.gg/RUFFbEaeDx and no retired invite appears in the runtime bundle.", "provenance": {"status": "observed", "source": "src/constants/urls.ts", "note": "Runtime and browser tests inspect the rendered href."}},
+      {"id": "home-one-primary", "statement": "Home has one filled primary Discord action; masthead and footer handoffs remain visually secondary and public event copy states that no registration or attendance confirmation is required.", "provenance": {"status": "inferred", "source": "docs/interface/kad-field-station-ascii-redesign-draft.md", "note": "Hierarchy review and Playwright assert the distinction."}},
+      {"id": "community-order", "statement": "Community renders sections in the exact order current, programs, agenda, people, sources.", "provenance": {"status": "observed", "source": "src/components/community-system/CommunityOverviewPage.astro", "note": "Runtime validator checks ordered data-community-section markers."}},
+      {"id": "program-structure", "statement": "Program detail proves optional Series, direct Sessions, metrics, responsibilities, and evidence state.", "provenance": {"status": "observed", "source": "src/components/programs/ProgramDetailPage.astro", "note": "Staging and production routes are checked separately."}},
+      {"id": "agenda-union", "statement": "Agenda consumes the signed same-origin projection, sorts active before scheduled entries, removes withdrawn or unsafe records, and exposes one public Discord handoff without web registration or attendance confirmation.", "provenance": {"status": "inferred", "source": "src/components/events/LiveAgenda.tsx and KAD projection contract", "note": "Playwright covers ready, active ordering, empty, stale, error and retry, mobile containment, safe text, and the canonical invite."}},
+      {"id": "volunteer-ledger", "statement": "Volunteer surfaces show four Positions, seven Divisions, three openings, opt-in identities, anonymous stubs, and Program-grouped contributions without an impact score.", "provenance": {"status": "observed", "source": "src/components/community-system/VolunteerDirectoryPage.astro and VolunteerDetailPage.astro", "note": "Counts and privacy markers are runtime assertions."}},
+      {"id": "route-boundary", "statement": "All nine route families remain no-hero information pages except the landing page, and fixture data is noindex and absent from production.", "provenance": {"status": "inferred", "source": "approved inner-page hierarchy", "note": "Runtime checks inspect route markers and fixture leakage."}},
+      {"id": "responsive-accessible", "statement": "The same content and action order remains usable at 1280x720 and 390x844 with native focus and reduced motion.", "provenance": {"status": "inferred", "source": "approved responsive acceptance", "note": "Browser suites and screenshots provide the rendered evidence."}}
+    ],
+    "evidence": [
+      {"id": "domain-spec", "source": "docs/superpowers/specs/2026-08-04-kad-community-information-system-design.md", "summary": "Approved domain relationships, privacy boundary, route jobs, and acceptance criteria.", "observed_at": null, "metrics": {"route_families": 9}, "provenance": {"status": "observed", "source": "approved design record", "note": "The specification is the source for domain semantics."}},
+      {"id": "runtime-selector-contract", "source": "src/components/community-system and src/components/programs", "summary": "Rendered data selectors expose page family, ordered sections, counts, states, and safe actions.", "observed_at": null, "metrics": {"community_sections": 5, "staging_programs": 5, "staging_agenda_sessions": 3, "staging_agenda_events": 1, "volunteer_positions": 4, "volunteer_divisions": 7}, "provenance": {"status": "observed", "source": "current implementation", "note": "Selectors are intentionally stable for runtime verification."}},
+      {"id": "production-build", "source": "bun run build", "summary": "Production Astro output with fixtures disabled and publication-safe placeholders.", "observed_at": null, "metrics": {}, "provenance": {"status": "inferred", "source": "runtime verification gate", "note": "Updated after the controller runs the final build."}},
+      {"id": "staging-build", "source": "PUBLIC_STAGING_FIXTURES=false PUBLIC_STAGING_BUILD=true bun run build", "summary": "Noindex Astro output connected at runtime to the signed public Agenda projection; fixture records remain disabled.", "observed_at": null, "metrics": {}, "provenance": {"status": "inferred", "source": "runtime verification gate", "note": "Updated after the controller runs the final build and staging CD smoke."}}
+    ],
+    "status": "tested",
+    "notes": "The Agenda index is now an API-backed live projection surface. Programs, volunteer, stories, and contribution records retain their existing publication boundaries until their own live slices land."
+  }
+}

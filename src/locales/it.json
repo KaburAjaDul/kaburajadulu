@@ -8,11 +8,11 @@
     "language": "Lingua"
   },
   "hero": {
-    "headline": "Kabur Aja Dulu",
-    "subheadline": "Scopri opportunità di studio e lavoro all'estero. Aiutiamo gli indonesiani a studiare e lavorare all'estero.",
-    "cta_primary": "Inizia ora",
-    "cta_secondary": "Leggi il nostro blog",
-    "badge": "Piattaforma di informazioni affidabile"
+    "headline": "Inizia da una domanda reale.",
+    "subheadline": "KaburAjaDulu è una community pubblica per chi sta cercando la propria strada nello studio, nel lavoro o nella vita all'estero. Porta la tua domanda, controlla le esperienze condivise e scegli con calma il prossimo passo.",
+    "cta_primary": "Entra in KAD su Discord",
+    "cta_secondary": "Esplora i programmi",
+    "badge": "Community pubblica KAD"
   },
   "about": {
     "headline": "Chi è KaburAjaDulu",
@@ -32,10 +32,10 @@
     "github_contributor": "GitHub Contributor"
   },
   "destinations": {
-    "headline": "Destinazioni popolari",
-    "subheadline": "Esplora i paesi più richiesti dai lavoratori indonesiani.",
-    "view_all": "Vedi tutte le destinazioni",
-    "learn_more": "Scopri di più",
+    "headline": "Inizia da una città che vuoi capire.",
+    "subheadline": "Esplora domande, storie e programmi collegati a ogni città. Sono spunti per conversare, non una classifica.",
+    "view_all": "Vedi le conversazioni",
+    "learn_more": "Esplora questa città",
     "show": "Mostra",
     "pause": "Metti in pausa la rotazione",
     "resume": "Riprendi la rotazione",
@@ -47,10 +47,10 @@
     }
   },
   "cta": {
-    "headline": "Pronto a iniziare il tuo viaggio?",
-    "subheadline": "Unisciti a migliaia di persone che hanno trovato nuove opportunità all'estero.",
-    "cta_primary": "Unisciti a noi",
-    "cta_secondary": "Contattaci"
+    "headline": "Non sai da dove iniziare?",
+    "subheadline": "Porta una domanda reale a KAD. Trova la conversazione giusta, poi scegli il tuo prossimo passo.",
+    "cta_primary": "Entra in KAD su Discord",
+    "cta_secondary": "Esplora i programmi"
   },
   "blog": {
     "headline": "Blog e articoli",
@@ -59,6 +59,7 @@
     "read_more": "Leggi di più",
     "empty_category": "Ops! Non ci sono articoli in questa categoria",
     "categories": {
+      "All": "Tutte",
       "Lowongan": "Offerte di lavoro",
       "Beasiswa": "Borse di studio",
       "Event": "Eventi",

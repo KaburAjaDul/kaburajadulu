@@ -1,0 +1,7 @@
+---
+import VolunteerDirectoryPage from '@/components/community-system/VolunteerDirectoryPage.astro';
+import { getLocaleFromUrl } from '@/i18n/getLocaleFromUrl';
+import type { Locale } from '@/i18n/constants';
+const locale = getLocaleFromUrl(Astro.url) as Locale;
+---
+<VolunteerDirectoryPage locale={locale} currentPath={Astro.url.pathname} />

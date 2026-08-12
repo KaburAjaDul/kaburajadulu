@@ -1,0 +1,7 @@
+---
+import CommunityPage from '@/components/community-system/CommunityPage.astro';
+import { getLocaleFromUrl } from '@/i18n/getLocaleFromUrl';
+import type { Locale } from '@/i18n/constants';
+const locale = getLocaleFromUrl(Astro.url) as Locale;
+---
+<CommunityPage kind="credits" locale={locale} currentPath={Astro.url.pathname} />

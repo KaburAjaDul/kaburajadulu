@@ -1,0 +1,165 @@
+name: Staging
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: staging-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    name: Verify and deploy staging
+    if: >-
+      vars.CLOUDFLARE_STAGING_ENABLED == 'true' &&
+      (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
+    runs-on: ubuntu-latest
+    environment: Preview
+    steps:
+      - name: Check out candidate
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 22.19.0
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version: 1.3.14
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Check interface
+        run: bun run check
+
+      - name: Build staging site
+        env:
+          PUBLIC_STAGING_FIXTURES: 'false'
+          PUBLIC_STAGING_BUILD: 'true'
+        run: bun run build
+
+      - name: Validate public runtime boundary
+        env:
+          PUBLIC_STAGING_FIXTURES: 'false'
+          PUBLIC_STAGING_BUILD: 'true'
+        run: bun run validate:interface-runtime
+
+      - name: Unit tests
+        run: bun run test:unit
+
+      - name: Worker tests
+        run: bun run test:worker
+
+      - name: Verify local D1 migrations
+        run: bunx wrangler d1 migrations apply AGENDA_DB --local --env staging --config wrangler.jsonc
+
+      - name: Install Playwright Chromium
+        run: bunx playwright install --with-deps chromium
+
+      - name: Run real-data agenda E2E
+        env:
+          PUBLIC_STAGING_FIXTURES: 'false'
+        run: bunx playwright test tests/e2e/real-agenda.spec.ts --config=playwright.config.ts
+
+      # Playwright starts Astro with a production-style rebuild. Recreate the
+      # exact noindex artifact that staging is allowed to deploy afterwards.
+      - name: Rebuild deployable staging artifact
+        env:
+          PUBLIC_STAGING_FIXTURES: 'false'
+          PUBLIC_STAGING_BUILD: 'true'
+        run: |
+          bun run build
+          bun run validate:interface-runtime
+          node --input-type=module <<'NODE'
+          import { readFile } from 'node:fs/promises';
+          for (const file of ['dist/index.html', 'dist/events/index.html']) {
+            const html = await readFile(file, 'utf8');
+            if (!html.includes('<meta name="robots" content="noindex, nofollow"')) {
+              throw new Error(`${file} is missing the staging noindex contract`);
+            }
+          }
+          NODE
+
+      - name: Deploy isolated staging Worker
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          PUBLIC_STAGING_FIXTURES: 'false'
+          PUBLIC_STAGING_BUILD: 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          cloudflare_token="$CLOUDFLARE_API_TOKEN"
+          if [[ "$cloudflare_token" == curl*api.cloudflare.com/client/v4/user/tokens/verify* ]] &&
+             [[ "$cloudflare_token" =~ Authorization:[[:space:]]Bearer[[:space:]]([A-Za-z0-9._-]+) ]]; then
+            cloudflare_token="${BASH_REMATCH[1]}"
+          else
+            cloudflare_token="${cloudflare_token//$'\r'/}"
+            cloudflare_token="${cloudflare_token//$'\n'/}"
+          fi
+          if [[ ! "$cloudflare_token" =~ ^[A-Za-z0-9._-]{30,}$ ]]; then
+            echo "Cloudflare API token secret has an unsupported format" >&2
+            exit 1
+          fi
+          export CLOUDFLARE_API_TOKEN="$cloudflare_token"
+          bunx wrangler d1 migrations apply AGENDA_DB --env staging --remote --config wrangler.jsonc
+          bunx wrangler d1 execute AGENDA_DB --env staging --remote --config wrangler.jsonc \
+            --command "SELECT COUNT(*) AS column_count FROM pragma_table_info('ingest_nonces') WHERE name = 'content_sha256'" \
+            --json > /tmp/kad-agenda-schema.json
+          node --input-type=module <<'NODE'
+          import { readFile } from 'node:fs/promises';
+          const output = JSON.parse(await readFile('/tmp/kad-agenda-schema.json', 'utf8'));
+          if (Number(output?.[0]?.results?.[0]?.column_count) !== 1) {
+            throw new Error('Remote agenda schema is missing ingest_nonces.content_sha256');
+          }
+          NODE
+          bun run deploy:staging
+
+      - name: Smoke staging API and crawler boundary
+        env:
+          STAGING_URL: https://kaburajadulu-staging.uibasev2-api.workers.dev
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error "$STAGING_URL/healthz" | tee /tmp/healthz.json
+          curl --fail --silent --show-error "$STAGING_URL/readyz" | tee /tmp/readyz.json
+          agenda_status="$(curl --silent --show-error -o /tmp/agenda.json -w '%{http_code}' "$STAGING_URL/api/v1/agenda")"
+          case "$agenda_status" in
+            200)
+              if grep -Eiq 'demo|fixture|deterministic|staging seed' /tmp/agenda.json; then
+                echo 'agenda response contains fixture markers' >&2
+                exit 1
+              fi
+              ;;
+            503)
+              grep -F 'agenda_unavailable' /tmp/agenda.json
+              ;;
+            *)
+              echo "unexpected agenda status: $agenda_status" >&2
+              cat /tmp/agenda.json >&2
+              exit 1
+              ;;
+          esac
+          test "$(curl --silent --show-error -o /dev/null -w '%{http_code}' "$STAGING_URL/sitemap.xml")" = 404
+          curl --fail --silent --show-error "$STAGING_URL/robots.txt" | grep -F 'Disallow: /'
+          curl --fail --silent --show-error -D /tmp/page.headers -o /dev/null "$STAGING_URL/"
+          grep -i '^x-robots-tag: noindex, nofollow' /tmp/page.headers
+          test "$(curl --silent --show-error -o /dev/null -w '%{http_code}' -H 'Origin: https://attacker.example' "$STAGING_URL/api/v1/agenda")" = 403
+          options_status=""
+          for attempt in 1 2 3 4 5 6; do
+            options_status="$(curl --silent --show-error -o /dev/null -w '%{http_code}' -X OPTIONS -H "Origin: $STAGING_URL" "$STAGING_URL/internal/v1/projections/agenda")"
+            if [ "$options_status" = 204 ]; then
+              break
+            fi
+            if [ "$attempt" -lt 6 ]; then
+              sleep 3
+            fi
+          done
+          test "$options_status" = 204

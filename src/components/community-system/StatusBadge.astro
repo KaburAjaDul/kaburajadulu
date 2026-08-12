@@ -1,0 +1,23 @@
+---
+import type { FixtureState } from '@/content/staging-fixtures';
+
+interface Props {
+  state: FixtureState | 'empty' | 'published' | 'not-published';
+  locale?: string;
+}
+
+const { state, locale = 'id' } = Astro.props;
+const labels: Record<string, [string, string]> = {
+  upcoming: ['Akan datang', 'Upcoming'],
+  live: ['Sedang berlangsung', 'Live'],
+  completed: ['Selesai', 'Completed'],
+  pending: ['Menunggu', 'Pending'],
+  error: ['Perlu diperbaiki', 'Needs attention'],
+  empty: ['Belum tersedia', 'Not available'],
+  published: ['Terbit', 'Published'],
+  'not-published': ['Belum dipublikasikan', 'Not published'],
+};
+const [idLabel, enLabel] = labels[state] ?? labels.pending;
+---
+
+<span class="kad-status kad-status--semantic" data-status={state}>{locale === 'id' ? idLabel : enLabel}</span>

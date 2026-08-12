@@ -1,0 +1,127 @@
+{
+  "$schema": "../../.codex/skills/interface-hierarchy-review/references/review-contract.schema.json",
+  "schema_version": "1.0",
+  "overall_status": "pass",
+  "scope": {
+    "platform": "web",
+    "surface": "KAD public Community, Programs, Agenda, Volunteer, and Stories route families",
+    "actor": "A visitor deciding what is available, what is scheduled, and what work can be safely attributed",
+    "task": "Read the current public state and take the next safe action without confusing fixture data with KAD facts",
+    "primary_action": "Open the relevant record or use its public source/Discord confirmation path",
+    "consequence": "The visitor reaches a useful detail or handoff while status, consent, and evidence boundaries remain visible",
+    "token_authority": "src/styles/global.css, src/styles/community-information.css, src/styles/agenda.css",
+    "scenarios": [
+      {"id": "community-wide", "state": "production and staging overview", "viewport": "1280x720"},
+      {"id": "community-narrow", "state": "production and staging overview", "viewport": "390x844"},
+      {"id": "programs-wide", "state": "production catalogue", "viewport": "1280x720"},
+      {"id": "program-detail-narrow", "state": "Japanese fixture detail", "viewport": "390x844"},
+      {"id": "agenda-wide", "state": "production empty and staging mixed agenda", "viewport": "1280x720"},
+      {"id": "agenda-detail-narrow", "state": "staging session detail", "viewport": "390x844"},
+      {"id": "volunteer-wide", "state": "staging organization directory", "viewport": "1280x720"},
+      {"id": "volunteer-profile-narrow", "state": "staging anonymous or opt-in profile", "viewport": "390x844"},
+      {"id": "stories-wide", "state": "production empty and staging index", "viewport": "1280x720"},
+      {"id": "story-detail-narrow", "state": "staging story detail", "viewport": "390x844"}
+    ]
+  },
+  "hierarchy_map": [
+    {"scenario_id": "community-wide", "units": [
+      {"id": "community-heading", "role": "route heading", "intended_priority": "primary", "visual_order": 1, "semantic_order": 1, "action_order": null, "focus_order": 1, "evidence_ids": ["source-community"]},
+      {"id": "community-current", "role": "qualified metrics", "intended_priority": "primary", "visual_order": 2, "semantic_order": 2, "action_order": null, "focus_order": 2, "evidence_ids": ["source-community"]},
+      {"id": "community-programs", "role": "continuing work directory", "intended_priority": "primary", "visual_order": 3, "semantic_order": 3, "action_order": 1, "focus_order": 3, "evidence_ids": ["source-community"]},
+      {"id": "community-agenda", "role": "scheduled next step", "intended_priority": "secondary", "visual_order": 4, "semantic_order": 4, "action_order": 2, "focus_order": 4, "evidence_ids": ["source-community", "source-agenda"]},
+      {"id": "community-people", "role": "consent-led attribution preview", "intended_priority": "secondary", "visual_order": 5, "semantic_order": 5, "action_order": 3, "focus_order": 5, "evidence_ids": ["source-volunteer"]},
+      {"id": "community-sources", "role": "public handoffs", "intended_priority": "tertiary", "visual_order": 6, "semantic_order": 6, "action_order": 4, "focus_order": 6, "evidence_ids": ["source-community"]}
+    ]},
+    {"scenario_id": "community-narrow", "units": [
+      {"id": "community-heading", "role": "route heading", "intended_priority": "primary", "visual_order": 1, "semantic_order": 1, "action_order": null, "focus_order": 1, "evidence_ids": ["source-community", "responsive-rule"]},
+      {"id": "community-current", "role": "qualified metrics", "intended_priority": "primary", "visual_order": 2, "semantic_order": 2, "action_order": null, "focus_order": 2, "evidence_ids": ["source-community", "responsive-rule"]},
+      {"id": "community-programs", "role": "continuing work directory", "intended_priority": "primary", "visual_order": 3, "semantic_order": 3, "action_order": 1, "focus_order": 3, "evidence_ids": ["source-community", "responsive-rule"]},
+      {"id": "community-agenda", "role": "scheduled next step", "intended_priority": "secondary", "visual_order": 4, "semantic_order": 4, "action_order": 2, "focus_order": 4, "evidence_ids": ["source-agenda", "responsive-rule"]},
+      {"id": "community-people", "role": "consent-led attribution preview", "intended_priority": "secondary", "visual_order": 5, "semantic_order": 5, "action_order": 3, "focus_order": 5, "evidence_ids": ["source-volunteer", "responsive-rule"]},
+      {"id": "community-sources", "role": "public handoffs", "intended_priority": "tertiary", "visual_order": 6, "semantic_order": 6, "action_order": 4, "focus_order": 6, "evidence_ids": ["source-community", "responsive-rule"]}
+    ]},
+    {"scenario_id": "programs-wide", "units": [
+      {"id": "programs-heading", "role": "catalogue heading", "intended_priority": "primary", "visual_order": 1, "semantic_order": 1, "action_order": null, "focus_order": 1, "evidence_ids": ["source-programs", "compact-header-rule"]},
+      {"id": "programs-filters", "role": "catalogue filters", "intended_priority": "secondary", "visual_order": 2, "semantic_order": 2, "action_order": 1, "focus_order": 2, "evidence_ids": ["source-programs"]},
+      {"id": "programs-records", "role": "Program records", "intended_priority": "primary", "visual_order": 3, "semantic_order": 3, "action_order": 2, "focus_order": 3, "evidence_ids": ["source-programs"]}
+    ]},
+    {"scenario_id": "program-detail-narrow", "units": [
+      {"id": "program-detail-heading", "role": "Program identity and purpose", "intended_priority": "primary", "visual_order": 1, "semantic_order": 1, "action_order": null, "focus_order": 1, "evidence_ids": ["source-program-detail", "compact-header-rule"]},
+      {"id": "program-detail-structure", "role": "Series or direct Sessions", "intended_priority": "primary", "visual_order": 2, "semantic_order": 2, "action_order": 1, "focus_order": 2, "evidence_ids": ["source-program-detail"]},
+      {"id": "program-detail-metrics", "role": "Program metrics", "intended_priority": "secondary", "visual_order": 3, "semantic_order": 3, "action_order": null, "focus_order": 3, "evidence_ids": ["source-program-detail"]},
+      {"id": "program-detail-contributors", "role": "responsibility context", "intended_priority": "secondary", "visual_order": 4, "semantic_order": 4, "action_order": 2, "focus_order": 4, "evidence_ids": ["source-program-detail"]},
+      {"id": "program-detail-evidence", "role": "source and readiness", "intended_priority": "tertiary", "visual_order": 5, "semantic_order": 5, "action_order": 3, "focus_order": 5, "evidence_ids": ["source-program-detail"]}
+    ]},
+    {"scenario_id": "agenda-wide", "units": [
+      {"id": "agenda-heading", "role": "Agenda heading and state", "intended_priority": "primary", "visual_order": 1, "semantic_order": 1, "action_order": null, "focus_order": 1, "evidence_ids": ["source-agenda", "compact-header-rule"]},
+      {"id": "agenda-date-groups", "role": "dated schedule", "intended_priority": "primary", "visual_order": 2, "semantic_order": 2, "action_order": 1, "focus_order": 2, "evidence_ids": ["source-agenda"]},
+      {"id": "agenda-join", "role": "safe confirmation path", "intended_priority": "secondary", "visual_order": 3, "semantic_order": 3, "action_order": 2, "focus_order": 3, "evidence_ids": ["source-agenda"]}
+    ]},
+    {"scenario_id": "agenda-detail-narrow", "units": [
+      {"id": "agenda-detail-state", "role": "kind and lifecycle", "intended_priority": "primary", "visual_order": 1, "semantic_order": 1, "action_order": null, "focus_order": 1, "evidence_ids": ["source-agenda", "compact-header-rule"]},
+      {"id": "agenda-detail-time", "role": "time and timezone", "intended_priority": "primary", "visual_order": 2, "semantic_order": 2, "action_order": null, "focus_order": 2, "evidence_ids": ["source-agenda"]},
+      {"id": "agenda-detail-relationship", "role": "Program/Series relationship", "intended_priority": "secondary", "visual_order": 3, "semantic_order": 3, "action_order": 1, "focus_order": 3, "evidence_ids": ["source-agenda"]},
+      {"id": "agenda-detail-join", "role": "Discord confirmation path", "intended_priority": "primary", "visual_order": 4, "semantic_order": 4, "action_order": 2, "focus_order": 4, "evidence_ids": ["source-agenda"]}
+    ]},
+    {"scenario_id": "volunteer-wide", "units": [
+      {"id": "volunteer-heading", "role": "Cycle orientation", "intended_priority": "primary", "visual_order": 1, "semantic_order": 1, "action_order": null, "focus_order": 1, "evidence_ids": ["source-volunteer", "compact-header-rule"]},
+      {"id": "volunteer-positions", "role": "four-position organization map", "intended_priority": "primary", "visual_order": 2, "semantic_order": 2, "action_order": null, "focus_order": 2, "evidence_ids": ["source-volunteer"]},
+      {"id": "volunteer-divisions", "role": "seven divisions", "intended_priority": "secondary", "visual_order": 3, "semantic_order": 3, "action_order": null, "focus_order": 3, "evidence_ids": ["source-volunteer"]},
+      {"id": "volunteer-openings", "role": "bounded openings", "intended_priority": "primary", "visual_order": 4, "semantic_order": 4, "action_order": 1, "focus_order": 4, "evidence_ids": ["source-volunteer"]},
+      {"id": "volunteer-people", "role": "consent-led directory", "intended_priority": "secondary", "visual_order": 5, "semantic_order": 5, "action_order": 2, "focus_order": 5, "evidence_ids": ["source-volunteer"]}
+    ]},
+    {"scenario_id": "volunteer-profile-narrow", "units": [
+      {"id": "profile-visibility", "role": "identity visibility", "intended_priority": "primary", "visual_order": 1, "semantic_order": 1, "action_order": null, "focus_order": 1, "evidence_ids": ["source-volunteer-profile", "responsive-rule"]},
+      {"id": "profile-assignments", "role": "cycle assignments", "intended_priority": "secondary", "visual_order": 2, "semantic_order": 2, "action_order": null, "focus_order": 2, "evidence_ids": ["source-volunteer-profile", "responsive-rule"]},
+      {"id": "profile-ledger", "role": "Program-grouped contributions", "intended_priority": "primary", "visual_order": 3, "semantic_order": 3, "action_order": 1, "focus_order": 3, "evidence_ids": ["source-volunteer-profile", "responsive-rule"]},
+      {"id": "profile-verification", "role": "future owner capability", "intended_priority": "tertiary", "visual_order": 4, "semantic_order": 4, "action_order": null, "focus_order": 4, "evidence_ids": ["source-volunteer-profile", "responsive-rule"]}
+    ]},
+    {"scenario_id": "stories-wide", "units": [
+      {"id": "stories-heading", "role": "documentation heading", "intended_priority": "primary", "visual_order": 1, "semantic_order": 1, "action_order": null, "focus_order": 1, "evidence_ids": ["source-stories", "compact-header-rule"]},
+      {"id": "stories-list", "role": "dated story records", "intended_priority": "primary", "visual_order": 2, "semantic_order": 2, "action_order": 1, "focus_order": 2, "evidence_ids": ["source-stories"]},
+      {"id": "stories-source", "role": "publication/source boundary", "intended_priority": "secondary", "visual_order": 3, "semantic_order": 3, "action_order": 2, "focus_order": 3, "evidence_ids": ["source-stories"]}
+    ]},
+    {"scenario_id": "story-detail-narrow", "units": [
+      {"id": "story-detail-heading", "role": "story title and summary", "intended_priority": "primary", "visual_order": 1, "semantic_order": 1, "action_order": null, "focus_order": 1, "evidence_ids": ["source-stories", "responsive-rule"]},
+      {"id": "story-detail-body", "role": "documented context", "intended_priority": "primary", "visual_order": 2, "semantic_order": 2, "action_order": null, "focus_order": 2, "evidence_ids": ["source-stories", "responsive-rule"]},
+      {"id": "story-detail-related", "role": "related record links", "intended_priority": "secondary", "visual_order": 3, "semantic_order": 3, "action_order": 1, "focus_order": 3, "evidence_ids": ["source-stories", "responsive-rule"]}
+    ]}
+  ],
+  "evidence": [
+    {"id": "source-community", "kind": "source", "source": "src/components/community-system/CommunityOverviewPage.astro", "location": "data-community-section and data-community-metric selectors", "status": "observed", "note": "Community order and metric context are explicit in the source."},
+    {"id": "source-programs", "kind": "source", "source": "src/components/programs/ProgramsPage.astro", "location": "data-program-record and data-program-filter selectors", "status": "observed", "note": "Catalogue hierarchy is explicit in the source."},
+    {"id": "source-program-detail", "kind": "source", "source": "src/components/programs/ProgramDetailPage.astro", "location": "data-program-series, data-program-session, data-program-metric selectors", "status": "observed", "note": "Optional Series and direct Sessions are explicit in the source."},
+    {"id": "source-agenda", "kind": "source", "source": "src/components/community-system/AgendaPage.astro", "location": "data-agenda-kind, data-agenda-state, data-discord-join-path selectors", "status": "observed", "note": "Agenda kind, lifecycle, and safe join path are explicit in the source."},
+    {"id": "source-volunteer", "kind": "source", "source": "src/components/community-system/VolunteerDirectoryPage.astro", "location": "data-volunteer-cycle, data-volunteer-position, data-volunteer-division, data-volunteer-opening selectors", "status": "observed", "note": "Organization counts and consent boundary are explicit in the source."},
+    {"id": "source-volunteer-profile", "kind": "source", "source": "src/components/community-system/VolunteerDetailPage.astro", "location": "data-volunteer-profile, data-contribution-group, data-verification-future selectors", "status": "observed", "note": "Profile and Program-grouped ledger order are explicit in the source."},
+    {"id": "source-stories", "kind": "source", "source": "src/components/community-system/StoriesPage.astro", "location": "data-story-surface, data-state, and related record links", "status": "observed", "note": "Stories remain documentation records."},
+    {"id": "compact-header-rule", "kind": "manual", "source": "tests/e2e/community-design.spec.ts", "status": "observed", "note": "Production Playwright measured compact task headers at 1280x720 and 390x844."},
+    {"id": "responsive-rule", "kind": "manual", "source": "tests/e2e/community-design.spec.ts", "status": "observed", "note": "Production and staging Playwright verified narrow reading order and no horizontal overflow."}
+  ],
+  "findings": [],
+  "remediations": [],
+  "parity": [
+    {"scenario_id": "community-wide", "status": "pass", "evidence_ids": ["source-community"], "note": "Production and staging browser gates confirm the five-section hierarchy."},
+    {"scenario_id": "community-narrow", "status": "pass", "evidence_ids": ["source-community", "responsive-rule"], "note": "390x844 screenshot and overflow checks preserve the reading order."},
+    {"scenario_id": "programs-wide", "status": "pass", "evidence_ids": ["source-programs", "compact-header-rule"], "note": "Catalogue screenshot and five-record runtime contract pass."},
+    {"scenario_id": "program-detail-narrow", "status": "pass", "evidence_ids": ["source-program-detail", "responsive-rule"], "note": "Japanese Series, direct Sessions, metrics, and contributor evidence remain scannable at 390x844."},
+    {"scenario_id": "agenda-wide", "status": "pass", "evidence_ids": ["source-agenda", "compact-header-rule"], "note": "Production empty state and staging mixed Agenda pass browser and runtime gates."},
+    {"scenario_id": "agenda-detail-narrow", "status": "pass", "evidence_ids": ["source-agenda", "responsive-rule"], "note": "Detail relationship, time, timezone, revision, and join path pass."},
+    {"scenario_id": "volunteer-wide", "status": "pass", "evidence_ids": ["source-volunteer", "compact-header-rule"], "note": "Organization counts, openings, consent states, and responsive density pass."},
+    {"scenario_id": "volunteer-profile-narrow", "status": "pass", "evidence_ids": ["source-volunteer-profile", "responsive-rule"], "note": "Privacy, assignment history, Program grouping, and no-impact-score checks pass."},
+    {"scenario_id": "stories-wide", "status": "pass", "evidence_ids": ["source-stories", "compact-header-rule"], "note": "Production empty and staging documentation index states pass."},
+    {"scenario_id": "story-detail-narrow", "status": "pass", "evidence_ids": ["source-stories", "responsive-rule"], "note": "Story body, references, and narrow reading order pass visual review."}
+  ],
+  "verification": [
+    {"id": "verify-community", "scenario_id": "community-wide", "method": "Run production and staging Playwright community tests plus the runtime validator.", "expected": "Five ordered sections, qualified metrics, and safe source actions are visible; fixture state is isolated.", "result": "Pass: production 86 tests passed with 5 staging-only skips; staging 14 tests passed; both runtime modes passed.", "status": "pass"},
+    {"id": "verify-community-mobile", "scenario_id": "community-narrow", "method": "Run 390x844 screenshot, overflow, keyboard, and reduced-motion checks.", "expected": "The same five-section reading order remains usable without horizontal scrolling.", "result": "Pass: final 390x844 capture reviewed and overflow/motion gates passed.", "status": "pass"},
+    {"id": "verify-programs", "scenario_id": "programs-wide", "method": "Run catalogue route smoke and runtime count checks.", "expected": "Five Program records and normal URL filters are present in a compact header.", "result": "Pass: five records, filters, staging lifecycle, and production evidence boundaries verified.", "status": "pass"},
+    {"id": "verify-program-detail", "scenario_id": "program-detail-narrow", "method": "Run staging Japanese and English detail tests at 390x844.", "expected": "Japanese shows three Series; English shows direct Sessions; metrics and evidence remain scannable.", "result": "Pass: three Japanese Series, direct English Sessions, four metrics, and responsive capture verified.", "status": "pass"},
+    {"id": "verify-agenda", "scenario_id": "agenda-wide", "method": "Run production empty and staging mixed Agenda tests.", "expected": "Staging has three Session rows and one standalone Event; production has a textual placeholder.", "result": "Pass: production placeholder and staging 3+1 date-grouped Agenda verified.", "status": "pass"},
+    {"id": "verify-agenda-detail", "scenario_id": "agenda-detail-narrow", "method": "Open a staging Agenda detail at 390x844.", "expected": "Kind, lifecycle, time, timezone, relationship, revision, and safe Discord action are available.", "result": "Pass: all detail facts and safe Discord action verified without horizontal overflow.", "status": "pass"},
+    {"id": "verify-volunteer", "scenario_id": "volunteer-wide", "method": "Run volunteer directory staging tests and runtime selector counts.", "expected": "One Cycle, four Positions, seven Divisions, three openings, and people records are visible.", "result": "Pass: cycle, 4 positions, 7 divisions, 3 openings, application paths, and consent states verified.", "status": "pass"},
+    {"id": "verify-volunteer-profile", "scenario_id": "volunteer-profile-narrow", "method": "Open named and anonymous staging profiles and inspect ledger selectors.", "expected": "Contributions group by Program; no impact score or secret verification flow exists.", "result": "Pass: named/anonymous routes, assignment disclosure, Program groups, and no score verified.", "status": "pass"},
+    {"id": "verify-stories", "scenario_id": "stories-wide", "method": "Run production empty and staging story index tests.", "expected": "Stories state their documentation role and publication boundary.", "result": "Pass: production Evidence Placeholder and staging record/reference states verified.", "status": "pass"},
+    {"id": "verify-story-detail", "scenario_id": "story-detail-narrow", "method": "Open a staging story detail at 390x844.", "expected": "Body, review/date, related records, and back/source actions remain readable.", "result": "Pass: final desktop/mobile captures and related-record tests verified the reading order.", "status": "pass"}
+  ]
+}

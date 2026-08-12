@@ -1,0 +1,184 @@
+{
+  "$schema": "../../.codex/skills/engineer-interfaces/assets/interface-system.schema.json",
+  "schema_version": "1.0",
+  "kind": "interface-ir",
+  "name": "KAD Programs catalogue and detail",
+  "description": "Information-first Programs catalogue and detail interface with deterministic seeded records and a future public projection adapter.",
+  "platform": "web",
+  "provenance": {
+    "status": "inferred",
+    "source": "docs/public-content-system/evidence-deconstruction.md",
+    "note": "The page family is derived from observed program records and the user-approved information-first review; final pixels require runtime and human visual review."
+  },
+  "tokens": {
+    "color": {
+      "paper": {"type": "color", "value": "#ffffff", "unit": null, "provenance": {"status": "observed", "source": "src/styles/global.css", "note": "Existing site surface."}},
+      "ink": {"type": "color", "value": "#111318", "unit": null, "provenance": {"status": "observed", "source": "src/styles/global.css", "note": "Existing primary text."}},
+      "cobalt": {"type": "color", "value": "#0055ff", "unit": null, "provenance": {"status": "observed", "source": "src/styles/global.css", "note": "Existing primary action color."}},
+      "line": {"type": "color", "value": "#dfe4ec", "unit": null, "provenance": {"status": "inferred", "source": "docs/interface/page-system.md", "note": "Structural rule for editorial rows."}},
+      "muted": {"type": "color", "value": "#687081", "unit": null, "provenance": {"status": "inferred", "source": "docs/interface/page-system.md", "note": "Secondary text must remain readable and not encode status by color alone."}},
+      "confirmation": {"type": "color", "value": "#fff4d8", "unit": null, "provenance": {"status": "inferred", "source": "src/content/community-site.ts", "note": "Warm surface for needs-confirmation guidance."}}
+    },
+    "type": {
+      "sans": {"type": "font-family", "value": "Plus Jakarta Sans", "unit": null, "provenance": {"status": "observed", "source": "src/layouts/Layout.astro", "note": "Existing interface typeface."}},
+      "body": {"type": "font-size", "value": 17, "unit": "px", "provenance": {"status": "inferred", "source": "docs/content/copy-system.md", "note": "Readable public prose baseline."}},
+      "heading": {"type": "font-size", "value": 48, "unit": "px", "provenance": {"status": "inferred", "source": "user information-first review 2026-08-04", "note": "Compact task heading ceiling for desktop inner pages."}}
+    },
+    "space": {
+      "page_gutter": {"type": "space", "value": 24, "unit": "px", "provenance": {"status": "inferred", "source": "existing layout and page-system.md", "note": "Default responsive page gutter."}},
+      "task": {"type": "space", "value": 32, "unit": "px", "provenance": {"status": "inferred", "source": "user information-first review 2026-08-04", "note": "Compact task spacing; not a universal landing section rhythm."}},
+      "row": {"type": "space", "value": 20, "unit": "px", "provenance": {"status": "inferred", "source": "page-family planning", "note": "Program rows prioritize scanability over floating-card decoration."}}
+    },
+    "radius": {
+      "control": {"type": "radius", "value": 999, "unit": "px", "provenance": {"status": "observed", "source": "src/components/ui/button.tsx", "note": "Existing pill control language."}},
+      "media": {"type": "radius", "value": 24, "unit": "px", "provenance": {"status": "observed", "source": "src/components/destination-card.tsx", "note": "Existing rounded media language, reduced for information density."}},
+      "panel": {"type": "radius", "value": 16, "unit": "px", "provenance": {"status": "inferred", "source": "page-family planning", "note": "Use only for grouped/actionable panels."}}
+    },
+    "motion": {
+      "feedback": {"type": "duration", "value": 160, "unit": "ms", "provenance": {"status": "inferred", "source": "web verification policy", "note": "Filter and focus feedback only."}},
+      "reveal": {"type": "duration", "value": 280, "unit": "ms", "provenance": {"status": "inferred", "source": "web verification policy", "note": "Optional finite loading-to-content reveal; remove under reduced motion."}}
+    },
+    "provenance": {"status": "inferred", "source": "docs/public-content-system/evidence-deconstruction.md", "note": "Observed brand primitives are retained; page-family density and state tokens are design decisions pending rendered review."}
+  },
+  "capabilities": {
+    "semantic-navigation": {
+      "support": {"web": "native", "webapp": "native", "tui": "adapted"},
+      "fallback": "Keep every program and filter result as a crawlable URL with ordinary links.",
+      "requirement": "required",
+      "provenance": {"status": "observed", "source": "src/pages/[lang]/programs/index.astro", "note": "Program pages already use static routes and links."},
+      "mapping_provenance": {
+        "web": {"status": "observed", "source": "src/pages/programs/index.astro", "note": "Astro route and anchor navigation."},
+        "webapp": {"status": "inferred", "source": "public repository adapter", "note": "Same links remain valid when data becomes live."},
+        "tui": {"status": "inferred", "source": "interface contract", "note": "No TUI runtime is planned; map to numbered links if needed."}
+      }
+    },
+    "url-filtering": {
+      "support": {"web": "native", "webapp": "native", "tui": "adapted"},
+      "fallback": "Use the unfiltered catalogue route and ordinary category links when client-side enhancement is unavailable.",
+      "requirement": "required",
+      "provenance": {"status": "inferred", "source": "user information-first review 2026-08-04", "note": "Filters must be real state and shareable, not decorative tabs."},
+      "mapping_provenance": {
+        "web": {"status": "observed", "source": "src/pages/programs/category/[category].astro", "note": "Static category routes render filtered results without JavaScript."},
+        "webapp": {"status": "inferred", "source": "Programs page plan", "note": "Use router state mirrored into the URL."},
+        "tui": {"status": "inferred", "source": "interface contract", "note": "Map to a filter prompt; not implemented."}
+      }
+    },
+    "source-freshness": {
+      "support": {"web": "native", "webapp": "native", "tui": "adapted"},
+      "fallback": "Show a confirmation or unknown-source label and the last observed date instead of inventing certainty.",
+      "requirement": "required",
+      "provenance": {"status": "observed", "source": "src/content/community-site.ts", "note": "Program records already separate known facts, confirmation questions, and public sources."},
+      "mapping_provenance": {
+        "web": {"status": "inferred", "source": "public-content-contract.md", "note": "Render public provenance and freshness from the common envelope."},
+        "webapp": {"status": "inferred", "source": "public-content-contract.md", "note": "Live adapter supplies the same fields."},
+        "tui": {"status": "inferred", "source": "interface contract", "note": "Render source and freshness as text."}
+      }
+    },
+    "responsive-recomposition": {
+      "support": {"web": "native", "webapp": "native", "tui": "adapted"},
+      "fallback": "Stack rows and detail columns in source order below the mobile breakpoint.",
+      "requirement": "required",
+      "provenance": {"status": "observed", "source": "existing responsive homepage", "note": "The website already adapts content for mobile."},
+      "mapping_provenance": {
+        "web": {"status": "inferred", "source": "web adapter", "note": "CSS grid/flex with mobile single-column composition."},
+        "webapp": {"status": "inferred", "source": "web adapter", "note": "Same browser primitives."},
+        "tui": {"status": "inferred", "source": "interface contract", "note": "Linear listing fallback."}
+      }
+    },
+    "keyboard-focus": {
+      "support": {"web": "native", "webapp": "native", "tui": "native"},
+      "fallback": "Keep filters, rows, source links, and detail actions in a visible source-order tab sequence.",
+      "requirement": "required",
+      "provenance": {"status": "inferred", "source": "engineer-interfaces verification contract", "note": "Keyboard and focus are acceptance gates."},
+      "mapping_provenance": {
+        "web": {"status": "inferred", "source": "web adapter", "note": "Native controls, visible focus, skip link."},
+        "webapp": {"status": "inferred", "source": "web adapter", "note": "Same browser primitives."},
+        "tui": {"status": "inferred", "source": "interface contract", "note": "No TUI experiment yet."}
+      }
+    },
+    "safe-media-fallback": {
+      "support": {"web": "native", "webapp": "native", "tui": "unsupported"},
+      "fallback": "Render a text-only program row with source and status when media is absent, withdrawn, or unapproved.",
+      "requirement": "required",
+      "provenance": {"status": "observed", "source": "src/content/community-site.ts", "note": "GKS has no approved local media and must remain useful."},
+      "mapping_provenance": {
+        "web": {"status": "observed", "source": "program source records", "note": "Media is optional in the existing model."},
+        "webapp": {"status": "inferred", "source": "public-content-contract.md", "note": "API media is approved independently from content."},
+        "tui": {"status": "unknown", "source": "interface contract", "note": "No TUI adapter is planned; text-only behavior is not runtime-validated."}
+      }
+    }
+  },
+  "regions": [
+    {"id": "site_header", "role": "banner", "label": "Site header", "children": ["skip_link", "brand_link", "primary_nav"], "provenance": {"status": "observed", "source": "src/components/layout/Navbar.tsx", "note": "Existing site shell."}},
+    {"id": "program_intro", "role": "region", "label": "Program directory introduction", "children": ["page_heading", "page_summary", "result_summary"], "provenance": {"status": "inferred", "source": "user information-first review 2026-08-04", "note": "Catalogue intro prioritizes inventory and task clarity."}},
+    {"id": "program_controls", "role": "region", "label": "Program filters", "children": ["category_filter"], "provenance": {"status": "inferred", "source": "page-family planning", "note": "Category filters are URL-addressable and keyboard operable."}},
+    {"id": "program_content", "role": "main", "label": "Programs", "children": ["program_list", "program_row", "program_detail", "state_panel"], "provenance": {"status": "inferred", "source": "public-content-contract.md", "note": "Content region supports catalogue, detail, and lifecycle states."}},
+    {"id": "site_footer", "role": "contentinfo", "label": "Site footer", "children": ["footer_links"], "provenance": {"status": "observed", "source": "src/layouts/Layout.astro", "note": "Existing footer boundary."}}
+  ],
+  "components": [
+    {"id": "skip_link", "kind": "link", "region": "site_header", "label": "Skip to content", "capabilities": ["keyboard-focus"], "props": {}, "states": [], "events": ["activate_link"], "actions": ["navigate_content"], "focusable": true, "provenance": {"status": "inferred", "source": "web verification contract", "note": "Required to bypass the shell."}},
+    {"id": "brand_link", "kind": "link", "region": "site_header", "label": "KaburAjaDulu", "capabilities": ["semantic-navigation", "keyboard-focus"], "props": {"href": "/"}, "states": [], "events": ["activate_link"], "actions": ["navigate_home"], "focusable": true, "provenance": {"status": "observed", "source": "src/components/layout/Navbar.tsx", "note": "Existing home link."}},
+    {"id": "primary_nav", "kind": "navigation", "region": "site_header", "label": "Primary navigation", "capabilities": ["semantic-navigation", "responsive-recomposition", "keyboard-focus"], "props": {"active": "/programs/"}, "states": ["shell_menu"], "events": ["toggle_menu", "dismiss_menu"], "actions": ["set_menu_state"], "focusable": true, "provenance": {"status": "observed", "source": "src/components/layout/Navbar.tsx", "note": "This Programs slice preserves the existing four-link shell; broader IA changes remain deferred."}},
+    {"id": "page_heading", "kind": "heading", "region": "program_intro", "label": "Program directory heading", "capabilities": ["responsive-recomposition"], "props": {"level": 1}, "states": [], "events": [], "actions": [], "focusable": false, "provenance": {"status": "inferred", "source": "docs/content/copy-system.md", "note": "Route name is the H1; it is not a landing hero."}},
+    {"id": "page_summary", "kind": "text", "region": "program_intro", "label": "Program directory summary", "capabilities": ["source-freshness"], "props": {}, "states": [], "events": [], "actions": [], "focusable": false, "provenance": {"status": "inferred", "source": "docs/content/copy-system.md", "note": "Explains the catalogue task without unsupported promises."}},
+    {"id": "result_summary", "kind": "status", "region": "program_intro", "label": "Result summary", "capabilities": ["source-freshness"], "props": {"shows": ["count", "active_filter", "last_updated"]}, "states": ["data_lifecycle"], "events": [], "actions": [], "focusable": false, "provenance": {"status": "inferred", "source": "public-content-contract.md", "note": "Count and freshness are shown only when meaningful."}},
+    {"id": "category_filter", "kind": "navigation", "region": "program_controls", "label": "Filter by category", "capabilities": ["url-filtering", "keyboard-focus"], "props": {"options": ["all", "language", "career"]}, "states": ["filter_state"], "events": ["change_category"], "actions": ["apply_category_filter"], "focusable": true, "provenance": {"status": "observed", "source": "src/pages/programs/category/[category].astro", "note": "Category filter is a real URL state rendered as ordinary links."}},
+    {"id": "program_list", "kind": "list", "region": "program_content", "label": "Program catalogue", "capabilities": ["semantic-navigation", "responsive-recomposition", "source-freshness", "safe-media-fallback"], "props": {"item_role": "program_row"}, "states": ["data_lifecycle", "filter_state"], "events": ["activate_program"], "actions": ["navigate_program"], "focusable": false, "provenance": {"status": "inferred", "source": "public-content-contract.md", "note": "Catalogue is a semantic list, not a decorative card grid."}},
+    {"id": "program_row", "kind": "listitem", "region": "program_content", "label": "Program record", "capabilities": ["semantic-navigation", "source-freshness", "safe-media-fallback", "keyboard-focus"], "props": {"fields": ["title", "category", "summary", "known", "needs_confirmation", "source", "freshness", "next_action"]}, "states": ["program_status", "media_state"], "events": ["activate_program", "activate_source"], "actions": ["navigate_program", "open_source"], "focusable": true, "provenance": {"status": "observed", "source": "src/content/community-site.ts", "note": "Maps stable public program fields into a scan-friendly row."}},
+    {"id": "program_detail", "kind": "record", "region": "program_content", "label": "Program detail", "capabilities": ["source-freshness", "safe-media-fallback", "responsive-recomposition"], "props": {"columns": ["known", "needs_confirmation", "media", "source"]}, "states": ["program_status", "media_state"], "events": ["activate_source", "activate_discord"], "actions": ["open_source", "open_discord"], "focusable": false, "provenance": {"status": "inferred", "source": "public-content-contract.md", "note": "Detail page separates known facts from confirmation questions."}},
+    {"id": "state_panel", "kind": "status-panel", "region": "program_content", "label": "Program state message", "capabilities": ["source-freshness", "keyboard-focus"], "props": {"states": ["loading", "empty", "error", "stale"]}, "states": ["data_lifecycle"], "events": ["retry_load"], "actions": ["retry_programs"], "focusable": true, "provenance": {"status": "inferred", "source": "engineer-interfaces verification contract", "note": "Meaningful loading, empty, stale, and error states are part of the page contract."}},
+    {"id": "footer_links", "kind": "navigation", "region": "site_footer", "label": "Footer links", "capabilities": ["semantic-navigation", "keyboard-focus"], "props": {}, "states": [], "events": ["activate_link"], "actions": ["navigate_internal"], "focusable": true, "provenance": {"status": "observed", "source": "src/layouts/Layout.astro", "note": "Existing footer navigation."}}
+  ],
+  "states": [
+    {"id": "shell_menu", "initial": "expanded", "values": ["expanded", "compact-closed", "compact-open"], "provenance": {"status": "observed", "source": "src/components/layout/Navbar.tsx", "note": "Desktop navigation is visible; mobile uses disclosure."}},
+    {"id": "filter_state", "initial": "unfiltered", "values": ["unfiltered", "category-filtered"], "provenance": {"status": "inferred", "source": "Programs page plan", "note": "Category filter state is reflected in the URL."}},
+    {"id": "data_lifecycle", "initial": "populated", "values": ["loading", "populated", "empty", "error", "stale"], "provenance": {"status": "inferred", "source": "public-content-contract.md", "note": "Seed and API adapters must expose the same lifecycle."}},
+    {"id": "program_status", "initial": "needs-confirmation", "values": ["active", "needs-confirmation", "archived"], "provenance": {"status": "observed", "source": "src/content/community-site.ts", "note": "All current public records need a latest-status confirmation."}},
+    {"id": "media_state", "initial": "approved", "values": ["approved", "missing", "withdrawn"], "provenance": {"status": "inferred", "source": "public-content-contract.md", "note": "Media approval is separate from content publication."}}
+  ],
+  "events": [
+    {"id": "activate_link", "type": "activate", "targets": ["skip_link", "brand_link", "footer_links"], "provenance": {"status": "observed", "source": "web navigation", "note": "Ordinary links remain operable without JavaScript."}},
+    {"id": "toggle_menu", "type": "toggle", "targets": ["primary_nav"], "provenance": {"status": "inferred", "source": "responsive shell", "note": "Mobile disclosure transition."}},
+    {"id": "dismiss_menu", "type": "dismiss", "targets": ["primary_nav"], "provenance": {"status": "inferred", "source": "keyboard interaction policy", "note": "Escape and link activation close the menu."}},
+    {"id": "change_category", "type": "activate", "targets": ["category_filter"], "provenance": {"status": "observed", "source": "src/components/programs/ProgramsPage.astro", "note": "Category link navigates to a static filtered result."}},
+    {"id": "activate_program", "type": "activate", "targets": ["program_list", "program_row"], "provenance": {"status": "observed", "source": "src/pages/programs/[slug].astro", "note": "Program records have stable detail routes."}},
+    {"id": "activate_source", "type": "activate", "targets": ["program_row", "program_detail"], "provenance": {"status": "observed", "source": "src/content/community-site.ts", "note": "Each source-backed program has a public source URL."}},
+    {"id": "activate_discord", "type": "activate", "targets": ["program_detail"], "provenance": {"status": "inferred", "source": "approved hierarchy A18-A24", "note": "Discord is the open community participation handoff, not registration and not the public data source."}},
+    {"id": "retry_load", "type": "retry", "targets": ["state_panel"], "provenance": {"status": "inferred", "source": "engineer-interfaces verification contract", "note": "Error state has a recoverable action."}}
+  ],
+  "actions": [
+    {"id": "navigate_content", "type": "navigate", "targets": ["skip_link"], "params": {"to": "program_content"}, "provenance": {"status": "inferred", "source": "web verification contract", "note": "Skip link moves focus to main content."}},
+    {"id": "navigate_home", "type": "navigate", "targets": ["brand_link"], "params": {"to": "/"}, "provenance": {"status": "observed", "source": "src/components/layout/Navbar.tsx", "note": "Brand link returns home."}},
+    {"id": "set_menu_state", "type": "set-state", "targets": ["primary_nav"], "params": {"state": "shell_menu"}, "provenance": {"status": "inferred", "source": "responsive shell", "note": "Disclosure state changes without changing route."}},
+    {"id": "apply_category_filter", "type": "navigate", "targets": ["category_filter"], "params": {"route": "/programs/category/{category}"}, "provenance": {"status": "observed", "source": "src/pages/programs/category/[category].astro", "note": "Category filter is shareable static URL state."}},
+    {"id": "navigate_program", "type": "navigate", "targets": ["program_list", "program_row"], "params": {"to": "program-detail"}, "provenance": {"status": "observed", "source": "src/pages/programs/[slug].astro", "note": "Open a stable program detail route."}},
+    {"id": "open_source", "type": "external-navigate", "targets": ["program_row", "program_detail"], "params": {"new_context": true}, "provenance": {"status": "observed", "source": "src/content/community-site.ts", "note": "Open the canonical public source."}},
+    {"id": "open_discord", "type": "external-navigate", "targets": ["program_detail"], "params": {"purpose": "join-community", "registration_required": false}, "provenance": {"status": "inferred", "source": "approved hierarchy A18-A24", "note": "Discord remains the participation/community handoff; source verification remains a separate action."}},
+    {"id": "retry_programs", "type": "retry-load", "targets": ["state_panel"], "params": {}, "provenance": {"status": "inferred", "source": "engineer-interfaces verification contract", "note": "Retry uses the repository adapter again."}},
+    {"id": "navigate_internal", "type": "navigate", "targets": ["footer_links"], "params": {}, "provenance": {"status": "observed", "source": "src/layouts/Layout.astro", "note": "Footer routes remain ordinary links."}}
+  ],
+  "focus": {"order": ["skip_link", "brand_link", "primary_nav", "category_filter", "program_row", "state_panel", "footer_links"], "trap": false, "default": "page_heading"},
+  "navigation": {"mode": "mixed", "links": [{"from": "brand_link", "to": "program_list", "via": "home-to-programs"}, {"from": "category_filter", "to": "program_list", "via": "apply-category"}, {"from": "program_row", "to": "program_detail", "via": "open-detail"}, {"from": "program_detail", "to": "program_list", "via": "back-to-programs"}]},
+  "media": [
+    {"id": "program_poster", "type": "image", "src": null, "alt": "Approved program poster with descriptive alternative text", "fallback": "Show the program title, source, and status in a text-only row when media is missing or withdrawn.", "implementation_safe": true, "provenance": {"status": "observed", "source": "src/content/community-site.ts", "note": "Local approved posters are available for some programs; GKS intentionally has none."}},
+    {"id": "reference_screenshot", "type": "none", "src": null, "alt": "", "fallback": "Use CSS-authored layout; reference screenshots remain comparison evidence only.", "implementation_safe": false, "provenance": {"status": "observed", "source": "docs/public-content-system/evidence-deconstruction.md", "note": "Screenshots are not production media."}}
+  ],
+  "motion": {"allowed": true, "reduced_motion": "remove", "transitions": [{"id": "filter-feedback", "from": "unfiltered", "to": "category-filtered", "duration": 160, "easing": "ease-out", "provenance": {"status": "inferred", "source": "web verification policy", "note": "Only feedback; content remains understandable without motion."}}, {"id": "loading-reveal", "from": "loading", "to": "populated", "duration": 280, "easing": "ease-out", "provenance": {"status": "inferred", "source": "web verification policy", "note": "Finite reveal removed for reduced motion."}}]},
+  "evaluation": {
+    "criteria": [
+      {"id": "catalogue-task-first", "statement": "At the first viewport, visitors can identify the program catalogue task, result count/state, and next action without a landing hero.", "provenance": {"status": "inferred", "source": "user information-first review 2026-08-04", "note": "Hierarchy criterion."}},
+      {"id": "known-versus-confirmation", "statement": "Program detail pages visibly separate known facts from needs-confirmation questions; catalogue rows expose the current lifecycle label.", "provenance": {"status": "observed", "source": "src/components/programs/ProgramDetailPage.astro", "note": "The content distinction survives without overloading catalogue rows."}},
+      {"id": "seed-live-parity", "statement": "The seeded repository and future public API repository can render the same DTO and lifecycle states.", "provenance": {"status": "inferred", "source": "public-content-contract.md", "note": "Adapter parity criterion."}},
+      {"id": "filter-shareable", "statement": "Category filters are keyboard-operable, reflected in the URL, and recoverable through the all-programs link.", "provenance": {"status": "inferred", "source": "Programs page plan", "note": "Interaction criterion."}},
+      {"id": "safe-media", "statement": "Missing, withdrawn, or unapproved media never blocks useful text content or leaks private URLs.", "provenance": {"status": "inferred", "source": "public-content-contract.md", "note": "Privacy and resilience criterion."}},
+      {"id": "responsive-accessible", "statement": "Desktop and mobile layouts preserve semantic order, keyboard focus, readable contrast, and no horizontal overflow.", "provenance": {"status": "inferred", "source": "engineer-interfaces verification contract", "note": "Runtime acceptance criterion."}}
+    ],
+    "evidence": [
+      {"id": "existing-program-records", "source": "src/content/community-site.ts", "summary": "Five source-backed program records with known facts, confirmation questions, source URLs, and optional local media.", "observed_at": "2026-08-04T00:00:00+07:00", "metrics": {"program_count": 5}, "provenance": {"status": "observed", "source": "src/content/community-site.ts", "note": "Repository evidence."}},
+      {"id": "public-contract", "source": "docs/public-content-system/public-content-contract.md", "summary": "Common public record envelope, revision/freshness rules, privacy exclusions, and one-way projection boundary.", "observed_at": "2026-08-04T00:00:00+07:00", "metrics": {}, "provenance": {"status": "inferred", "source": "PR0 contract", "note": "Planning evidence; implementation must test it."}},
+      {"id": "captured-reference-coverage", "source": "docs/public-content-system/reference-coverage.json", "summary": "Visually reviewed Programs catalogue/detail desktop/mobile, URL-backed filter, and loading/empty/stale/error frames.", "observed_at": "2026-08-04T14:47:36+07:00", "metrics": {"captured_frames": 9}, "provenance": {"status": "observed", "source": "Playwright reference capture and root visual QC", "note": "All mandatory frames are captured and explicitly approved."}}
+    ],
+    "status": "tested",
+    "notes": "Programs vertical slice passed schema/runtime validation, browser regression tests, unit tests, strict reference coverage, and root visual review."
+  }
+}

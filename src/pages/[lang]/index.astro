@@ -3,8 +3,9 @@ import Layout from '../../layouts/Layout.astro'
 import Navbar from '../../components/layout/Navbar'
 import HeroSection from '../../components/home/HeroSection'
 import DestinationShowcase from '../../components/home/DestinationShowcase'
+import CommunityGateway from '../../components/home/CommunityGateway'
+import LandingDirection from '../../components/home/LandingDirection'
 import AboutSection from '../../components/home/AboutSection'
-import CTASection from '../../components/home/CTASection'
 import { BlogSection } from '../../components/blog/BlogSection'
 import Footer from '../../components/layout/Footer'
 import { getCollection } from 'astro:content'
@@ -26,22 +27,34 @@ const currentPath = Astro.url.pathname;
 
 const blogPosts = await getCollection('blog', ({ data }) => !data.draft)
 const gscVerification = import.meta.env.GOOGLE_SITE_VERIFICATION;
+const pageTitle = locale === 'id'
+  ? '#KaburAjaDulu | Mulai dari pertanyaanmu'
+  : '#KaburAjaDulu | Start with your question';
+const pageDescription = locale === 'id'
+  ? 'Periksa program komunitas, status agenda, dan jalur relawan sebelum menentukan langkah berikutnya.'
+  : 'Check community programs, schedule status, and volunteer paths before choosing your next step.';
 ---
 
 <Layout
-  title="#KaburAjaDulu"
-  description="Discover study and work opportunities abroad. Trusted information platform for Indonesians."
+  title={pageTitle}
+  description={pageDescription}
   gscVerification={gscVerification}
   locale={locale}
   currentPath={currentPath}
 >
   <Navbar client:only="react" locale={locale} currentPath={currentPath} />
-  <main>
-    <HeroSection client:only="react" locale={locale} />
-    <DestinationShowcase client:only="react" locale={locale} />
-    <AboutSection client:only="react" locale={locale} />
+  <main id="main-content" tabindex="-1">
+    {locale !== 'id' && locale !== 'en' && (
+      <p class="kad-translation-notice" lang="en" role="status">
+        Some community sections remain in English while their full translation is prepared.
+      </p>
+    )}
+    <HeroSection locale={locale} />
+    <CommunityGateway locale={locale} />
+    <DestinationShowcase client:load locale={locale} />
+    <LandingDirection direction="field-notes" locale={locale} showFallbackNotice={false} />
+    <AboutSection locale={locale} />
     {blogPosts.length > 0 && <BlogSection client:only="react" posts={blogPosts} locale={locale} />}
-    <CTASection client:only="react" locale={locale} />
   </main>
-  <Footer client:only="react" locale={locale} />
+  <Footer locale={locale} />
 </Layout>

@@ -1,0 +1,69 @@
+---
+import type { Locale } from '@/i18n/constants';
+import { DISCORD_URL } from '@/content/community-site';
+import { agendaById, type AgendaRecord } from '@/content/agenda-content';
+import StatePanel from '@/components/community-system/StatePanel.astro';
+import StatusBadge from '@/components/community-system/StatusBadge.astro';
+import LiveAgenda from '@/components/events/LiveAgenda';
+import '@/styles/agenda.css';
+
+interface Props {
+  locale: Locale;
+  href: (path: string) => string;
+  id?: string;
+  copy: {
+    eyebrow: string;
+    title: string;
+    description: string;
+    discord: string;
+    back: string;
+  };
+}
+
+const { locale, href, id, copy } = Astro.props as Props;
+const record = id ? agendaById(id, locale) : undefined;
+const isEnglish = locale !== 'id';
+const formatDate = (value: string, recordTimezone: string, style: 'short' | 'long' = 'short') => new Intl.DateTimeFormat(isEnglish ? 'en-GB' : 'id-ID', {
+  dateStyle: style,
+  timeStyle: 'short',
+  timeZone: recordTimezone,
+}).format(new Date(value));
+const formatTime = (value: string, recordTimezone: string) => new Intl.DateTimeFormat(isEnglish ? 'en-GB' : 'id-ID', {
+  timeStyle: 'short',
+  timeZone: recordTimezone,
+}).format(new Date(value));
+const timezoneLabel = (recordTimezone: string) => recordTimezone === 'Asia/Jakarta' ? (isEnglish ? 'Jakarta time (WIB)' : 'WIB · Jakarta') : recordTimezone;
+const statusCopy = (state: AgendaRecord['lifecycle']) => ({
+  upcoming: isEnglish ? 'Upcoming' : 'Akan datang',
+  live: isEnglish ? 'Live now' : 'Sedang berlangsung',
+  completed: isEnglish ? 'Completed' : 'Selesai',
+}[state]);
+---
+
+{!id ? (
+  <LiveAgenda client:load locale={locale} discordUrl={DISCORD_URL} copy={{ eyebrow: copy.eyebrow, title: copy.title, description: copy.description, discord: copy.discord }} />
+) : record ? (
+  <>
+    <nav class="kad-breadcrumb" aria-label={isEnglish ? 'Breadcrumb' : 'Jejak halaman'}><a href={href('/events')}>{isEnglish ? 'Agenda' : 'Agenda'}</a><span aria-hidden="true">/</span><span aria-current="page">{record.title}</span></nav>
+    <header class="kad-record-intro" aria-labelledby="page-title" data-page-header="event-record" data-agenda-kind={record.kind} data-agenda-id={record.id} data-agenda-state={record.lifecycle} data-participation-model={record.participationModel} data-registration-required={String(record.registrationRequired)}>
+      <div><StatusBadge state={record.lifecycle} locale={locale} /><p class="kad-eyebrow">{copy.eyebrow}</p><h1 id="page-title">{record.title}</h1><p>{record.summary}</p></div>
+      <dl class="kad-record-facts">
+        <div><dt>{isEnglish ? 'Status' : 'Status'}</dt><dd>{statusCopy(record.lifecycle)}</dd></div>
+        <div><dt>{isEnglish ? 'When' : 'Waktu'}</dt><dd><time datetime={record.startsAt}>{formatDate(record.startsAt, record.timezone, 'long')}</time><span class="kad-agenda-detail-time">{isEnglish ? 'Ends' : 'Selesai'} {formatTime(record.endsAt, record.timezone)} · {timezoneLabel(record.timezone)}</span></dd></div>
+        <div><dt>{isEnglish ? 'Duration' : 'Durasi'}</dt><dd>{record.durationMinutes} {isEnglish ? 'minutes' : 'menit'}</dd></div>
+        <div><dt>{isEnglish ? 'Program' : 'Program'}</dt><dd>{record.programHref && record.programTitle ? <a href={record.programHref}>{record.programTitle}</a> : (isEnglish ? 'Standalone event' : 'Acara berdiri sendiri')}</dd></div>
+        <div><dt>{isEnglish ? 'Series' : 'Seri'}</dt><dd>{record.seriesTitle ?? (record.kind === 'session' ? (isEnglish ? 'Direct session' : 'Sesi langsung') : '—')}</dd></div>
+        <div><dt>{isEnglish ? 'Source revision' : 'Revisi sumber'}</dt><dd>{record.sourceRevision} · {record.freshness === 'demo' ? (isEnglish ? 'Sample record' : 'Data contoh') : (isEnglish ? 'Published record' : 'Rekaman terbit')}</dd></div>
+      </dl>
+    </header>
+    <section class="kad-record-actions" aria-labelledby="agenda-next-title">
+      <div><p class="kad-kicker">{isEnglish ? 'How to take part' : 'Cara ikut'}</p><h2 id="agenda-next-title">{record.lifecycle === 'upcoming' ? (isEnglish ? 'Join KAD, then show up in Discord.' : 'Gabung KAD, lalu hadir di Discord.') : record.lifecycle === 'live' ? (isEnglish ? 'This activity is live in Discord.' : 'Kegiatan ini sedang berlangsung di Discord.') : (isEnglish ? 'This record is complete.' : 'Rekaman ini sudah selesai.')}</h2><p>{record.lifecycle === 'completed' ? (record.recapHref ? (isEnglish ? 'A recap is available below.' : 'Dokumentasi tersedia di bawah.') : (isEnglish ? 'No public recap has been published yet.' : 'Belum ada dokumentasi publik yang diterbitkan.')) : (isEnglish ? 'No registration or confirmation is required. Use the Discord handoff to join.' : 'Tidak perlu mendaftar atau mengonfirmasi. Gunakan jalur Discord untuk bergabung.')}</p></div>
+      <div class="kad-actions">{record.joinHref && record.joinLabel && <a class="kad-button kad-button--primary" data-discord-join-path href={record.joinHref} target="_blank" rel="noopener noreferrer">{record.joinLabel}</a>}{record.recapHref && <a class="kad-button kad-button--primary" href={record.recapHref}>{isEnglish ? 'Read the recap' : 'Lihat dokumentasi'}</a>}<a class="kad-button kad-button--outline" href={href('/events')}>{copy.back}</a></div>
+    </section>
+  </>
+) : (
+  <>
+    <header class="kad-subpage-intro kad-subpage-intro--record" aria-labelledby="page-title" data-page-header="event-record" data-agenda-state="empty"><div><p class="kad-eyebrow">{copy.eyebrow}</p><h1 id="page-title">{id === 'pending' ? (isEnglish ? 'This agenda item is under review.' : 'Item agenda ini sedang diperiksa.') : copy.title}</h1><p>{id === 'pending' ? (isEnglish ? 'The time, source, and joining path are being checked before publication.' : 'Waktu, sumber, dan jalur ikut sedang diperiksa sebelum dipublikasikan.') : copy.description}</p></div></header>
+    <section class="kad-operational-section"><StatePanel state={id === 'pending' ? 'pending' : 'not-published'} locale={locale} statusLabel={id === 'pending' ? (isEnglish ? 'Under review' : 'Sedang diperiksa') : (isEnglish ? 'Not published' : 'Belum dipublikasikan')} title={id === 'pending' ? (isEnglish ? 'Review is still in progress.' : 'Pemeriksaan masih berlangsung.') : (isEnglish ? 'No public agenda item is available.' : 'Belum ada item agenda publik.')} description={isEnglish ? 'Only approved agenda records appear on this route.' : 'Hanya rekaman agenda yang telah disetujui yang tampil di halaman ini.'}><a class="kad-button kad-button--outline" href={href('/events')}>{copy.back}</a></StatePanel></section>
+  </>
+)}

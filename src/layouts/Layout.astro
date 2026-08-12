@@ -10,28 +10,58 @@ export interface Props {
   gscVerification?: string;
   locale?: Locale;
   currentPath?: string;
+  robots?: string;
+  isPreview?: boolean;
 }
 
 const {
   title,
-  description = "Temukan peluang untuk bekerja, belajar, atau menjelajahi dunia dengan sumber daya komprehensif, daftar pekerjaan, beasiswa, kelas bahasa, dan banyak lagi.",
+  description: descriptionProp,
   canonical,
   gscVerification,
   locale = 'id' as Locale,
   currentPath = Astro.url.pathname,
+  robots: robotsProp,
+  isPreview = false,
 } = Astro.props;
 
-const dir = LOCALE_DIR[locale] ?? 'ltr';
-const canonicalURL = canonical || `https://kaburajadulu.com${currentPath}`;
 const siteUrl = 'https://kaburajadulu.com';
+const dir = LOCALE_DIR[locale] ?? 'ltr';
+const stagingFixturesEnabled = import.meta.env.PUBLIC_STAGING_FIXTURES === 'true';
+const stagingBuildEnabled = import.meta.env.PUBLIC_STAGING_BUILD === 'true';
+const suppressDiscoveryLinks = isPreview || stagingFixturesEnabled || stagingBuildEnabled;
+const robots = robotsProp ?? (stagingFixturesEnabled || stagingBuildEnabled ? 'noindex, nofollow' : 'index, follow');
+const description = descriptionProp ?? (locale === 'id'
+  ? 'Temukan sumber, program, dan percakapan komunitas untuk orang Indonesia yang sedang menjajaki studi dan kerja di luar negeri.'
+  : 'Find sources, programs, and community conversations for Indonesians exploring study and work abroad.');
+const organizationDescription = locale === 'id'
+  ? 'Komunitas orang Indonesia yang saling berbagi sumber dan pengalaman tentang studi, kerja, dan hidup di luar negeri.'
+  : 'A community where Indonesians share sources and lived experience about studying, working, and living abroad.';
+const websiteDescription = locale === 'id'
+  ? 'Sumber, program, dan percakapan komunitas untuk menjajaki langkah ke luar negeri.'
+  : 'Sources, programs, and community conversations for exploring life abroad.';
+const keywords = locale === 'id'
+  ? 'studi luar negeri, kerja luar negeri, beasiswa, kelas bahasa, komunitas Indonesia'
+  : 'study abroad, work abroad, scholarships, language clubs, Indonesian community';
+const withTrailingSlash = (value: string): string => {
+  const url = new URL(value, siteUrl);
+  if (!url.pathname.endsWith('/')) url.pathname = `${url.pathname}/`;
+  return url.toString();
+};
+const canonicalURL = withTrailingSlash(canonical || currentPath);
+
+const pathSegments = currentPath.split('/').filter(Boolean);
+if (pathSegments[0] && LOCALES.includes(pathSegments[0] as Locale)) pathSegments.shift();
+const pagePath = pathSegments.length > 0 ? `/${pathSegments.join('/')}` : '/';
 
 const hreflangLinks = LOCALES.map((loc) => {
-  const locPath = loc === 'id' ? '/' : `/${loc}/`;
+  const prefix = loc === 'id' ? '' : `/${loc}`;
+  const locPath = pagePath === '/' ? `${prefix}/` : `${prefix}${pagePath}/`;
   return {
     locale: loc === 'zh-cn' ? 'zh-CN' : loc === 'zh-tw' ? 'zh-TW' : loc,
     url: `${siteUrl}${locPath}`,
   };
-}).concat([{ locale: 'x-default', url: `${siteUrl}/en/` }]);
+}).concat([{ locale: 'x-default', url: withTrailingSlash(`/en${pagePath}`) }]);
 ---
 
 <!doctype html>
@@ -48,7 +78,7 @@ const hreflangLinks = LOCALES.map((loc) => {
     <title>{title}</title>
 
     <!-- Hreflang tags for i18n SEO -->
-    {hreflangLinks.map(({ locale: loc, url }) => (
+    {!suppressDiscoveryLinks && hreflangLinks.map(({ locale: loc, url }) => (
       <link rel="alternate" hreflang={loc} href={url} />
     ))}
 
@@ -56,20 +86,20 @@ const hreflangLinks = LOCALES.map((loc) => {
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Caveat:wght@400;500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,300..900&family=Caveat:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Newsreader:ital,opsz,wght@1,6..72,400;1,6..72,500&display=swap"
       rel="stylesheet"
     />
 
     <!-- Meta tags -->
-    <meta name="keywords" content="peluang internasional, kerja di luar negeri, kuliah di luar negeri, traveling, beasiswa, kelas bahasa, karir global, komunitas expatriat" />
+    <meta name="keywords" content={keywords} />
     <meta name="author" content="Tim KaburAjaDulu" />
-    <meta name="robots" content="index, follow" />
+    <meta name="robots" content={robots} />
 
     <!-- Google Search Console Verification -->
     {gscVerification && <meta name="google-site-verification" content={gscVerification} />}
 
     <!-- Canonical URL -->
-    <link rel="canonical" href={canonicalURL} />
+    {!suppressDiscoveryLinks && <link rel="canonical" href={canonicalURL} />}
 
     <!-- Open Graph -->
     <meta property="og:title" content={title} />
@@ -89,7 +119,7 @@ const hreflangLinks = LOCALES.map((loc) => {
       "@context": "https://schema.org",
       "@type": "Organization",
       "name": "KaburAjaDulu",
-      "description": "Platform untuk menemukan peluang internasional - kerja, kuliah, dan traveling",
+      "description": organizationDescription,
       "url": siteUrl,
       "logo": `${siteUrl}/icon.svg`,
       "foundingDate": "2024",
@@ -106,7 +136,7 @@ const hreflangLinks = LOCALES.map((loc) => {
       "@context": "https://schema.org",
       "@type": "WebSite",
       "name": "KaburAjaDulu",
-      "description": "Temukan peluang untuk bekerja, belajar, atau menjelajahi dunia",
+      "description": websiteDescription,
       "url": siteUrl
     })} />
 
@@ -147,7 +177,9 @@ const hreflangLinks = LOCALES.map((loc) => {
 
 <style is:global>
   :root {
-    --font-sans: 'Plus Jakarta Sans', sans-serif;
+    --font-sans: 'Archivo', sans-serif;
+    --font-editorial: 'Newsreader', Georgia, serif;
+    --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
     --font-caveat: 'Caveat', cursive;
   }
 

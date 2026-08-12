@@ -1,0 +1,8 @@
+---
+import CommunityPage from '@/components/community-system/CommunityPage.astro';
+import { LOCALES, type Locale } from '@/i18n/constants';
+import { agendaFixtureIds } from '@/content/agenda-content';
+export function getStaticPaths() { const ids = ['not-published', 'pending', ...agendaFixtureIds()]; return LOCALES.filter((locale) => locale !== 'id').flatMap((locale) => ids.map((id) => ({ params: { lang: locale, id } }))); }
+const locale = Astro.params.lang as Locale;
+---
+<CommunityPage kind="event" id={Astro.params.id} locale={locale} currentPath={`/${locale}/events/${Astro.params.id}`} />

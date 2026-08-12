@@ -1,0 +1,40 @@
+---
+import { fixtureText, type AttributionConsent } from '@/content/staging-fixtures';
+
+interface Props {
+  consent: AttributionConsent;
+  locale?: string;
+}
+
+const { consent, locale = 'id' } = Astro.props;
+const isIndonesian = locale === 'id';
+const isRevoked = consent.status === 'revoked-demo';
+const labels = {
+  'granted-for-demo': isIndonesian ? 'Izin aktif' : 'Consent granted',
+  'anonymous-by-choice': isIndonesian ? 'Memilih anonim' : 'Anonymous by choice',
+  'revoked-demo': isIndonesian ? 'Atribusi ditarik' : 'Attribution withdrawn',
+};
+---
+
+<article
+  class="kad-card kad-consent-card"
+  data-fixture-id={consent.id}
+  data-fixture-state={consent.state}
+  data-consent-status={consent.status}
+>
+  <div class="kad-card-top">
+    <span class="kad-status kad-status--semantic" data-status={consent.status}>{labels[consent.status]}</span>
+  </div>
+  {isRevoked || !consent.subject || !consent.scope ? (
+    <div class="kad-consent-tombstone" role="status">
+      <span>{isIndonesian ? 'Atribusi ditarik' : 'Attribution withdrawn'}</span>
+      <span>{isIndonesian ? 'Rincian publik tidak tersedia.' : 'No public details are available.'}</span>
+    </div>
+  ) : (
+    <>
+      <h3>{fixtureText(consent.subject, locale)}</h3>
+      <p>{fixtureText(consent.scope, locale)}</p>
+    </>
+  )}
+  <small data-consent-boundary>{isRevoked ? (isIndonesian ? 'Pencabutan tercatat' : 'Withdrawal recorded') : (isIndonesian ? 'Opt-in · dapat dicabut' : 'Opt-in · revocable')}</small>
+</article>

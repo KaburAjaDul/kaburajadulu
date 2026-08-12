@@ -1,8 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
-import DestinationCard from '@/components/destination-card';
-import { translate } from '@/i18n/dictionaries';
+import { useEffect, useState } from 'react';
 import type { Locale } from '@/i18n/constants';
 import { cn } from '@/lib/utils';
 
@@ -13,70 +11,68 @@ interface DestinationShowcaseProps {
 const AUTO_ADVANCE_MS = 7_000;
 
 const destinations = [
-  { id: 'seoul', imageUrl: '/images/seoul.webp', locationKey: 'destinations.cities.seoul' },
-  { id: 'tokyo', imageUrl: '/images/tokyo.webp', locationKey: 'destinations.cities.tokyo' },
-  {
-    id: 'singapore',
-    imageUrl: '/images/singapore.webp',
-    locationKey: 'destinations.cities.singapore',
-  },
-  { id: 'berlin', imageUrl: '/images/berlin_2.webp', locationKey: 'destinations.cities.berlin' },
-] as const;
-
-const collageSlots = [
-  {
-    className: 'left-[-3%] top-[22%] w-[28%] sm:w-[28%] aspect-[1.5/1]',
-    transform: 'rotate(7.83deg)',
-    sizes: '(max-width: 640px) 28vw, 28vw',
-  },
-  {
-    className: 'right-[-2%] top-[-8%] w-[23%] sm:w-[23%] aspect-[1.56/1]',
-    transform: 'rotate(-9.5deg)',
-    sizes: '(max-width: 640px) 23vw, 23vw',
-  },
-  {
-    className: 'right-[12%] bottom-[4%] w-[28%] sm:w-[28%] aspect-[1.5/1]',
-    transform: 'rotate(-6deg)',
-    sizes: '(max-width: 640px) 28vw, 28vw',
-  },
+  { id: 'seoul', imageUrl: '/images/seoul.webp', idLabel: 'Seoul, Korea Selatan', enLabel: 'Seoul, South Korea', idNote: 'hangat, cepat, penuh kemungkinan', enNote: 'warm, fast, full of possibility' },
+  { id: 'tokyo', imageUrl: '/images/tokyo.webp', idLabel: 'Tokyo, Jepang', enLabel: 'Tokyo, Japan', idNote: 'detail, ritme, ruang untuk tersesat', enNote: 'detail, rhythm, room to get lost' },
+  { id: 'singapore', imageUrl: '/images/singapore.webp', idLabel: 'Singapura', enLabel: 'Singapore', idNote: 'terhubung, jernih, mulai dari kecil', enNote: 'connected, clear, start small' },
+  { id: 'berlin', imageUrl: '/images/berlin_2.webp', idLabel: 'Berlin, Jerman', enLabel: 'Berlin, Germany', idNote: 'berani, terbuka, bikin sendiri', enNote: 'bold, open, make your own way' },
 ] as const;
 
 export default function DestinationShowcase({ locale = 'id' }: DestinationShowcaseProps) {
-  const t = (key: string) => translate(locale, key);
+  const contentLocale = locale === 'id' ? 'id' : 'en';
   const [activeIndex, setActiveIndex] = useState(0);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
+  const [isChanging, setIsChanging] = useState(false);
 
   useEffect(() => {
     const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
     const updatePreference = () => setPrefersReducedMotion(mediaQuery.matches);
-
     updatePreference();
     mediaQuery.addEventListener?.('change', updatePreference);
-
     return () => mediaQuery.removeEventListener?.('change', updatePreference);
   }, []);
 
   useEffect(() => {
     if (prefersReducedMotion || isPaused) return;
-
     const interval = window.setInterval(() => {
       setActiveIndex((currentIndex) => (currentIndex + 1) % destinations.length);
+      setIsChanging(true);
     }, AUTO_ADVANCE_MS);
-
     return () => window.clearInterval(interval);
   }, [isPaused, prefersReducedMotion]);
 
+  useEffect(() => {
+    if (!isChanging) return;
+    const frame = window.requestAnimationFrame(() => setIsChanging(false));
+    return () => window.cancelAnimationFrame(frame);
+  }, [activeIndex, isChanging]);
+
   const activeDestination = destinations[activeIndex];
-  const activeLocation = t(activeDestination.locationKey);
+  const activeLocation = contentLocale === 'id' ? activeDestination.idLabel : activeDestination.enLabel;
   const autoplayPaused = prefersReducedMotion || isPaused;
-  const previewDestinations = useMemo(
-    () => destinations.filter((_, index) => index !== activeIndex),
-    [activeIndex],
-  );
+  const copy = contentLocale === 'id'
+    ? {
+        route: '02 · Kota-kota KAD',
+        title: 'Empat kota. Banyak alasan untuk mulai bertanya.',
+        summary: 'Pilih kota yang memanggil rasa penasaranmu. Ini titik masuk visual, bukan peringkat popularitas anggota.',
+        pause: 'Jeda rotasi',
+        resume: 'Lanjutkan rotasi',
+        show: 'Tampilkan',
+        visualNote: 'Visual konteks. Hubungan kota dan program belum diklaim.',
+      }
+    : {
+        route: '02 · KAD cities',
+        title: 'Four cities. Plenty of reasons to start asking.',
+        summary: 'Choose the city that catches your curiosity. This is a visual entry point, not a member-popularity ranking.',
+        pause: 'Pause rotation',
+        resume: 'Resume rotation',
+        show: 'Show',
+        visualNote: 'Context image. No city-to-program relationship is claimed.',
+      };
 
   const selectDestination = (index: number) => {
     setActiveIndex(index);
+    setIsChanging(true);
     setIsPaused(true);
   };
 
@@ -86,161 +82,79 @@ export default function DestinationShowcase({ locale = 'id' }: DestinationShowca
 
   return (
     <section
-      className="py-12"
+      className="kad-city-atlas"
       data-testid="destination-showcase"
+      data-requested-locale={locale}
+      lang={contentLocale}
       aria-labelledby="destinations-heading"
     >
-      <div className="container mx-auto px-4">
-        <h2 id="destinations-heading" className="text-3xl font-bold text-center mb-2">
-          {t('destinations.headline')}
-        </h2>
-        <p className="text-center text-gray-500 mb-8 max-w-2xl mx-auto">
-          {t('destinations.subheadline')}
-        </p>
+      <div className="kad-container">
+        <header className="kad-city-atlas__header">
+          <p>{copy.route}</p>
+          <h2 id="destinations-heading">{copy.title}</h2>
+          <span>{copy.summary}</span>
+        </header>
 
-        {/* Desktop view */}
-        <div className="hidden sm:block relative mx-auto aspect-[16/9] md:aspect-[16/9] w-full max-w-7xl">
-          {/* The featured card rotates while the surrounding cards stay as a visual collage. */}
-          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] sm:w-[90%] h-auto aspect-[2/1] z-0">
-            <div
-              key={activeDestination.id}
-              data-testid="featured-destination"
-              data-destination={activeDestination.id}
-              aria-live="polite"
-              aria-atomic="true"
-            >
-              <DestinationCard
-                imageUrl={activeDestination.imageUrl}
-                location={activeLocation}
-                sizes="(max-width: 640px) 90vw, (max-width: 1024px) 90vw, 90vw"
-                style={{ width: '100%', height: '100%' }}
-              />
-            </div>
-          </div>
+        <span
+          className="sr-only"
+          data-testid="destination-live-status"
+          aria-live={autoplayPaused ? 'polite' : 'off'}
+          aria-atomic="true"
+        >
+          {activeLocation}
+        </span>
 
-          {previewDestinations.map((destination, previewIndex) => {
-            const slot = collageSlots[previewIndex];
+        <div className="kad-city-atlas__stage">
+          <figure
+            data-testid="featured-destination"
+            data-destination={activeDestination.id}
+            className={cn('kad-city-atlas__featured', isChanging && 'is-changing')}
+            aria-live="off"
+          >
+            <img src={activeDestination.imageUrl} alt={activeLocation} width="1200" height="800" />
+            <figcaption>
+              <span>{String(activeIndex + 1).padStart(2, '0')} / 04</span>
+              <strong>{activeLocation}</strong>
+              <small>{contentLocale === 'id' ? activeDestination.idNote : activeDestination.enNote}</small>
+            </figcaption>
+          </figure>
 
-            return (
-              <div key={destination.id} className={cn('absolute h-auto z-10', slot.className)}>
-                <DestinationCard
-                  imageUrl={destination.imageUrl}
-                  location={t(destination.locationKey)}
-                  sizes={slot.sizes}
-                  style={{ width: '100%', height: '100%', transform: slot.transform }}
-                />
-              </div>
-            );
-          })}
-
-          {/* Text overlay */}
-          <div className="absolute left-[20%] bottom-[1%] text-primary text-xl md:text-2xl lg:text-3xl font-caveat z-20">
-            {t('destinations.view_all')}
+          <div className="kad-city-atlas__selectors" role="group" aria-label={copy.title}>
+            {destinations.map((destination, index) => {
+              const label = contentLocale === 'id' ? destination.idLabel : destination.enLabel;
+              return (
+                <button
+                  key={destination.id}
+                  type="button"
+                  className={cn('kad-city-atlas__selector', activeIndex === index && 'is-active')}
+                  data-testid="destination-selector"
+                  aria-label={`${copy.show} ${label}`}
+                  aria-pressed={activeIndex === index}
+                  onFocus={() => setIsPaused(true)}
+                  onClick={() => selectDestination(index)}
+                >
+                  <img src={destination.imageUrl} alt="" width="320" height="220" aria-hidden="true" />
+                  <span>{String(index + 1).padStart(2, '0')}</span>
+                  <strong>{label}</strong>
+                </button>
+              );
+            })}
           </div>
         </div>
 
-        <div
-          className="hidden sm:flex flex-wrap justify-center items-center gap-2 mt-5"
-          role="group"
-          aria-label={t('destinations.headline')}
-        >
-          {destinations.map((destination, index) => (
-            <button
-              key={destination.id}
-              type="button"
-              className={cn(
-                'rounded-full px-4 py-2 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2',
-                activeIndex === index
-                  ? 'bg-primary text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200',
-              )}
-              data-testid="destination-selector"
-              aria-label={`${t('destinations.show')} ${t(destination.locationKey)}`}
-              aria-pressed={activeIndex === index}
-              onFocus={() => setIsPaused(true)}
-              onClick={() => selectDestination(index)}
-            >
-              {t(destination.locationKey)}
-            </button>
-          ))}
+        <footer className="kad-city-atlas__footer">
+          <span>{copy.visualNote}</span>
           <button
             type="button"
-            className={cn(
-              'rounded-full px-4 py-2 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2',
-              autoplayPaused
-                ? 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                : 'bg-primary text-white',
-            )}
             data-testid="destination-autoplay-toggle"
-            aria-label={autoplayPaused ? t('destinations.resume') : t('destinations.pause')}
+            aria-label={autoplayPaused ? copy.resume : copy.pause}
             aria-pressed={autoplayPaused}
             disabled={prefersReducedMotion}
             onClick={toggleAutoplay}
           >
-            {autoplayPaused ? t('destinations.resume') : t('destinations.pause')}
+            {autoplayPaused ? copy.resume : copy.pause}
           </button>
-        </div>
-
-        {/* Mobile view */}
-        <div className="block sm:hidden mt-8">
-          <div
-            data-testid="featured-destination"
-            data-destination={activeDestination.id}
-            aria-live="polite"
-            aria-atomic="true"
-          >
-            <DestinationCard
-              imageUrl={activeDestination.imageUrl}
-              location={activeLocation}
-              className="aspect-[1.5/1]"
-              sizes="(max-width: 640px) 100vw, 0vw"
-            />
-          </div>
-          <div
-            className="grid grid-cols-2 gap-2 mt-4"
-            role="group"
-            aria-label={t('destinations.headline')}
-          >
-            {destinations.map((destination, index) => (
-              <button
-                key={destination.id}
-                type="button"
-                className={cn(
-                  'rounded-lg px-3 py-2 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2',
-                  activeIndex === index
-                    ? 'bg-primary text-white'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200',
-                )}
-                data-testid="destination-selector"
-                aria-label={`${t('destinations.show')} ${t(destination.locationKey)}`}
-                aria-pressed={activeIndex === index}
-                onFocus={() => setIsPaused(true)}
-                onClick={() => selectDestination(index)}
-              >
-                {t(destination.locationKey)}
-              </button>
-            ))}
-            <button
-              type="button"
-              className={cn(
-                'col-span-2 rounded-lg px-3 py-2 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2',
-                autoplayPaused
-                  ? 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                  : 'bg-primary text-white',
-              )}
-              data-testid="destination-autoplay-toggle"
-              aria-label={autoplayPaused ? t('destinations.resume') : t('destinations.pause')}
-              aria-pressed={autoplayPaused}
-              disabled={prefersReducedMotion}
-              onClick={toggleAutoplay}
-            >
-              {autoplayPaused ? t('destinations.resume') : t('destinations.pause')}
-            </button>
-          </div>
-          <div className="text-left text-primary text-xl font-caveat mt-4 pl-4">
-            {t('destinations.view_all')}
-          </div>
-        </div>
+        </footer>
       </div>
     </section>
   );

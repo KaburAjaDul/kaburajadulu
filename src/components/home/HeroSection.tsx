@@ -1,50 +1,75 @@
 'use client';
 
-import { useMemo } from 'react';
 import { DISCORD_URL } from '@/constants/urls';
-import { translate } from '@/i18n/dictionaries';
+import { localizedPath } from '@/content/community-site';
 import type { Locale } from '@/i18n/constants';
+import { translate } from '@/i18n/dictionaries';
 
 interface HeroSectionProps {
   locale?: Locale;
 }
 
 export function HeroSection({ locale = 'id' }: HeroSectionProps) {
-  const t = useMemo(() => {
-    return (key: string) => translate(locale, key);
-  }, [locale]);
+  const t = (key: string) => translate(locale, key);
+  const supportingLocale = locale === 'id' ? 'id' : 'en';
+  const copy = supportingLocale === 'id'
+    ? {
+        note: 'Event publik tidak memerlukan pendaftaran atau konfirmasi kehadiran.',
+        visual: 'Konteks kota, bukan peringkat',
+        annotation: 'berangkat dari sini',
+      }
+    : {
+        note: 'Public events require no registration or attendance confirmation.',
+        visual: 'City context, not a ranking',
+        annotation: 'start from here',
+      };
 
   return (
-    <section className="py-10 md:py-16 lg:py-24">
-      <div className="container mx-auto text-center px-4 md:px-6">
-        <h1 className="text-4xl md:text-5xl font-extrabold mb-4 md:mb-6">
-          {t('hero.headline')}
-        </h1>
-        <p className="text-lg md:text-xl font-light max-w-3xl mx-auto mb-8">
-          {t('hero.subheadline')}
-        </p>
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-          <a
-            href={DISCORD_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="w-full sm:w-auto px-6 py-3 rounded-full bg-blue-600 text-white font-semibold hover:bg-blue-700 transition-colors"
-            aria-label={t('hero.cta_primary')}
-          >
-            {t('hero.cta_primary')}
-          </a>
-          <a
-            href={`/${locale === 'id' ? '' : locale + '/'}#blog`}
-            className="text-blue-600 hover:underline font-medium mt-2 sm:mt-0"
-          >
-            {t('hero.cta_secondary')}
-          </a>
+    <section
+      className="kad-home-hero"
+      lang={locale}
+      data-requested-locale={locale}
+      data-field-station="home"
+      aria-labelledby="home-title"
+    >
+      <div className="kad-container kad-home-hero__route-stamp">
+        <span>KAD/00 · KABURAJADULU</span>
+        <span>EST. 2024</span>
+      </div>
+
+      <div className="kad-container kad-home-hero__grid">
+        <div className="kad-home-hero__content">
+          <p className="kad-home-hero__kicker">{t('hero.badge')}</p>
+          <h1 id="home-title">{t('hero.headline')}</h1>
+          <p className="kad-home-hero__summary">{t('hero.subheadline')}</p>
+          <div className="kad-home-hero__actions">
+            <a
+              href={DISCORD_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="kad-button kad-button--primary kad-home-hero__primary"
+              aria-label={t('hero.cta_primary')}
+              data-home-primary-action
+            >
+              {t('hero.cta_primary')} <span aria-hidden="true">↗</span>
+            </a>
+            <a href={localizedPath(locale, '/programs')} className="kad-home-hero__secondary">
+              {t('hero.cta_secondary')} <span aria-hidden="true">→</span>
+            </a>
+          </div>
+          <p className="kad-home-hero__note" lang={supportingLocale}>{copy.note}</p>
         </div>
-        <div className="mt-6">
-          <span className="inline-block px-3 py-1 text-sm font-medium text-blue-700 bg-blue-50 rounded-full">
-            {t('hero.badge')}
-          </span>
-        </div>
+
+        <figure className="kad-home-hero__visual" aria-label={copy.visual} lang={supportingLocale}>
+          <div className="kad-home-hero__image" aria-hidden="true">
+            <img src="/images/seoul.webp" alt="" width="720" height="900" />
+          </div>
+          <figcaption>
+            <span>SEOUL / CITY 01</span>
+            <strong>{copy.visual}</strong>
+          </figcaption>
+          <span className="kad-home-hero__annotation" aria-hidden="true">{copy.annotation} →</span>
+        </figure>
       </div>
     </section>
   );

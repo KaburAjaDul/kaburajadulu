@@ -1,0 +1,9 @@
+---
+import ProgramsPage from '@/components/programs/ProgramsPage.astro';
+import { publicContentRepository } from '@/content/public-content';
+import { getLocaleFromUrl } from '@/i18n/getLocaleFromUrl';
+import type { Locale } from '@/i18n/constants';
+const locale = getLocaleFromUrl(Astro.url) as Locale;
+const result = await publicContentRepository.listPrograms({ locale });
+---
+<ProgramsPage locale={locale} currentPath={Astro.url.pathname} result={result} />

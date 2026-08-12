@@ -1,0 +1,16 @@
+---
+import ProgramDetailPage from '@/components/programs/ProgramDetailPage.astro';
+import { publicContentRepository } from '@/content/public-content';
+import { type Locale } from '@/i18n/constants';
+
+export async function getStaticPaths() {
+  const locale: Locale = 'id';
+  const result = await publicContentRepository.listPrograms({ locale });
+  return result.records.map((program) => ({ params: { slug: program.slug }, props: { locale, currentPath: `/programs/${program.slug}` } }));
+}
+
+const { slug } = Astro.params;
+const locale = Astro.props.locale as Locale;
+const program = slug ? await publicContentRepository.getProgram({ locale, slug }) : undefined;
+---
+<ProgramDetailPage program={program} locale={locale} currentPath={Astro.props.currentPath} />

@@ -23,7 +23,8 @@ interface BlogSectionProps {
 }
 
 export const BlogSection: React.FC<BlogSectionProps> = ({ posts, locale = 'id' }) => {
-  const t = (key: string) => translate(locale, key);
+  const contentLocale = locale === 'id' ? 'id' : 'en';
+  const t = (key: string) => translate(contentLocale, key);
   const [selectedCategory, setSelectedCategory] = useState('Semua');
 
   const allCategories = ['Semua', 'Lowongan', 'Beasiswa', 'Event', 'Kelas Bahasa', 'Berita'];
@@ -40,7 +41,7 @@ export const BlogSection: React.FC<BlogSectionProps> = ({ posts, locale = 'id' }
   };
 
   return (
-    <section className="py-16 px-4" id="blog">
+    <section className="py-16 px-4" id="blog" lang={contentLocale} data-requested-locale={locale}>
       <div className="w-full max-w-[1040px] mx-auto">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between w-full mb-12">
           <div className="flex flex-col md:flex-row md:items-center gap-4 md:gap-10">
@@ -61,7 +62,7 @@ export const BlogSection: React.FC<BlogSectionProps> = ({ posts, locale = 'id' }
                           : 'font-normal hover:opacity-70 cursor-pointer'
                       )}
                     >
-                      {category}
+                      {t(category === 'Semua' ? 'blog.categories.All' : `blog.categories.${category}`)}
                     </button>
                     {index < allCategories.length - 1 && (
                       <div className="w-1 h-1 bg-gray-900 opacity-20 rounded-full flex-shrink-0" />
@@ -92,8 +93,8 @@ export const BlogSection: React.FC<BlogSectionProps> = ({ posts, locale = 'id' }
             {filteredPosts.map((post) => (
               <BlogCard
                 key={post.id}
-                category={post.data.category}
-                date={post.data.pubDate.toLocaleDateString(locale === 'id' ? 'id-ID' : locale, {
+                category={t(`blog.categories.${post.data.category}`)}
+                date={post.data.pubDate.toLocaleDateString(contentLocale === 'id' ? 'id-ID' : 'en-US', {
                   day: 'numeric',
                   month: 'long',
                   year: 'numeric',

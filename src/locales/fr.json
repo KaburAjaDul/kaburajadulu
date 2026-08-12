@@ -8,11 +8,11 @@
     "language": "Langue"
   },
   "hero": {
-    "headline": "Kabur Aja Dulu",
-    "subheadline": "Découvrez des opportunités d'études et de travail à l'étranger. Nous aidons les Indonésiens à étudier et travailler à l'étranger.",
-    "cta_primary": "Commencer",
-    "cta_secondary": "Lire notre blog",
-    "badge": "Plateforme d'information fiable"
+    "headline": "Commencez par une vraie question.",
+    "subheadline": "KaburAjaDulu est une communauté publique pour celles et ceux qui cherchent leur voie vers les études, le travail ou la vie à l'étranger. Apportez votre question, consultez les expériences partagées, puis choisissez votre prochaine étape en connaissance de cause.",
+    "cta_primary": "Rejoindre KAD sur Discord",
+    "cta_secondary": "Découvrir les programmes",
+    "badge": "Communauté publique KAD"
   },
   "about": {
     "headline": "À propos de KaburAjaDulu",
@@ -32,10 +32,10 @@
     "github_contributor": "GitHub Contributor"
   },
   "destinations": {
-    "headline": "Destinations populaires",
-    "subheadline": "Explorez les pays les plus recherchés par les travailleurs indonésiens.",
-    "view_all": "Voir toutes les destinations",
-    "learn_more": "En savoir plus",
+    "headline": "Commencez par une ville que vous voulez comprendre.",
+    "subheadline": "Explorez les questions, récits et programmes liés à chaque ville. Ce sont des points de départ, pas un classement.",
+    "view_all": "Voir les conversations",
+    "learn_more": "Explorer cette ville",
     "show": "Afficher",
     "pause": "Mettre la rotation en pause",
     "resume": "Reprendre la rotation",
@@ -47,10 +47,10 @@
     }
   },
   "cta": {
-    "headline": "Prêt à commencer votre voyage ?",
-    "subheadline": "Rejoignez des milliers de personnes qui ont trouvé de nouvelles opportunités à l'étranger.",
-    "cta_primary": "Rejoignez-nous",
-    "cta_secondary": "Contactez-nous"
+    "headline": "Vous ne savez pas par où commencer ?",
+    "subheadline": "Apportez une vraie question à KAD. Trouvez la bonne conversation, puis choisissez votre prochaine étape.",
+    "cta_primary": "Rejoindre KAD sur Discord",
+    "cta_secondary": "Découvrir les programmes"
   },
   "blog": {
     "headline": "Blog et articles",
@@ -59,6 +59,7 @@
     "read_more": "Lire la suite",
     "empty_category": "Oups ! Il n’y a pas encore d’articles dans cette catégorie",
     "categories": {
+      "All": "Toutes",
       "Lowongan": "Offres d'emploi",
       "Beasiswa": "Bourses d'études",
       "Event": "Événements",

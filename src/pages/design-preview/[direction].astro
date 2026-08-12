@@ -1,0 +1,40 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Navbar from '../../components/layout/Navbar';
+import HeroSection from '../../components/home/HeroSection';
+import DestinationShowcase from '../../components/home/DestinationShowcase';
+import LandingDirection, { type LandingDirectionId } from '../../components/home/LandingDirection';
+import Footer from '../../components/layout/Footer';
+import '../../styles/global.css';
+
+export function getStaticPaths() {
+  const directions: LandingDirectionId[] = [
+    'field-notes',
+    'community-bulletin',
+    'community-atlas',
+  ];
+  return directions.map((direction) => ({ params: { direction }, props: { direction } }));
+}
+
+const { direction } = Astro.props as { direction: LandingDirectionId };
+const currentPath = Astro.url.pathname;
+const title = `${direction.replaceAll('-', ' ')} — KAD staging review`;
+---
+
+<Layout
+  title={title}
+  description="Perbandingan arah desain landing KaburAjaDulu untuk review staging."
+  canonical="/"
+  locale="id"
+  currentPath={currentPath}
+  robots="noindex, nofollow"
+  isPreview
+>
+  <Navbar client:only="react" locale="id" currentPath={currentPath} />
+  <main id="main-content" tabindex="-1">
+    <HeroSection client:only="react" locale="id" />
+    <DestinationShowcase client:only="react" locale="id" />
+    <LandingDirection direction={direction} locale="id" preview />
+  </main>
+  <Footer locale="id" />
+</Layout>

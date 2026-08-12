@@ -1,0 +1,16 @@
+---
+import ProgramsPage from '@/components/programs/ProgramsPage.astro';
+import { publicContentRepository, type ProgramCategoryId } from '@/content/public-content';
+import type { Locale } from '@/i18n/constants';
+
+export function getStaticPaths() {
+  const categories: readonly ProgramCategoryId[] = ['language', 'career'];
+  return categories.map((category) => ({ params: { category } }));
+}
+
+const locale: Locale = 'id';
+const category = Astro.params.category as ProgramCategoryId;
+const result = await publicContentRepository.listPrograms({ locale, category });
+---
+
+<ProgramsPage locale={locale} currentPath={`/programs/category/${category}`} result={result} selectedCategory={category} />

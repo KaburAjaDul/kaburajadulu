@@ -8,11 +8,11 @@
     "language": "Sprache"
   },
   "hero": {
-    "headline": "Kabur Aja Dulu",
-    "subheadline": "Entdecke Studien- und Arbeitsmöglichkeiten im Ausland. Wir helfenIndonesiern im Ausland zu studieren und zu arbeiten.",
-    "cta_primary": "Jetzt starten",
-    "cta_secondary": "Unseren Blog lesen",
-    "badge": "Vertrauenswürdige Informationsplattform"
+    "headline": "Beginne mit einer echten Frage.",
+    "subheadline": "KaburAjaDulu ist eine öffentliche Community für Menschen, die ihren Weg zu Studium, Arbeit oder einem Leben im Ausland suchen. Bring deine Frage mit, prüfe die Erfahrungen anderer und wähle deinen nächsten Schritt mit Bedacht.",
+    "cta_primary": "KAD auf Discord beitreten",
+    "cta_secondary": "Programme entdecken",
+    "badge": "Öffentliche KAD-Community"
   },
   "about": {
     "headline": "Über KaburAjaDulu",
@@ -32,10 +32,10 @@
     "github_contributor": "GitHub Contributor"
   },
   "destinations": {
-    "headline": "Beliebte Reiseziele",
-    "subheadline": "Entdecke die von indonesischen Arbeitnehmern am meisten gesuchten Länder.",
-    "view_all": "Alle Reiseziele ansehen",
-    "learn_more": "Mehr erfahren",
+    "headline": "Beginne mit einer Stadt, die du verstehen möchtest.",
+    "subheadline": "Entdecke Fragen, Geschichten und Programme zu jeder Stadt. Das sind Gesprächseinstiege, keine Rangliste.",
+    "view_all": "Gespräche ansehen",
+    "learn_more": "Diese Stadt erkunden",
     "show": "Anzeigen",
     "pause": "Rotation pausieren",
     "resume": "Rotation fortsetzen",
@@ -47,10 +47,10 @@
     }
   },
   "cta": {
-    "headline": "Bereit, deine Reise zu starten?",
-    "subheadline": "Schließe dich Tausenden von Menschen an, die neue Möglichkeiten im Ausland gefunden haben.",
-    "cta_primary": "Mach mit",
-    "cta_secondary": "Kontaktiere uns"
+    "headline": "Nicht sicher, wo du anfangen sollst?",
+    "subheadline": "Bring eine echte Frage zu KAD. Finde das passende Gespräch und entscheide dann über deinen nächsten Schritt.",
+    "cta_primary": "KAD auf Discord beitreten",
+    "cta_secondary": "Programme entdecken"
   },
   "blog": {
     "headline": "Blog & Artikel",
@@ -59,6 +59,7 @@
     "read_more": "Weiterlesen",
     "empty_category": "Hoppla! In dieser Kategorie gibt es keine Beiträge",
     "categories": {
+      "All": "Alle",
       "Lowongan": "Stellenausschreibungen",
       "Beasiswa": "Stipendien",
       "Event": "Veranstaltungen",

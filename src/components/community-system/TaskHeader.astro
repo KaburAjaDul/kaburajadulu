@@ -1,0 +1,50 @@
+---
+interface HeaderStat {
+  value: string;
+  label: string;
+  state?: 'default' | 'pending' | 'ready';
+}
+
+interface Props {
+  eyebrow: string;
+  title: string;
+  summary: string;
+  stats?: HeaderStat[];
+  variant?: 'catalogue' | 'operational' | 'evidence' | 'proposal' | 'record';
+  locale?: string;
+}
+
+const {
+  eyebrow,
+  title,
+  summary,
+  stats = [],
+  variant = 'operational',
+  locale = 'id',
+} = Astro.props;
+---
+
+<section class:list={['kad-task-header', `kad-task-header--${variant}`]} aria-labelledby="page-title" data-page-header="task" data-header-variant={variant} data-header-density="compact">
+  <div class="kad-task-header__layout">
+    <div class="kad-task-header__copy">
+      <p class="kad-eyebrow">{eyebrow}</p>
+      <slot name="marker" />
+      <h1 id="page-title">{title}</h1>
+      <p class="kad-task-header__summary">{summary}</p>
+    </div>
+    <div class="kad-task-header__utility">
+      {stats.length > 0 && (
+        <dl class="kad-task-header__stats" aria-label={locale === 'id' ? 'Ringkasan halaman' : 'Page summary'}>
+          {stats.map((stat) => (
+            <div data-state={stat.state ?? 'default'}>
+              <dt>{stat.label}</dt>
+              <dd>{stat.value}</dd>
+            </div>
+          ))}
+        </dl>
+      )}
+      <div class="kad-task-header__actions"><slot name="actions" /></div>
+    </div>
+  </div>
+  <slot name="footer" />
+</section>

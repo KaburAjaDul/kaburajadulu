@@ -1,0 +1,134 @@
+{
+  "$schema": "../../../../.codex/skills/engineer-interfaces/assets/reference-coverage.schema.json",
+  "schema_version": "1.0",
+  "kind": "reference-image-coverage",
+  "id": "kad-landing-staging-v1",
+  "policy": "reference-coverage.policy.md",
+  "asset_contract": {
+    "format": "png",
+    "viewport_field": "represented-css-viewport",
+    "presentation_modes": ["full-frame", "viewport-on-board"]
+  },
+  "required_coverage": {
+    "dimensions": {
+      "route": [
+        "/design-preview/field-notes/",
+        "/design-preview/community-bulletin/",
+        "/design-preview/community-atlas/"
+      ],
+      "viewport": ["desktop", "mobile"],
+      "shell_state": ["expanded", "compact-closed"],
+      "interaction_state": ["idle"],
+      "data_state": ["approved-public-snapshot"]
+    },
+    "categories": ["shell-context", "responsive-reflow", "landing-direction"],
+    "scenario_ids": [
+      "field-notes-desktop",
+      "field-notes-mobile",
+      "bulletin-desktop",
+      "bulletin-mobile",
+      "atlas-desktop",
+      "atlas-mobile"
+    ],
+    "route_context_scenarios": {
+      "/design-preview/field-notes/": "field-notes-desktop",
+      "/design-preview/community-bulletin/": "bulletin-desktop",
+      "/design-preview/community-atlas/": "atlas-desktop"
+    },
+    "context_pairs": [],
+    "lifecycle_sequences": []
+  },
+  "frames": [
+    {
+      "id": "field-notes-desktop",
+      "route": "/design-preview/field-notes/",
+      "viewport": {"class": "desktop", "width": 1440, "height": 1000, "presentation": "full-frame"},
+      "represented_region": {"x": 0, "y": 0, "width": 1440, "height": 1000},
+      "shell_state": {"id": "expanded", "navigation": "visible", "menu": "open"},
+      "interaction_state": {"id": "idle"},
+      "data_state": {"id": "approved-public-snapshot", "description": "five approved public program posters and explicit pending agenda"},
+      "categories": ["shell-context", "landing-direction"],
+      "required_visible_controls": ["Field Notes selected", "Gabung Discord", "Cek placeholder halaman lain"],
+      "provenance": {"status": "planned-reference", "source": "locked Field Notes exploration", "note": "Recommended staging direction in full site context."},
+      "file_path": "captures/field-notes-desktop.png",
+      "coverage_status": "planned",
+      "mandatory": true
+    },
+    {
+      "id": "field-notes-mobile",
+      "route": "/design-preview/field-notes/",
+      "viewport": {"class": "mobile", "width": 390, "height": 844, "presentation": "full-frame"},
+      "represented_region": {"x": 0, "y": 0, "width": 390, "height": 844},
+      "shell_state": {"id": "compact-closed", "navigation": "disclosure", "menu": "closed"},
+      "interaction_state": {"id": "idle"},
+      "data_state": {"id": "approved-public-snapshot", "description": "poster rail recomposed for touch scrolling"},
+      "categories": ["responsive-reflow", "landing-direction"],
+      "required_visible_controls": ["Field Notes selected", "Buka navigasi"],
+      "provenance": {"status": "planned-reference", "source": "locked Field Notes exploration", "note": "Mobile reflow for the recommended direction."},
+      "file_path": "captures/field-notes-mobile.png",
+      "coverage_status": "planned",
+      "mandatory": true
+    },
+    {
+      "id": "bulletin-desktop",
+      "route": "/design-preview/community-bulletin/",
+      "viewport": {"class": "desktop", "width": 1440, "height": 1000, "presentation": "full-frame"},
+      "represented_region": {"x": 0, "y": 0, "width": 1440, "height": 1000},
+      "shell_state": {"id": "expanded", "navigation": "visible", "menu": "open"},
+      "interaction_state": {"id": "idle"},
+      "data_state": {"id": "approved-public-snapshot", "description": "five approved posters arranged as public notices"},
+      "categories": ["shell-context", "landing-direction"],
+      "required_visible_controls": ["Community Bulletin selected", "Gabung Discord"],
+      "provenance": {"status": "planned-reference", "source": "landing design exploration", "note": "Comparison direction in full site context."},
+      "file_path": "captures/bulletin-desktop.png",
+      "coverage_status": "planned",
+      "mandatory": true
+    },
+    {
+      "id": "bulletin-mobile",
+      "route": "/design-preview/community-bulletin/",
+      "viewport": {"class": "mobile", "width": 390, "height": 844, "presentation": "full-frame"},
+      "represented_region": {"x": 0, "y": 0, "width": 390, "height": 844},
+      "shell_state": {"id": "compact-closed", "navigation": "disclosure", "menu": "closed"},
+      "interaction_state": {"id": "idle"},
+      "data_state": {"id": "approved-public-snapshot", "description": "public notices stacked for mobile"},
+      "categories": ["responsive-reflow", "landing-direction"],
+      "required_visible_controls": ["Community Bulletin selected", "Buka navigasi"],
+      "provenance": {"status": "planned-reference", "source": "landing design exploration", "note": "Mobile comparison direction."},
+      "file_path": "captures/bulletin-mobile.png",
+      "coverage_status": "planned",
+      "mandatory": true
+    },
+    {
+      "id": "atlas-desktop",
+      "route": "/design-preview/community-atlas/",
+      "viewport": {"class": "desktop", "width": 1440, "height": 1000, "presentation": "full-frame"},
+      "represented_region": {"x": 0, "y": 0, "width": 1440, "height": 1000},
+      "shell_state": {"id": "expanded", "navigation": "visible", "menu": "open"},
+      "interaction_state": {"id": "idle"},
+      "data_state": {"id": "approved-public-snapshot", "description": "conceptual city route and approved poster archive"},
+      "categories": ["shell-context", "landing-direction"],
+      "required_visible_controls": ["Community Atlas selected", "Gabung Discord"],
+      "provenance": {"status": "planned-reference", "source": "landing design exploration", "note": "Comparison direction in full site context."},
+      "file_path": "captures/atlas-desktop.png",
+      "coverage_status": "planned",
+      "mandatory": true
+    },
+    {
+      "id": "atlas-mobile",
+      "route": "/design-preview/community-atlas/",
+      "viewport": {"class": "mobile", "width": 390, "height": 844, "presentation": "full-frame"},
+      "represented_region": {"x": 0, "y": 0, "width": 390, "height": 844},
+      "shell_state": {"id": "compact-closed", "navigation": "disclosure", "menu": "closed"},
+      "interaction_state": {"id": "idle"},
+      "data_state": {"id": "approved-public-snapshot", "description": "conceptual route stacked and poster rail scrollable"},
+      "categories": ["responsive-reflow", "landing-direction"],
+      "required_visible_controls": ["Community Atlas selected", "Buka navigasi"],
+      "provenance": {"status": "planned-reference", "source": "landing design exploration", "note": "Mobile comparison direction."},
+      "file_path": "captures/atlas-mobile.png",
+      "coverage_status": "planned",
+      "mandatory": true
+    }
+  ],
+  "visual_reviews": {}
+}

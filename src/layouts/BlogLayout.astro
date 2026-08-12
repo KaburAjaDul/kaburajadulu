@@ -33,13 +33,17 @@ const {
 const canonicalURL = canonical || `https://kaburajadulu.com${Astro.url.pathname}`;
 
 // Enhanced description with category info
-const enhancedDescription = description || `${category ? `${category}: ` : ''}${title} - Artikel dari KaburAjaDulu tentang peluang internasional.`;
+const enhancedDescription = description || (locale === 'id'
+  ? `${category ? `${category}: ` : ''}${title}. Artikel KaburAjaDulu tentang studi dan kerja di luar negeri.`
+  : `${category ? `${category}: ` : ''}${title}. A KaburAjaDulu article about studying and working abroad.`);
 ---
 
 <Layout 
   title={`${title} | KaburAjaDulu`}
   description={enhancedDescription}
   canonical={canonicalURL}
+  locale={locale}
+  currentPath={currentPath}
 >
   <!-- Blog-specific JSON-LD Schema -->
   <script type="application/ld+json" slot="head" is:inline>
@@ -88,7 +92,7 @@ const enhancedDescription = description || `${category ? `${category}: ` : ''}${
   </main>
 
   <!-- Footer -->
-  <Footer client:only="react" locale={locale} />
+  <Footer locale={locale} />
 </Layout>
 
 <style>

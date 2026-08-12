@@ -1,0 +1,27 @@
+---
+import { fixtureText, type Session } from '@/content/staging-fixtures';
+import StatusBadge from '@/components/community-system/StatusBadge.astro';
+
+interface Props {
+  session: Session;
+  locale?: string;
+  programHref: string;
+}
+
+const { session, locale = 'id', programHref } = Astro.props;
+const date = new Intl.DateTimeFormat(locale === 'id' ? 'id-ID' : 'en-US', {
+  dateStyle: 'medium',
+  timeStyle: 'short',
+  timeZone: session.timezone,
+}).format(new Date(session.startsAt));
+---
+
+<article class="kad-card kad-session-preview" data-fixture-id={session.id} data-fixture-state={session.state} data-participation-model="open_discord" data-registration-required="false">
+  <div class="kad-card-top">
+    <StatusBadge state={session.state} locale={locale} />
+    <span class="kad-status">{locale === 'id' ? 'Data simulasi' : 'Demo data'}</span>
+  </div>
+  <h3>{fixtureText(session.title, locale)}</h3>
+  <p>{date} · {session.durationMinutes} {locale === 'id' ? 'menit' : 'minutes'} · {locale === 'id' ? 'Tanpa pendaftaran' : 'No registration'}</p>
+  <a class="kad-text-link" href={programHref}>{locale === 'id' ? 'Buka program' : 'Open program'}</a>
+</article>

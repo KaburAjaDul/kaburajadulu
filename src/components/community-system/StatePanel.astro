@@ -1,0 +1,24 @@
+---
+interface Props {
+  state: 'empty' | 'pending' | 'error' | 'not-published';
+  title: string;
+  description: string;
+  id?: string;
+  locale?: string;
+  statusLabel?: string;
+}
+
+const { state, title, description, id, locale = 'id', statusLabel } = Astro.props;
+const labels = {
+  id: { empty: 'Belum tersedia', pending: 'Menunggu', error: 'Perlu diperbaiki', 'not-published': 'Belum dipublikasikan' },
+  en: { empty: 'Not available', pending: 'Pending', error: 'Needs attention', 'not-published': 'Not published' },
+} as const;
+const statusText = statusLabel ?? labels[locale === 'id' ? 'id' : 'en'][state];
+---
+
+<div class="kad-empty-state kad-state-panel" data-state={state} data-state-panel={state} id={id}>
+  <span class="kad-status kad-status--semantic" data-status={state}>{statusText}</span>
+  <h2>{title}</h2>
+  <p>{description}</p>
+  <slot />
+</div>

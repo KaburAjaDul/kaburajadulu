@@ -13,7 +13,7 @@ explore study and work opportunities abroad. Domain: **kaburajadulu.com**
 | UI | React 19 + ShadCN (New York style) + Radix UI |
 | Styling | Tailwind CSS v4 via `@tailwindcss/vite` (no `tailwind.config.js`) |
 | Language | TypeScript (strict mode via `astro/tsconfigs/strict`) |
-| Runtime | Node.js 22.12.0 or newer |
+| Runtime | Node.js 22.19.0 or newer |
 | Package manager | Bun 1.3.14 |
 | Deployment | Cloudflare Workers (static assets) |
 

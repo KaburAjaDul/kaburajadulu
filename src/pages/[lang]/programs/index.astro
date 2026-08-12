@@ -1,0 +1,9 @@
+---
+import ProgramsPage from '@/components/programs/ProgramsPage.astro';
+import { publicContentRepository } from '@/content/public-content';
+import { LOCALES, type Locale } from '@/i18n/constants';
+export function getStaticPaths() { return LOCALES.filter((locale) => locale !== 'id').map((locale) => ({ params: { lang: locale } })); }
+const locale = Astro.params.lang as Locale;
+const result = await publicContentRepository.listPrograms({ locale });
+---
+<ProgramsPage locale={locale} currentPath={`/${locale}/programs`} result={result} />
