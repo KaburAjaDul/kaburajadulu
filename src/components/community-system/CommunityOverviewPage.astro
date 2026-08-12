@@ -13,6 +13,7 @@ import {
   stagingFixturesEnabled,
 } from '@/content/staging-fixtures';
 import { PRODUCTION_COMMUNITY_METRICS, communityText } from '@/content/community-information-content';
+import LiveCommunitySummary from '@/components/community-system/LiveCommunitySummary';
 import '@/styles/community-information.css';
 
 interface Props { locale: Locale; href: (path: string) => string; }
@@ -99,6 +100,8 @@ const peoplePreview = publicPeople.slice(0, 3);
       <p>{isEnglish ? 'Programs, the next public agenda item, and people who chose to make their contribution visible.' : 'Program, agenda publik terdekat, dan orang-orang yang memilih untuk menampilkan kontribusinya.'}</p>
     </div>
   </header>
+
+  {!fixturesEnabled && <LiveCommunitySummary client:load locale={locale} />}
 
   <section class="kad-community-information__section kad-community-information__section--current" data-community-section="current" aria-labelledby="community-current-title">
     <div class="kad-community-information__current-grid">

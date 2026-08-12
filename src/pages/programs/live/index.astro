@@ -1,0 +1,20 @@
+---
+import Layout from '@/layouts/Layout.astro';
+import Navbar from '@/components/layout/Navbar';
+import Footer from '@/components/layout/Footer';
+import LiveProgramDetail from '@/components/programs/LiveProgramDetail';
+import { getLocaleFromUrl } from '@/i18n/getLocaleFromUrl';
+import type { Locale } from '@/i18n/constants';
+import '@/styles/agenda.css';
+const locale = getLocaleFromUrl(Astro.url) as Locale;
+const currentPath = `${Astro.url.pathname}${Astro.url.search}`;
+const title = locale === 'id' ? 'Study Club live — KaburAjaDulu' : locale === 'ar' ? 'نوادي Study Club المباشرة — KaburAjaDulu' : 'Live Study Clubs — KaburAjaDulu';
+const description = locale === 'id' ? 'Jadwal operasional Study Club dari Discord Scheduled Events yang disetujui.' : locale === 'ar' ? 'الجداول التشغيلية لـ Study Club من فعاليات Discord المجدولة المعتمدة.' : 'Operational Study Club schedules from approved Discord Scheduled Events.';
+---
+<Layout title={title} description={description} canonical={`https://kaburajadulu.com${Astro.url.pathname}`} locale={locale} currentPath={currentPath}>
+  <Navbar client:only="react" locale={locale} currentPath={currentPath} />
+  <main id="main-content" class="kad-page kad-page--task" lang={locale === 'id' ? 'id' : locale === 'ar' ? 'ar' : 'en'} data-page-family="program-live-detail">
+    <div class="kad-container"><LiveProgramDetail client:load locale={locale} initialProgram={Astro.url.searchParams.get('program') ?? ''} /></div>
+  </main>
+  <Footer locale={locale} />
+</Layout>

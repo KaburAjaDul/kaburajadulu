@@ -11,7 +11,7 @@ export const MAX_CLOCK_SKEW_MS = 5 * 60 * 1000;
 export const MAX_AGENDA_AGE_MS = 45 * 60 * 1000;
 
 type AgendaStatus = 'scheduled' | 'active' | 'withdrawn';
-type PublicAgendaStatus = Exclude<AgendaStatus, 'withdrawn'>;
+export type PublicAgendaStatus = AgendaStatus;
 type SourceStatus = 'fresh' | 'stale';
 const PUBLIC_JOIN_URL = 'https://discord.gg/RUFFbEaeDx';
 const PUBLIC_SOURCE = 'discord_scheduled_event';
@@ -23,7 +23,7 @@ export interface AgendaProjectionEntry {
   startAt: string;
   endAt: string | null;
   timezone: string;
-  status: PublicAgendaStatus;
+  status: Exclude<PublicAgendaStatus, 'withdrawn'>;
   program: string;
   series: string | null;
   joinUrl: typeof PUBLIC_JOIN_URL;
@@ -266,6 +266,24 @@ export async function verifyProjectionSignature(request: Request, body: string, 
 const checkpoint = async (db: D1Database): Promise<StoredCheckpoint | null> =>
   db.prepare('SELECT revision, observed_at, received_at FROM agenda_checkpoint WHERE id = 1').first<StoredCheckpoint>();
 
+const validateStoredCheckpoint = (candidate: unknown): StoredCheckpoint | null => {
+  if (!candidate || typeof candidate !== 'object' || Array.isArray(candidate)) return null;
+  if (!exactKeys(candidate, ['revision', 'observed_at', 'received_at'])) return null;
+  const value = candidate as Partial<StoredCheckpoint>;
+  if (!Number.isSafeInteger(value.revision) || (value.revision as number) < 1) return null;
+  if (!isValidIsoDate(value.observed_at) || !isValidIsoDate(value.received_at)) return null;
+  const observedAt = Date.parse(value.observed_at as string);
+  const receivedAt = Date.parse(value.received_at as string);
+  const now = Date.now();
+  if (observedAt > now + MAX_CLOCK_SKEW_MS || receivedAt > now + MAX_CLOCK_SKEW_MS) return null;
+  if (receivedAt < observedAt) return null;
+  return {
+    revision: value.revision as number,
+    observed_at: value.observed_at as string,
+    received_at: value.received_at as string,
+  };
+};
+
 export async function applyProjection(
   db: D1Database,
   projection: AgendaProjection,
@@ -311,7 +329,22 @@ export async function applyProjection(
   return 'applied';
 }
 
-const toPublicEntry = (entry: StoredAgendaEntry) => ({
+type ValidPublicEntry = Omit<AgendaProjectionEntry, 'status'> & { status: PublicAgendaStatus };
+
+const validateStoredPublicEntry = (entry: StoredAgendaEntry, allowWithdrawn = false, expectedRevision?: number): ValidPublicEntry | null => {
+  if (!Number.isSafeInteger(entry.revision) || entry.revision < 1 || (expectedRevision !== undefined && entry.revision !== expectedRevision)) return null;
+  if (!isValidIsoDate(entry.observed_at) || !isValidIsoDate(entry.generated_at)) return null;
+  if (Date.parse(entry.observed_at) > Date.now() + MAX_CLOCK_SKEW_MS || Date.parse(entry.generated_at) > Date.now() + MAX_CLOCK_SKEW_MS) return null;
+  if (!isSafeOpaqueId(entry.id) || typeof entry.title !== 'string' || entry.title.length < 1 || entry.title.length > 500 || hasUnsafeText(entry.title)) return null;
+  if (typeof entry.summary !== 'string' || entry.summary.length < 1 || entry.summary.length > 500 || hasUnsafeText(entry.summary)) return null;
+  if (!isValidIsoDate(entry.start_at) || (entry.end_at !== null && (!isValidIsoDate(entry.end_at) || Date.parse(entry.end_at) <= Date.parse(entry.start_at)))) return null;
+  if (entry.timezone !== 'Asia/Jakarta' || !isSafeOpaqueId(entry.id)) return null;
+  if (entry.status !== 'scheduled' && entry.status !== 'active' && entry.status !== 'withdrawn') return null;
+  if (!allowWithdrawn && entry.status === 'withdrawn') return null;
+  if (typeof entry.program !== 'string' || entry.program.length < 1 || entry.program.length > 500 || hasUnsafeText(entry.program)) return null;
+  if (entry.series !== null && (typeof entry.series !== 'string' || entry.series.length < 1 || entry.series.length > 500 || hasUnsafeText(entry.series))) return null;
+  if (entry.join_url !== PUBLIC_JOIN_URL || entry.source !== PUBLIC_SOURCE) return null;
+  return {
   id: entry.id,
   title: entry.title,
   summary: entry.summary,
@@ -323,7 +356,16 @@ const toPublicEntry = (entry: StoredAgendaEntry) => ({
   series: entry.series,
   joinUrl: entry.join_url,
   source: entry.source,
-});
+  };
+};
+
+const freshnessFor = (observedAt: string) => {
+  const staleAt = new Date(Date.parse(observedAt) + MAX_AGENDA_AGE_MS).toISOString();
+  return {
+    staleAt,
+    sourceStatus: (Date.now() - Date.parse(observedAt) <= MAX_AGENDA_AGE_MS ? 'fresh' : 'stale') as SourceStatus,
+  };
+};
 
 async function agendaResponse(request: Request, env: Env): Promise<Response> {
   if (!env.AGENDA_DB) return errorResponse(503, 'agenda_unavailable', 'Agenda is not configured in this environment.');
@@ -333,11 +375,12 @@ async function agendaResponse(request: Request, env: Env): Promise<Response> {
     env.AGENDA_DB.prepare('SELECT revision, observed_at, received_at FROM agenda_checkpoint WHERE id = 1'),
   ]);
   const rows = (rowsResult?.results ?? []) as StoredAgendaEntry[];
-  const current = (checkpointResult?.results?.[0] as StoredCheckpoint | undefined) ?? null;
+  const current = validateStoredCheckpoint(checkpointResult?.results?.[0]);
   if (!current) return errorResponse(503, 'agenda_unavailable', 'Agenda has not received a signed projection yet.');
+  const publicRows = rows.map((row) => validateStoredPublicEntry(row, false, current.revision)).filter((row): row is ValidPublicEntry => row !== null);
+  if (publicRows.length !== rows.length) return errorResponse(503, 'agenda_unavailable', 'Agenda data is not currently available for public display.');
   const observedAt = current.observed_at;
-  const staleAt = new Date(Date.parse(observedAt) + MAX_AGENDA_AGE_MS).toISOString();
-  const sourceStatus: SourceStatus = Date.now() - Date.parse(observedAt) <= MAX_AGENDA_AGE_MS ? 'fresh' : 'stale';
+  const { staleAt, sourceStatus } = freshnessFor(observedAt);
   const payload = {
     schemaVersion: 'v1',
     generatedAt: current.received_at,
@@ -345,12 +388,44 @@ async function agendaResponse(request: Request, env: Env): Promise<Response> {
     revision: current.revision,
     sourceStatus,
     staleAt,
-    entries: rows.map(toPublicEntry),
+    entries: publicRows,
   };
   const body = JSON.stringify(payload);
   const etag = `"${encodeBase64(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(body)))}"`;
   if (request.headers.get('if-none-match') === etag) return new Response(null, { status: 304, headers: new Headers({ ...JSON_HEADERS, etag, 'cache-control': 'public, max-age=30, stale-while-revalidate=120' }) });
   return json(payload, { headers: { etag, 'cache-control': 'public, max-age=30, stale-while-revalidate=120' } });
+}
+
+async function agendaDetailResponse(request: Request, env: Env, opaqueId: string): Promise<Response> {
+  if (!env.AGENDA_DB) return errorResponse(503, 'agenda_unavailable', 'Agenda is not configured in this environment.');
+  if (!isSafeOpaqueId(opaqueId)) return errorResponse(404, 'agenda_not_found', 'No public agenda record was found.');
+  const [rowsResult, checkpointResult] = await env.AGENDA_DB.batch([
+    env.AGENDA_DB.prepare(`SELECT id, title, summary, start_at, end_at, timezone, status, program, series, join_url, source, revision, generated_at, observed_at
+      FROM agenda_entries WHERE id = ?1 LIMIT 1`).bind(opaqueId),
+    env.AGENDA_DB.prepare('SELECT revision, observed_at, received_at FROM agenda_checkpoint WHERE id = 1'),
+  ]);
+  const row = ((rowsResult?.results ?? []) as StoredAgendaEntry[])[0];
+  const current = validateStoredCheckpoint(checkpointResult?.results?.[0]);
+  if (!current) return errorResponse(503, 'agenda_unavailable', 'Agenda is not currently available for public display.');
+  if (!row) return errorResponse(404, 'agenda_not_found', 'No public agenda record was found.');
+  if (row.status === 'withdrawn') return json({ error: { code: 'agenda_withdrawn', detail: 'This agenda record is no longer public.' } }, { status: 410, headers: { 'cache-control': 'no-store' } });
+  const publicEntry = validateStoredPublicEntry(row, false, current.revision);
+  if (!publicEntry) return errorResponse(503, 'agenda_unavailable', 'Agenda data is not currently available for public display.');
+  const { staleAt, sourceStatus } = freshnessFor(current.observed_at);
+  const payload = {
+    schemaVersion: 'v1' as const,
+    generatedAt: current.received_at,
+    observedAt: current.observed_at,
+    revision: current.revision,
+    sourceStatus,
+    staleAt,
+    entry: publicEntry,
+  };
+  const body = JSON.stringify(payload);
+  const etag = `"${encodeBase64(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(body)))}"`;
+  const headers = { etag, 'cache-control': 'public, max-age=30, stale-while-revalidate=120' };
+  if (request.headers.get('if-none-match') === etag) return new Response(null, { status: 304, headers: new Headers({ ...JSON_HEADERS, ...headers }) });
+  return json(payload, { headers });
 }
 
 async function readiness(env: Env): Promise<Response> {
@@ -439,6 +514,12 @@ export default {
     if (url.pathname === '/healthz') return json({ status: 'ok', service: 'kaburajadulu-web', version: 'agenda-api-v1' }, { headers: { 'cache-control': 'no-store' } });
     if (url.pathname === '/readyz') return readiness(env);
     if (url.pathname === '/api/v1/agenda' && request.method === 'GET') return withCors(await agendaResponse(request, env), request);
+    const agendaDetail = url.pathname.match(/^\/api\/v1\/agenda\/([^/]+)$/);
+    if (agendaDetail && request.method === 'GET') {
+      let opaqueId: string;
+      try { opaqueId = decodeURIComponent(agendaDetail[1]); } catch { return errorResponse(404, 'agenda_not_found', 'No public agenda record was found.'); }
+      return withCors(await agendaDetailResponse(request, env, opaqueId), request);
+    }
     if (url.pathname === '/internal/v1/projections/agenda') return handleIngest(request, env);
     return serveAssets(request, env);
   },

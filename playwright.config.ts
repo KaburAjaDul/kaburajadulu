@@ -7,10 +7,12 @@ export default defineConfig({
   expect: {
     timeout: 5_000,
   },
-  fullyParallel: true,
+  // Astro preview serves locale redirects and static assets from one process;
+  // serial workers keep local/default runs deterministic across those requests.
+  fullyParallel: false,
   forbidOnly: Boolean(process.env.CI),
   retries: process.env.CI ? 2 : 0,
-  workers: process.env.CI ? 1 : undefined,
+  workers: 1,
   reporter: process.env.CI ? [['github'], ['list']] : [['list']],
   use: {
     baseURL: 'http://127.0.0.1:4321',

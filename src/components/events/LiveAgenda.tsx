@@ -1,31 +1,17 @@
 import { useEffect, useMemo, useState } from 'react';
+import { operationalProgramHref } from '@/content/live-agenda';
+import { localizedPath } from '@/content/community-site';
+import type { Locale } from '@/i18n/constants';
+import {
+  isPayloadStale,
+  parseAgendaPayload,
+  type AgendaEntry,
+  type AgendaPayload,
+} from '@/components/events/live-agenda-contract';
 
-type AgendaStatus = 'scheduled' | 'active';
 type AgendaPhase = 'loading' | 'ready' | 'empty' | 'error';
-
-interface AgendaEntry {
-  id: string;
-  title: string;
-  summary: string;
-  startAt: string;
-  endAt: string | null;
-  timezone: string;
-  status: AgendaStatus;
-  program: string;
-  series: string | null;
-  joinUrl: string;
-  source: string;
-}
-
-interface AgendaPayload {
-  schemaVersion: 'v1';
-  generatedAt: string;
-  observedAt: string;
-  revision: number;
-  sourceStatus: 'fresh' | 'stale';
-  staleAt?: string | null;
-  entries: unknown[];
-}
+const AGENDA_ENDPOINT = '/api/v1/agenda';
+const AGENDA_SOURCE = 'discord_scheduled_event';
 
 interface Props {
   locale: string;
@@ -52,69 +38,10 @@ interface AgendaError {
 
 type AgendaState = { phase: 'loading' } | LoadedAgenda | AgendaError;
 
-const unsafePublicText = /<@!?\d+>|@everyone|@here|\b\d{15,20}\b|https?:\/\/|discord(?:app)?\.com|discord\.gg/i;
-const isoTimestamp = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,3})?Z$/;
-
-function hasExactKeys(value: Record<string, unknown>, expected: readonly string[]): boolean {
-  const keys = Object.keys(value).sort();
-  const allowed = [...expected].sort();
-  return keys.length === allowed.length && keys.every((key, index) => key === allowed[index]);
-}
-
-function isSafeText(value: unknown): value is string {
-  return typeof value === 'string' && value.trim().length > 0 && !unsafePublicText.test(value);
-}
-
-function isIsoTimestamp(value: unknown): value is string {
-  return typeof value === 'string' && isoTimestamp.test(value) && !Number.isNaN(Date.parse(value));
-}
-
-function parseEntry(value: unknown, discordUrl: string): AgendaEntry | null {
-  if (!value || typeof value !== 'object') return null;
-  const item = value as Record<string, unknown>;
-  if (!hasExactKeys(item, ['id', 'title', 'summary', 'startAt', 'endAt', 'timezone', 'status', 'program', 'series', 'joinUrl', 'source'])) return null;
-  if (item.status !== 'scheduled' && item.status !== 'active') return null;
-  if (item.source !== 'discord_scheduled_event' || item.joinUrl !== discordUrl) return null;
-  if (!isSafeText(item.id) || !/^agenda_[A-Za-z0-9_-]{43}$/.test(item.id) || !isSafeText(item.title) || !isSafeText(item.summary) || !isSafeText(item.program) || item.timezone !== 'Asia/Jakarta') return null;
-  if (!isIsoTimestamp(item.startAt)) return null;
-  if (item.endAt !== null && !isIsoTimestamp(item.endAt)) return null;
-  if (item.endAt !== null && Date.parse(item.endAt) <= Date.parse(item.startAt)) return null;
-  if (item.series !== null && item.series !== undefined && !isSafeText(item.series)) return null;
-  const series = item.series === null || item.series === undefined ? null : item.series;
-  return {
-    id: item.id,
-    title: item.title,
-    summary: item.summary,
-    startAt: item.startAt,
-    endAt: item.endAt,
-    timezone: item.timezone,
-    status: item.status,
-    program: item.program,
-    series,
-    joinUrl: discordUrl,
-    source: item.source,
-  };
-}
-
-function parsePayload(value: unknown, discordUrl: string): LoadedAgenda | null {
-  if (!value || typeof value !== 'object') return null;
-  const payload = value as Partial<AgendaPayload>;
-  if (!hasExactKeys(payload as Record<string, unknown>, ['schemaVersion', 'generatedAt', 'observedAt', 'revision', 'sourceStatus', 'staleAt', 'entries'])) return null;
-  const revision = payload.revision;
-  if (payload.schemaVersion !== 'v1' || !Array.isArray(payload.entries) || !isIsoTimestamp(payload.generatedAt) || !isIsoTimestamp(payload.observedAt) || typeof revision !== 'number' || !Number.isSafeInteger(revision) || revision < 1 || (payload.sourceStatus !== 'fresh' && payload.sourceStatus !== 'stale')) return null;
-  if (payload.staleAt !== null && payload.staleAt !== undefined && !isIsoTimestamp(payload.staleAt)) return null;
-  const parsedEntries = payload.entries.map((entry) => parseEntry(entry, discordUrl));
-  if (parsedEntries.some((entry) => entry === null)) return null;
-  const entries = parsedEntries as AgendaEntry[];
-  if (new Set(entries.map((entry) => entry.id)).size !== entries.length) return null;
-  const staleAt = payload.staleAt ?? null;
-  const stale = payload.sourceStatus === 'stale' || (staleAt !== null && Date.parse(staleAt) <= Date.now());
-  return {
-    phase: entries.length > 0 ? 'ready' : 'empty',
-    entries,
-    payload: payload as AgendaPayload,
-    stale,
-  };
+function parsePayload(value: unknown): LoadedAgenda | null {
+  const payload = parseAgendaPayload(value);
+  if (!payload) return null;
+  return { phase: payload.entries.length > 0 ? 'ready' : 'empty', entries: payload.entries, payload, stale: isPayloadStale(payload) };
 }
 
 function sortEntries(entries: AgendaEntry[]): AgendaEntry[] {
@@ -125,7 +52,7 @@ function sortEntries(entries: AgendaEntry[]): AgendaEntry[] {
 }
 
 function formatDate(value: string, locale: string, timezone: string): string {
-  return new Intl.DateTimeFormat(locale === 'id' ? 'id-ID' : 'en-GB', {
+  return new Intl.DateTimeFormat(locale === 'id' ? 'id-ID' : locale === 'ar' ? 'ar' : 'en-GB', {
     weekday: 'short',
     day: 'numeric',
     month: 'short',
@@ -135,7 +62,7 @@ function formatDate(value: string, locale: string, timezone: string): string {
 }
 
 function formatTime(value: string, locale: string, timezone: string): string {
-  return new Intl.DateTimeFormat(locale === 'id' ? 'id-ID' : 'en-GB', {
+  return new Intl.DateTimeFormat(locale === 'id' ? 'id-ID' : locale === 'ar' ? 'ar' : 'en-GB', {
     hour: '2-digit',
     minute: '2-digit',
     timeZone: timezone,
@@ -143,12 +70,12 @@ function formatTime(value: string, locale: string, timezone: string): string {
 }
 
 function timezoneLabel(timezone: string, locale: string): string {
-  if (timezone === 'Asia/Jakarta') return locale === 'id' ? 'WIB · Jakarta' : 'Jakarta time (WIB)';
+  if (timezone === 'Asia/Jakarta') return locale === 'id' ? 'WIB · Jakarta' : locale === 'ar' ? 'توقيت جاكرتا (WIB)' : 'Jakarta time (WIB)';
   return timezone;
 }
 
 function revisionCopy(locale: string, revision: number): string {
-  return locale === 'id' ? `Revisi sumber ${revision}` : `Source revision ${revision}`;
+  return locale === 'id' ? `Revisi sumber ${revision}` : locale === 'ar' ? `مراجعة المصدر ${revision}` : `Source revision ${revision}`;
 }
 
 export default function LiveAgenda({ locale, discordUrl, copy }: Props) {
@@ -158,10 +85,10 @@ export default function LiveAgenda({ locale, discordUrl, copy }: Props) {
   useEffect(() => {
     const controller = new AbortController();
     setState({ phase: 'loading' });
-    fetch('/api/v1/agenda', { headers: { accept: 'application/json' }, signal: controller.signal })
+    fetch(AGENDA_ENDPOINT, { headers: { accept: 'application/json' }, signal: controller.signal })
       .then(async (response) => {
         if (!response.ok) throw new Error(`agenda-${response.status}`);
-        return parsePayload(await response.json(), discordUrl);
+        return parsePayload(await response.json());
       })
       .then((payload) => {
         if (!payload) throw new Error('agenda-invalid-payload');
@@ -174,8 +101,10 @@ export default function LiveAgenda({ locale, discordUrl, copy }: Props) {
     return () => controller.abort();
   }, [attempt, discordUrl]);
 
-  const isEnglish = locale !== 'id';
-  const text = useMemo(() => isEnglish ? {
+  const isEnglish = locale !== 'id' && locale !== 'ar';
+  const text = useMemo(() => locale === 'ar' ? {
+    live: 'مباشر الآن', scheduled: 'مجدول', join: 'الانضمام عبر Discord', noRegistration: 'لا يلزم التسجيل أو التأكيد عبر الموقع.', loading: 'جارٍ تحميل الأجندة العامة…', emptyTitle: 'لا توجد أجندة عامة مجدولة بعد.', emptyDescription: 'ستظهر المواعيد المؤكدة هنا. تحقق من Discord للحصول على آخر التحديثات.', staleTitle: 'قد تكون الأجندة قديمة.', staleDescription: 'تحقق من Discord من الوقت الأحدث قبل الانضمام.', errorTitle: 'تعذر تحميل الأجندة.', errorDescription: 'يمكنك المحاولة مرة أخرى أو فتح Discord لرؤية جدول المجتمع الحالي.', retry: 'حاول مرة أخرى', source: 'المصدر', sourceLabel: 'فعالية مجدولة في Discord', endTimePending: 'لم يُنشر وقت الانتهاء.', agendaHeading: 'الأجندة القادمة', program: 'البرنامج', series: 'السلسلة',
+  } : isEnglish ? {
     live: 'Live now',
     scheduled: 'Scheduled',
     join: 'Join on Discord',
@@ -213,10 +142,10 @@ export default function LiveAgenda({ locale, discordUrl, copy }: Props) {
     agendaHeading: 'Agenda terdekat',
     program: 'Program',
     series: 'Seri',
-  }, [isEnglish]);
+  }, [isEnglish, locale]);
 
   return (
-    <div className="kad-live-agenda" data-agenda-app data-agenda-phase={state.phase}>
+    <div className="kad-live-agenda" data-agenda-app data-agenda-phase={state.phase} data-agenda-source={AGENDA_SOURCE}>
       <header className="kad-live-agenda__header" data-page-header="schedule" aria-labelledby="page-title">
         <div>
           <p className="kad-eyebrow">{copy.eyebrow}</p>
@@ -276,10 +205,10 @@ export default function LiveAgenda({ locale, discordUrl, copy }: Props) {
                           <span className={`kad-live-agenda__status kad-live-agenda__status--${entry.status}`} data-agenda-status-label>{entry.status === 'active' ? text.live : text.scheduled}</span>
                           <time dateTime={entry.startAt}>{formatDate(entry.startAt, locale, entry.timezone)} · {formatTime(entry.startAt, locale, entry.timezone)}{entry.endAt ? <>–{formatTime(entry.endAt, locale, entry.timezone)}</> : <> · <span className="kad-live-agenda__pending-end">{text.endTimePending}</span></>} <span>{timezoneLabel(entry.timezone, locale)}</span></time>
                         </div>
-                        <h3>{entry.title}</h3>
+                        <h3><a href={localizedPath(locale as Locale, `/events/live/?id=${encodeURIComponent(entry.id)}`)}>{entry.title}</a></h3>
                         <p className="kad-live-agenda__summary">{entry.summary}</p>
                         <dl className="kad-live-agenda__context">
-                          <div><dt>{text.program}</dt><dd>{entry.program}</dd></div>
+                          <div><dt>{text.program}</dt><dd>{operationalProgramHref(locale as Locale, entry.program) ? <a href={operationalProgramHref(locale as Locale, entry.program)!}>{entry.program}</a> : <span data-program-mapping="unmapped">{entry.program}</span>}</dd></div>
                           {entry.series && <div><dt>{text.series}</dt><dd>{entry.series}</dd></div>}
                         </dl>
                         <div className="kad-live-agenda__card-footer">

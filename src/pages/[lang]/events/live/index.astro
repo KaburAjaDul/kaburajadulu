@@ -1,0 +1,25 @@
+---
+import Layout from '@/layouts/Layout.astro';
+import Navbar from '@/components/layout/Navbar';
+import Footer from '@/components/layout/Footer';
+import LiveAgendaDetail from '@/components/events/LiveAgendaDetail';
+import { localizedPath } from '@/content/community-site';
+import { LOCALES, type Locale } from '@/i18n/constants';
+import '@/styles/agenda.css';
+export function getStaticPaths() { return LOCALES.filter((locale) => locale !== 'id').map((locale) => ({ params: { lang: locale } })); }
+const locale = Astro.params.lang as Locale;
+const currentPath = `/${locale}/events/live/`;
+const fallback = locale !== 'id' && locale !== 'en' && locale !== 'ar';
+const title = locale === 'ar' ? 'الأجندة — KaburAjaDulu' : 'Agenda — KaburAjaDulu';
+const description = locale === 'ar' ? 'تفاصيل الأجندة العامة لـ KaburAjaDulu.' : 'Public KaburAjaDulu agenda detail.';
+---
+<Layout title={title} description={description} canonical={`https://kaburajadulu.com${currentPath}`} locale={locale} currentPath={currentPath}>
+  <Navbar client:only="react" locale={locale} currentPath={currentPath} />
+  <main id="main-content" class="kad-page kad-page--task" lang={locale === 'ar' ? 'ar' : 'en'} data-page-family="agenda-live-detail">
+    <div class="kad-container">
+      {fallback && <p class="kad-translation-notice" data-translation-fallback="true" lang="en" role="note">This live schedule is available in English while a full translation is prepared.</p>}
+      <LiveAgendaDetail client:load locale={locale} opaqueId={Astro.url.searchParams.get('id') ?? ''} backHref={localizedPath(locale, '/events')} discordLabel={locale === 'ar' ? 'الانضمام إلى Discord' : 'Join Discord'} />
+    </div>
+  </main>
+  <Footer locale={locale} />
+</Layout>

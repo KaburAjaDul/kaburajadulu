@@ -48,7 +48,10 @@ class FakeStatement {
   }
   async all<T = unknown>() {
     if (this.query.toLowerCase().includes('from agenda_entries')) {
-      const results = [...this.db.entries.values()].filter((entry) => entry.status === 'scheduled' || entry.status === 'active') as T[];
+      const query = this.query.toLowerCase();
+      const results = (query.includes('where id')
+        ? [...this.db.entries.values()].filter((entry) => entry.id === this.values[0])
+        : [...this.db.entries.values()].filter((entry) => entry.status === 'scheduled' || entry.status === 'active')) as T[];
       return { results };
     }
     return { results: [] as T[] };
@@ -80,7 +83,9 @@ class FakeD1 {
         const query = statement.query.toLowerCase();
         const values = statement.values;
         if (query.includes('select') && query.includes('from agenda_entries')) {
-          results.push({ success: true, results: [...this.entries.values()].filter((entry) => entry.status === 'scheduled' || entry.status === 'active') });
+          results.push({ success: true, results: query.includes('where id')
+            ? [...this.entries.values()].filter((entry) => entry.id === values[0])
+            : [...this.entries.values()].filter((entry) => entry.status === 'scheduled' || entry.status === 'active') });
           continue;
         } else if (query.includes('select') && query.includes('from agenda_checkpoint')) {
           results.push({ success: true, results: this.checkpoint ? [{ ...this.checkpoint }] : [] });
@@ -251,6 +256,63 @@ describe('agenda persistence and public API', () => {
     expect(firstPayload.staleAt).toBeTruthy();
     const second = await worker.fetch(new Request('https://example.test/api/v1/agenda', { headers: { 'if-none-match': first.headers.get('etag')! } }), env);
     expect(second.status).toBe(304);
+  });
+
+  test('returns one opaque-id detail DTO, keeps withdrawn records out of the list, and honours detail ETag', async () => {
+    const db = new FakeD1();
+    await applyProjection(db as any, projection(), 'nonce-detail');
+    const env = { AGENDA_DB: db, ASSETS: { fetch: async () => new Response('asset') } } as any;
+    const id = agendaId(1);
+    const first = await worker.fetch(new Request(`https://example.test/api/v1/agenda/${id}`), env);
+    expect(first.status).toBe(200);
+    const payload = await first.json() as any;
+    expect(Object.keys(payload).sort()).toEqual(['entry', 'generatedAt', 'observedAt', 'revision', 'schemaVersion', 'sourceStatus', 'staleAt']);
+    expect(Object.keys(payload.entry).sort()).toEqual(['endAt', 'id', 'joinUrl', 'program', 'series', 'source', 'startAt', 'status', 'summary', 'timezone', 'title']);
+    expect(JSON.stringify(payload)).not.toMatch(/discord_id|snowflake|channel|raw/i);
+    const second = await worker.fetch(new Request(`https://example.test/api/v1/agenda/${id}`, { headers: { 'if-none-match': first.headers.get('etag')! } }), env);
+    expect(second.status).toBe(304);
+    const withdrawn = projection(2, 0);
+    withdrawn.tombstones = [id];
+    await applyProjection(db as any, withdrawn, 'nonce-detail-withdrawn');
+    const gone = await worker.fetch(new Request(`https://example.test/api/v1/agenda/${id}`), env);
+    expect(gone.status).toBe(410);
+    expect(gone.headers.get('cache-control')).toBe('no-store');
+    const goneBody = await gone.json() as any;
+    expect(Object.keys(goneBody)).toEqual(['error']);
+    expect(JSON.stringify(goneBody)).not.toMatch(/title|summary|program|series|join|source|agenda_A/);
+  });
+
+  test('fails closed when a stored row violates the public DTO contract', async () => {
+    const db = new FakeD1();
+    await applyProjection(db as any, projection(), 'nonce-invalid-row');
+    db.entries.get(agendaId(1)).title = 'Private <@123456789012345678>';
+    const env = { AGENDA_DB: db, ASSETS: { fetch: async () => new Response('asset') } } as any;
+    const response = await worker.fetch(new Request('https://example.test/api/v1/agenda'), env);
+    expect(response.status).toBe(503);
+    expect(JSON.stringify(await response.json())).not.toMatch(/Private|123456789012345678/);
+  });
+
+  test('fails closed when the checkpoint is malformed, future, or out of sync with an active row', async () => {
+    const db = new FakeD1();
+    await applyProjection(db as any, projection(), 'nonce-invalid-checkpoint');
+    const env = { AGENDA_DB: db, ASSETS: { fetch: async () => new Response('asset') } } as any;
+
+    db.checkpoint.revision = '1';
+    const malformed = await worker.fetch(new Request('https://example.test/api/v1/agenda'), env);
+    expect(malformed.status).toBe(503);
+    expect(JSON.stringify(await malformed.json())).not.toMatch(/agenda_A|Language session/);
+
+    db.checkpoint = { revision: 1, observed_at: new Date(Date.now() + 60 * 60_000).toISOString(), received_at: now };
+    const future = await worker.fetch(new Request('https://example.test/api/v1/agenda'), env);
+    expect(future.status).toBe(503);
+
+    db.checkpoint = { revision: 1, observed_at: now, received_at: now };
+    db.entries.get(agendaId(1)).revision = 99;
+    const mismatch = await worker.fetch(new Request('https://example.test/api/v1/agenda'), env);
+    expect(mismatch.status).toBe(503);
+    const detail = await worker.fetch(new Request(`https://example.test/api/v1/agenda/${agendaId(1)}`), env);
+    expect(detail.status).toBe(503);
+    expect(JSON.stringify(await detail.json())).not.toMatch(/Language session|agenda_A/);
   });
 
   test('staging assets are noindex and sitemap is unavailable', async () => {

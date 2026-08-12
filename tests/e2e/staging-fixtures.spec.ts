@@ -45,6 +45,28 @@ async function mockLiveAgenda(page: Page): Promise<void> {
   await page.route('**/api/v1/agenda', (route) => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(liveAgendaPayload) }));
 }
 
+async function mockLiveAgendaDetail(page: Page): Promise<void> {
+  const { entries: _entries, ...detailEnvelope } = liveAgendaPayload;
+  await page.route('**/api/v1/agenda/agenda_AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA', (route) => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ ...detailEnvelope, entry: liveAgendaPayload.entries[0] }) }));
+}
+
+test('staging live workflow preserves ID/EN/AR routes, exact program mapping, and privacy boundary', async ({ page }) => {
+  await mockLiveAgenda(page);
+  await mockLiveAgendaDetail(page);
+  for (const [prefix, direction] of [['', 'ltr'], ['/en', 'ltr'], ['/ar', 'rtl']] as const) {
+    await page.goto(`${prefix}/events/live/?id=agenda_AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA`, { waitUntil: 'domcontentloaded' });
+    await expect(page.locator('[data-agenda-detail-phase="ready"], [data-agenda-detail-phase="stale"]')).toBeVisible();
+    await expect(page.locator('[data-agenda-detail-phase="ready"] a[href*="programs/live"], [data-agenda-detail-phase="stale"] a[href*="programs/live"]')).toHaveAttribute('href', `${prefix}/programs/live/?program=japanese-study-club`);
+    await expect(page.locator('html')).toHaveAttribute('dir', direction);
+    const detailText = await page.locator('main').innerText();
+    expect(detailText).not.toMatch(/discord_(?:id|message|channel)|snowflake|<@|@everyone|@here/i);
+  }
+  await page.goto('/en/programs/', { waitUntil: 'domcontentloaded' });
+  await expect(page.locator('[data-live-study-clubs]')).toBeVisible();
+  await expect(page.locator('[data-live-study-program="japanese-study-club"]')).toBeVisible();
+  await expect(page.locator('[data-live-study-program]')).toHaveCount(2);
+});
+
 test('staging is noindex and visibly labels fictional data', async ({ page }) => {
   await page.goto('/events/', { waitUntil: 'domcontentloaded' });
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', 'noindex, nofollow');
