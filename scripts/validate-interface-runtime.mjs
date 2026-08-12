@@ -16,6 +16,7 @@ const publicContentIrPath = join(root, 'docs/public-content-system/interface-ir.
 const publicContentPath = join(root, 'src/content/public-content.ts');
 const stagingFixturePath = join(root, 'src/content/staging-fixtures.ts');
 const stagingMode = process.env.PUBLIC_STAGING_FIXTURES === 'true';
+const stagingBuild = process.env.PUBLIC_STAGING_BUILD === 'true';
 
 const requiredRoutes = ['/', '/community/', '/programs/', '/events/', '/volunteer/', '/stories/'];
 const canonicalProgramSources = [
@@ -114,7 +115,8 @@ const irChecks = [
   ['no absolute local paths', !/(?:^|["'])\/(?:Users\/[^/]+|home\/[^/]+)\//m.test(irRaw)],
   ['community order', JSON.stringify(component('community_overview')?.props?.content_order) === JSON.stringify(['current', 'programs', 'agenda', 'people', 'sources'])],
   ['program structure contract', component('program_catalogue')?.props?.structure === 'Program -> optional Series -> Session'],
-  ['staging Agenda union counts', component('agenda_index')?.props?.staging_kind_counts?.session === 3 && component('agenda_index')?.props?.staging_kind_counts?.event === 1],
+  ['live Agenda transport', component('agenda_index')?.props?.data_transport === 'same_origin_api' && component('agenda_index')?.props?.endpoint === '/api/v1/agenda'],
+  ['live Agenda privacy boundary', component('agenda_index')?.props?.source === 'discord_scheduled_event' && component('agenda_index')?.props?.privacy_exclusions?.includes('discord_snowflake')],
   ['volunteer organization counts', component('volunteer_directory')?.props?.positions === 4 && component('volunteer_directory')?.props?.divisions === 7 && component('volunteer_directory')?.props?.openings === 3],
   ['profile no impact score', component('volunteer_profile')?.props?.personal_impact_score === false],
   ['compact inner page contract', component('page_heading')?.props?.inner_page_max_rem === 3 && component('page_status_summary')?.props?.landing_hero_only === true],
@@ -173,9 +175,10 @@ const programChecks = [
 for (const [label, passed] of programChecks) if (!passed) fail(`Programs runtime missing ${label}`);
 
 const agendaChecks = [
-  ['Agenda page header', has(agendaHtml, 'data-page-header="schedule"') || has(agendaHtml, 'data-page-header="agenda"')],
+  ['Agenda live application', has(agendaHtml, 'data-agenda-app="true"')],
   ['Agenda public label', /<h1[^>]*>Agenda<\/h1>/i.test(agendaHtml) || /<h1[^>]*>Agenda\b/i.test(agendaHtml)],
-  ['Agenda state marker', has(agendaHtml, 'data-agenda-state=')],
+  ['Agenda truthful loading state', has(agendaHtml, 'data-agenda-phase="loading"')],
+  ['Agenda API client emitted', [...runtime.entries()].some(([file, content]) => file.endsWith('.js') && content.includes('/api/v1/agenda') && content.includes('discord_scheduled_event'))],
   ['Agenda detail route generated in staging', stagingMode ? Boolean(agendaDetailHtml) : true],
   ['Agenda detail relationship', stagingMode ? (has(agendaDetailHtml, 'data-agenda-kind=') && has(agendaDetailHtml, 'data-agenda-id=')) : true],
 ];
@@ -219,7 +222,7 @@ if (stagingMode) {
 } else {
   const productionChecks = [
     ['production fixture marker', has(htmlText, 'data-fixtures="disabled"')],
-    ['production empty Agenda', has(agendaHtml, 'data-agenda-state="empty"') && has(agendaHtml, 'data-evidence-placeholder')],
+    ['production live Agenda shell', has(agendaHtml, 'data-agenda-app="true"') && has(agendaHtml, 'data-agenda-phase="loading"')],
     ['production no fixture IDs', !fixtureIdPattern.test(htmlText)],
     ['production no demo copy', !/Data simulasi|Demo data|Pratinjau · data contoh/i.test(htmlText)],
     ['production no staged people', !has(htmlText, 'data-attribution="opt-in-demo"')],
@@ -229,6 +232,13 @@ if (stagingMode) {
   for (const [label, passed] of productionChecks) if (!passed) fail(`Production runtime missing ${label}`);
   const sourceMatches = [...new Set(canonicalProgramSources.filter((source) => htmlText.includes(source)))];
   if (sourceMatches.length !== canonicalProgramSources.length) fail(`canonical program source links found ${sourceMatches.length}/${canonicalProgramSources.length}`);
+}
+
+if (stagingBuild) {
+  const missingNoindex = html.filter(([, content]) => !/<meta\s+name=["']robots["']\s+content=["']noindex, nofollow["']/i.test(content));
+  if (missingNoindex.length > 0) fail(`staging build noindex missing from ${missingNoindex.length} HTML files`);
+  const discoveryLinks = html.filter(([, content]) => /<link\s+rel=["'](?:canonical|alternate)["']/i.test(content));
+  if (discoveryLinks.length > 0) fail(`staging build discovery links found in ${discoveryLinks.length} HTML files`);
 }
 
 if (!stagingFixtureSource.includes('PUBLIC_STAGING_FIXTURES') || !stagingFixtureSource.includes('demo: true')) {
@@ -247,4 +257,5 @@ for (const [file, content] of runtime) {
 if (/Pulse|Denyut komunitas/i.test(htmlText)) fail('deprecated community labels found in runtime');
 
 if (process.exitCode) process.exit(1);
-console.log(`INTERFACE_RUNTIME_PASS mode=${stagingMode ? 'staging' : 'production'} routes=${requiredRoutes.length} html=${html.length} files=${runtimeFiles.length}`);
+const runtimeMode = stagingMode ? 'fixtures' : stagingBuild ? 'staging-real-data' : 'production';
+console.log(`INTERFACE_RUNTIME_PASS mode=${runtimeMode} routes=${requiredRoutes.length} html=${html.length} files=${runtimeFiles.length}`);

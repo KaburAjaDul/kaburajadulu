@@ -11,6 +11,7 @@ import {
   listStagingAgenda,
   publicContributorProjection,
 } from '../../src/content/staging-fixtures';
+import { agendaFixtureIds } from '../../src/content/agenda-content';
 
 function withFixtureEnv<T>(enabled: boolean, callback: () => T): T {
   const previous = process.env.PUBLIC_STAGING_FIXTURES;
@@ -39,13 +40,17 @@ describe('staging community domain', () => {
   });
 
   test('gates the canonical Agenda fixtures by environment', () => {
-    withFixtureEnv(false, () => expect(listStagingAgenda()).toHaveLength(0));
+    withFixtureEnv(false, () => {
+      expect(listStagingAgenda()).toHaveLength(0);
+      expect(agendaFixtureIds()).toHaveLength(0);
+    });
     withFixtureEnv(true, () => {
       const agenda = listStagingAgenda();
       expect(agenda.filter((item) => item.kind === 'session')).toHaveLength(3);
       expect(agenda.filter((item) => item.kind === 'event')).toHaveLength(1);
       expect(agenda.some((item) => item.kind === 'event' && item.standalone && item.programId === null)).toBe(true);
       expect(agenda.every((item) => item.source === 'staging-seed' && item.demo === true)).toBe(true);
+      expect(agendaFixtureIds()).toHaveLength(agenda.length);
     });
   });
 

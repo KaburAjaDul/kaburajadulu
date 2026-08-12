@@ -2,6 +2,7 @@
 dist/
 # generated types
 .astro/
+.wrangler/
 .vscode/
 playwright-report/
 test-results/

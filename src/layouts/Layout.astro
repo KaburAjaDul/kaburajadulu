@@ -28,7 +28,9 @@ const {
 const siteUrl = 'https://kaburajadulu.com';
 const dir = LOCALE_DIR[locale] ?? 'ltr';
 const stagingFixturesEnabled = import.meta.env.PUBLIC_STAGING_FIXTURES === 'true';
-const robots = robotsProp ?? (stagingFixturesEnabled ? 'noindex, nofollow' : 'index, follow');
+const stagingBuildEnabled = import.meta.env.PUBLIC_STAGING_BUILD === 'true';
+const suppressDiscoveryLinks = isPreview || stagingFixturesEnabled || stagingBuildEnabled;
+const robots = robotsProp ?? (stagingFixturesEnabled || stagingBuildEnabled ? 'noindex, nofollow' : 'index, follow');
 const description = descriptionProp ?? (locale === 'id'
   ? 'Temukan sumber, program, dan percakapan komunitas untuk orang Indonesia yang sedang menjajaki studi dan kerja di luar negeri.'
   : 'Find sources, programs, and community conversations for Indonesians exploring study and work abroad.');
@@ -76,7 +78,7 @@ const hreflangLinks = LOCALES.map((loc) => {
     <title>{title}</title>
 
     <!-- Hreflang tags for i18n SEO -->
-    {!isPreview && hreflangLinks.map(({ locale: loc, url }) => (
+    {!suppressDiscoveryLinks && hreflangLinks.map(({ locale: loc, url }) => (
       <link rel="alternate" hreflang={loc} href={url} />
     ))}
 
@@ -97,7 +99,7 @@ const hreflangLinks = LOCALES.map((loc) => {
     {gscVerification && <meta name="google-site-verification" content={gscVerification} />}
 
     <!-- Canonical URL -->
-    <link rel="canonical" href={canonicalURL} />
+    {!suppressDiscoveryLinks && <link rel="canonical" href={canonicalURL} />}
 
     <!-- Open Graph -->
     <meta property="og:title" content={title} />

@@ -17,7 +17,7 @@ projection can replace fixtures without changing the page jobs.
 | `src/components/community-system/StoriesPage.astro` | observed | Stories carry a body, date, publication state, and related record links. | Documentation adds context but does not replace live Agenda or the ledger. | Story links must remain ordinary anchors and production-safe. |
 | `src/content/staging-fixtures.ts` | observed | Staging is deterministic, marked `demo: true`, and selected only when `PUBLIC_STAGING_FIXTURES=true`. | Fictional records can exercise hierarchy when their boundary is obvious. | Every generated staging page is noindex; selectors must never be emitted in production. |
 | `src/content/public-content.ts` | observed | Production DTOs retain source, revision, freshness, review, and media safety fields. | Unknown publication state is data, not a missing UI detail. | Render Evidence Placeholder/pending/empty states instead of invented facts. |
-| `docs/adr/0003-project-discord-events-through-kad-agent.md` | observed | The future live path is private authority → reviewed public projection; the website does not scrape Discord. | Integrations should preserve a public contract and an explicit authority boundary. | This release validates the projection shape only; bot, D1, R2, and auth are out of scope. |
+| `docs/adr/0003-project-discord-events-through-kad-agent.md` | observed | The live Agenda slice follows private authority → allow-listed signed projection → D1 public read model; the website does not scrape Discord. | Integrations preserve a public contract and an explicit authority boundary. | This release projects only approved schedule fields; identity, contributions, private media, and R2 remain out of scope. |
 | `tests/e2e/community-design.spec.ts` and `tests/e2e/staging-fixtures.spec.ts` | observed | Browser gates exercise route semantics, responsive states, localization, and fixture leakage. | Static output checks must be paired with real browser interaction. | Runtime guard reports build-level mismatches; Playwright remains the behavior gate. |
 | Prior Field Notes visual reference | inferred | The landing page can use a stronger visual treatment, but inner routes need density and information first. | Reserve visual drama for orientation; use compact task headers for records. | Inner-page contracts cap heading size and forbid universal hero fragments. |
 | Private Discord channels and screenshots | unknown | Private operations may contain useful event/role context, but they are not public evidence. | Treat private material as context only and replace it with safe public labels. | No private channel URL, message ID, media CDN URL, or consent authority field may enter the build. |
@@ -58,9 +58,9 @@ The required scenarios are contextual, not generic labels:
 
 ## Unknowns kept open
 
-- The live Agenda projection, freshness rules, and Discord event mapping are
-  not yet implemented. The current adapter deliberately renders only fixture
-  records or an honest empty state.
+- The live Agenda projection, freshness rules, and exact Language Club mapping
+  are implemented for staging. Standalone collaborations and additional event
+  families remain unpublished until they receive explicit classifications.
 - Program metrics and contribution evidence are manually attested in this
   release. Automated attendance, social, repository, voice, and observability
   integrations require separate approval.

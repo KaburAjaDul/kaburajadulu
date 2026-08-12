@@ -1,9 +1,12 @@
 {
-  // Cloudflare Workers — static site deployment for kaburajadulu.com
+  // Cloudflare Workers — static site plus the public agenda API.
   "name": "kaburajadulu",
-  "compatibility_date": "2026-03-18",
+  "main": "worker/index.ts",
+  "compatibility_date": "2026-08-11",
   "assets": {
+    "binding": "ASSETS",
     "directory": "./dist",
+    "run_worker_first": ["/api/*", "/internal/*", "/healthz", "/readyz", "/robots.txt", "/sitemap.xml"],
     // Serve a custom 404 page (src/pages/404.astro → dist/404.html) when no route matches
     "not_found_handling": "404-page"
   },
@@ -11,7 +14,26 @@
     "staging": {
       "name": "kaburajadulu-staging",
       "workers_dev": true,
-      "preview_urls": true
+      "preview_urls": true,
+      "assets": {
+        "binding": "ASSETS",
+        "directory": "./dist",
+        "run_worker_first": true,
+        "not_found_handling": "404-page"
+      },
+      "vars": {
+        "ENVIRONMENT": "staging",
+        "KAD_PROJECTION_KEY_ID": "staging-2026-08-11",
+        "KAD_PROJECTION_PUBLIC_KEY_SPKI_BASE64": "MCowBQYDK2VwAyEAXpGcjj/i8JoY3lc86fJWDax3wvYZrWlMQj7GtOgg7C4="
+      },
+      "d1_databases": [
+        {
+          "binding": "AGENDA_DB",
+          "database_name": "kaburajadulu-staging-agenda",
+          "database_id": "74167679-9c66-413f-acad-980670202024",
+          "migrations_dir": "migrations"
+        }
+      ]
     }
   }
 }

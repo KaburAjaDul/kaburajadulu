@@ -7,6 +7,7 @@ import StatePanel from '@/components/community-system/StatePanel.astro';
 import { localizedPath } from '@/content/community-site';
 import { stagingFixturesEnabled } from '@/content/staging-fixtures';
 import { programDisplayState, type ProgramCategoryId, type RepositoryResult, type PublicProgram } from '@/content/public-content';
+import LiveStudyClubs from '@/components/programs/LiveStudyClubs';
 import type { Locale } from '@/i18n/constants';
 import '@/styles/global.css';
 
@@ -156,6 +157,8 @@ const statusLabels = {
           </ol>
         )}
       </section>
+
+      <LiveStudyClubs client:load locale={locale} />
 
       {programs.length > 0 && (
         <section class="kad-program-next" aria-labelledby="program-next-title">

@@ -20,6 +20,7 @@
     "test:e2e:staging": "playwright test --config=playwright.staging.config.ts",
     "capture:program-references": "playwright test --config=playwright.references.config.ts",
     "test:unit": "bun test tests/unit",
+    "test:worker": "bun test tests/worker",
     "validate:interface-runtime": "node scripts/validate-interface-runtime.mjs",
     "test:e2e:community": "playwright test tests/e2e/community-design.spec.ts"
   },
@@ -56,6 +57,7 @@
     "esbuild": "0.28.1",
     "fast-uri": "3.1.5",
     "mdast-util-to-hast": "13.2.1",
+    "nanoid": "3.3.17",
     "picomatch": "2.3.2",
     "rollup": "4.62.4",
     "sharp": "0.35.3",
