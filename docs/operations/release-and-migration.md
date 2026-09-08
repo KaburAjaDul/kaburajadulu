@@ -93,23 +93,39 @@ request is expected to be rejected with `401`.
 
 ## Recovery and handoff
 
-1. Confirm the migrated KAD-Agent host is the intended active publisher and that
-   the previous scheduler is disabled. The bot repository's `sync-staging`
-   workflow is paused for the migration; re-enable scheduling only after the
-   new infrastructure is ready for cutover. Keep any existing runtime activation
-   gate intact.
-2. Configure its production endpoint and signing key to match the production
-   verification key. Keep staging and production credentials separate.
-3. Resume one scheduler and send a current, signed agenda projection using the
-   existing `/internal/v1/projections/agenda` contract. Check its acceptance
-   result without printing credentials or private payload fields.
-4. Check `/healthz`, `/readyz`, and `/api/v1/agenda`; confirm the source timestamp
-   advances and the agenda becomes fresh. Check both the public page and API.
-5. Set `KAD_INFRA_MIGRATION=false` (or remove it) and rerun the deployed checks
-   with the exception disabled. Restore normal freshness alerting. Observe at
-   least two consecutive successful scheduled runs, then hand off to the
-   infrastructure owner with the endpoint, deployed revision, and last accepted
-   projection time.
+1. Select exactly one publisher after the migrated infrastructure is ready.
+   For the migrated Kaddy runtime, keep legacy `sync-staging` disabled and follow
+   the bot's [single-writer handoff protocol](https://github.com/KaburAjaDul/kad-agent/blob/main/docs/exec-plans/active/kaddy-24x7-homelab-program.md#single-writer-handoff-protocol).
+   Begin in `observe`, verify the runtime lease, guild identity and approved
+   source data, and prove zero outbound projection POSTs.
+2. Configure its production endpoint and independent signing key to match the
+   production verifier. Preserve the intended environment's public-ID HMAC key;
+   it is separate from the signing key. Do not reuse staging signing credentials.
+3. Before activating the runtime, set the **bot repository's**
+   `KADDY_RUNTIME_PUBLICATION_ACTIVE=true`, drain/cancel all admitted legacy
+   runs, and prove none are queued or in progress. Record the latest Worker
+   checkpoint and fence the local revision floor at or above it. Only then use
+   `KADDY_PUBLICATION_MODE=active` with
+   `KADDY_PUBLICATION_CUTOVER_CONFIRMED=true`. Keep legacy sync disabled.
+   If explicitly selecting legacy staging sync instead, do not activate the
+   runtime: prove it is stopped and drained, then clear the **bot repository's**
+   migration pause and re-enable only that staging writer. Legacy staging sync
+   does not restore the production publisher.
+4. Verify a real approved signed projection returns `202`, then check the
+   public revision advances, approved entries/tombstones match, and no private
+   identifiers leak. The protocol's canary must use real approved source data,
+   not a synthetic agenda record. Check `/healthz`, `/readyz`, `/api/v1/agenda`,
+   and the public page. Observe fresh source timestamps over at least two
+   scheduled publication intervals.
+5. Keep the **website repository's** `KAD_INFRA_MIGRATION=true` until its
+   configured production and staging source checks can pass without the
+   exception. Then clear that website flag and rerun both deployed checks to
+   restore normal freshness enforcement. Clear the **bot repository's** pause
+   only with the chosen writer verified; for runtime cutover retain
+   `KADDY_RUNTIME_PUBLICATION_ACTIVE=true` and keep legacy sync disabled.
+   Hand off the endpoint, deployed revision, and last accepted projection time
+   to the infrastructure owner. Rollback must stop and drain the active runtime
+   before admitting another writer.
 
 If a new Worker release fails, use the known working Cloudflare version after
 checking that it remains compatible with the migrated D1 schema. Do not delete
