@@ -375,8 +375,10 @@ async function agendaResponse(request: Request, env: Env): Promise<Response> {
     env.AGENDA_DB.prepare('SELECT revision, observed_at, received_at FROM agenda_checkpoint WHERE id = 1'),
   ]);
   const rows = (rowsResult?.results ?? []) as StoredAgendaEntry[];
-  const current = validateStoredCheckpoint(checkpointResult?.results?.[0]);
-  if (!current) return errorResponse(503, 'agenda_unavailable', 'Agenda has not received a signed projection yet.');
+  const storedCheckpoint = checkpointResult?.results?.[0];
+  if (storedCheckpoint === undefined && rows.length === 0) return errorResponse(503, 'agenda_unavailable', 'Agenda has not received a signed projection yet.');
+  const current = validateStoredCheckpoint(storedCheckpoint);
+  if (!current) return errorResponse(503, 'agenda_unavailable', 'Agenda data is not currently available for public display.');
   const publicRows = rows.map((row) => validateStoredPublicEntry(row, false, current.revision)).filter((row): row is ValidPublicEntry => row !== null);
   if (publicRows.length !== rows.length) return errorResponse(503, 'agenda_unavailable', 'Agenda data is not currently available for public display.');
   const observedAt = current.observed_at;
@@ -430,9 +432,20 @@ async function agendaDetailResponse(request: Request, env: Env, opaqueId: string
 
 async function readiness(env: Env): Promise<Response> {
   if (!env.AGENDA_DB) return errorResponse(503, 'not_ready', 'D1 is not configured.');
+  if (!env.KAD_PROJECTION_KEY_ID || !env.KAD_PROJECTION_PUBLIC_KEY_SPKI_BASE64) {
+    return errorResponse(503, 'not_ready', 'Projection verification is not configured.');
+  }
   try {
-    await env.AGENDA_DB.prepare('SELECT 1').first();
-    await env.AGENDA_DB.prepare('SELECT id FROM agenda_checkpoint WHERE id = 1').first();
+    await crypto.subtle.importKey('spki', toArrayBuffer(decodeBase64(env.KAD_PROJECTION_PUBLIC_KEY_SPKI_BASE64)), { name: 'Ed25519' }, false, ['verify']);
+  } catch {
+    return errorResponse(503, 'not_ready', 'Projection verification key is invalid.');
+  }
+  try {
+    // Readiness checks the complete storage contract without requiring an
+    // external publisher to be online or an initial signed snapshot to exist.
+    await env.AGENDA_DB.prepare('SELECT id, title, summary, start_at, end_at, timezone, status, program, series, join_url, source, revision, generated_at, observed_at, withdrawn_at FROM agenda_entries LIMIT 0').first();
+    await env.AGENDA_DB.prepare('SELECT nonce, issued_at, revision, content_sha256, expires_at FROM ingest_nonces LIMIT 0').first();
+    await env.AGENDA_DB.prepare('SELECT id, revision, observed_at, received_at FROM agenda_checkpoint LIMIT 0').first();
     return json({ status: 'ready' });
   } catch {
     return errorResponse(503, 'not_ready', 'D1 schema is not ready.');

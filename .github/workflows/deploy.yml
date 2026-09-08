@@ -36,7 +36,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
-          node-version: 22.12.0
+          node-version: 22.19.0
 
       - name: Set up Bun
         uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
@@ -75,4 +75,19 @@ jobs:
             exit 1
           fi
           export CLOUDFLARE_API_TOKEN="$cloudflare_token"
+          bunx wrangler d1 migrations apply AGENDA_DB --remote --config wrangler.jsonc
+          bunx wrangler d1 execute AGENDA_DB --remote --config wrangler.jsonc \
+            --command "SELECT id, revision, observed_at, received_at FROM agenda_checkpoint LIMIT 0; SELECT nonce, issued_at, revision, content_sha256, expires_at FROM ingest_nonces LIMIT 0; SELECT id, title, summary, start_at, end_at, timezone, status, program, series, join_url, source, revision, generated_at, observed_at FROM agenda_entries LIMIT 0;"
+          current_main_sha="$(git ls-remote origin refs/heads/main | cut -f1)"
+          if [[ "$current_main_sha" != "$EXPECTED_MAIN_SHA" ]]; then
+            echo "Refusing deployment after main advanced during migrations: tested=$EXPECTED_MAIN_SHA current=$current_main_sha" >&2
+            exit 1
+          fi
           bun run deploy:ci
+
+      - name: Verify deployed Cloudflare site and agenda
+        env:
+          SMOKE_BASE_URL: https://kaburajadulu.com
+          SMOKE_ENVIRONMENT: production
+          KAD_INFRA_MIGRATION: ${{ vars.KAD_INFRA_MIGRATION }}
+        run: node scripts/post-deploy-smoke.mjs

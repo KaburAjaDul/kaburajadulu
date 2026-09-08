@@ -16,6 +16,20 @@ jobs:
     steps:
       - name: Check out source
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+
+      - name: Check changed lines for whitespace errors
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ -n "$BASE_SHA" && "$BASE_SHA" != 0000000000000000000000000000000000000000 ]]; then
+            git diff --check "$BASE_SHA" HEAD
+          else
+            git show --format= --check HEAD
+          fi
 
       - name: Set up Node.js
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
@@ -62,6 +76,12 @@ jobs:
       - name: Unit tests
         run: bun run test:unit
 
+      - name: Worker tests
+        run: bun run test:worker
+
+      - name: Verify local D1 migrations
+        run: bunx wrangler d1 migrations apply AGENDA_DB --local --env staging --config wrangler.jsonc
+
       - name: Smoke-test generated routes and invite
         shell: bash
         run: |
@@ -92,3 +112,14 @@ jobs:
 
       - name: Run Playwright E2E
         run: bun run test:e2e
+
+      - name: Upload failed browser diagnostics
+        if: failure()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: browser-failures-${{ github.run_id }}
+          path: |
+            test-results/
+            playwright-report/
+          if-no-files-found: ignore
+          retention-days: 7
