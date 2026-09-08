@@ -2,22 +2,25 @@ name: Staging
 
 on:
   pull_request:
-    types: [opened, synchronize, reopened]
+    types: [opened, synchronize, reopened, ready_for_review]
   workflow_dispatch:
 
 permissions:
   contents: read
 
 concurrency:
-  group: staging-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true
+  # Every candidate writes to the same Worker and D1 database. Do not interrupt
+  # a running deploy or let a second PR replace it during the live smoke checks.
+  group: deploy-staging
+  cancel-in-progress: false
 
 jobs:
   deploy:
     name: Verify and deploy staging
     if: >-
       vars.CLOUDFLARE_STAGING_ENABLED == 'true' &&
-      (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
+      (github.event_name != 'pull_request' ||
+        (github.event.pull_request.head.repo.full_name == github.repository && !github.event.pull_request.draft))
     runs-on: ubuntu-latest
     environment: Preview
     steps:
@@ -125,41 +128,18 @@ jobs:
 
       - name: Smoke staging API and crawler boundary
         env:
-          STAGING_URL: https://kaburajadulu-staging.uibasev2-api.workers.dev
-        run: |
-          set -euo pipefail
-          curl --fail --silent --show-error "$STAGING_URL/healthz" | tee /tmp/healthz.json
-          curl --fail --silent --show-error "$STAGING_URL/readyz" | tee /tmp/readyz.json
-          agenda_status="$(curl --silent --show-error -o /tmp/agenda.json -w '%{http_code}' "$STAGING_URL/api/v1/agenda")"
-          case "$agenda_status" in
-            200)
-              if grep -Eiq 'demo|fixture|deterministic|staging seed' /tmp/agenda.json; then
-                echo 'agenda response contains fixture markers' >&2
-                exit 1
-              fi
-              ;;
-            503)
-              grep -F 'agenda_unavailable' /tmp/agenda.json
-              ;;
-            *)
-              echo "unexpected agenda status: $agenda_status" >&2
-              cat /tmp/agenda.json >&2
-              exit 1
-              ;;
-          esac
-          test "$(curl --silent --show-error -o /dev/null -w '%{http_code}' "$STAGING_URL/sitemap.xml")" = 404
-          curl --fail --silent --show-error "$STAGING_URL/robots.txt" | grep -F 'Disallow: /'
-          curl --fail --silent --show-error -D /tmp/page.headers -o /dev/null "$STAGING_URL/"
-          grep -i '^x-robots-tag: noindex, nofollow' /tmp/page.headers
-          test "$(curl --silent --show-error -o /dev/null -w '%{http_code}' -H 'Origin: https://attacker.example' "$STAGING_URL/api/v1/agenda")" = 403
-          options_status=""
-          for attempt in 1 2 3 4 5 6; do
-            options_status="$(curl --silent --show-error -o /dev/null -w '%{http_code}' -X OPTIONS -H "Origin: $STAGING_URL" "$STAGING_URL/internal/v1/projections/agenda")"
-            if [ "$options_status" = 204 ]; then
-              break
-            fi
-            if [ "$attempt" -lt 6 ]; then
-              sleep 3
-            fi
-          done
-          test "$options_status" = 204
+          SMOKE_BASE_URL: https://kaburajadulu-staging.uibasev2-api.workers.dev
+          SMOKE_ENVIRONMENT: staging
+          KAD_INFRA_MIGRATION: ${{ vars.KAD_INFRA_MIGRATION }}
+        run: node scripts/post-deploy-smoke.mjs
+
+      - name: Upload failed browser diagnostics
+        if: failure()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: staging-browser-failures-${{ github.run_id }}
+          path: |
+            test-results/
+            playwright-report/
+          if-no-files-found: ignore
+          retention-days: 7

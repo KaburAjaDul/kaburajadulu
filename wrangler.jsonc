@@ -3,6 +3,19 @@
   "name": "kaburajadulu",
   "main": "worker/index.ts",
   "compatibility_date": "2026-08-11",
+  "vars": {
+    "ENVIRONMENT": "production",
+    "KAD_PROJECTION_KEY_ID": "production-2026-09-08",
+    "KAD_PROJECTION_PUBLIC_KEY_SPKI_BASE64": "MCowBQYDK2VwAyEAWmy0KsygclScqVJB4E+y1IPznJre8XU4dLuvhcv0Dlw="
+  },
+  "d1_databases": [
+    {
+      "binding": "AGENDA_DB",
+      "database_name": "kaburajadulu-production-agenda",
+      "database_id": "73b94bbc-c3bc-495c-a0ee-139c00d1a589",
+      "migrations_dir": "migrations"
+    }
+  ],
   "assets": {
     "binding": "ASSETS",
     "directory": "./dist",

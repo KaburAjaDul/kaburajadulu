@@ -64,7 +64,8 @@ We believe that international experience has the power to transform lives and br
 ## 🛠️ Getting Started
 
 ### Prerequisites
-- Node.js 22.12.0 or higher
+
+- Node.js 22.19.0 or higher (CI pins 22.19.0)
 - Bun 1.3.14
 
 ### Installation
@@ -78,11 +79,12 @@ git clone https://github.com/KaburAjaDul/kaburajadulu.git
 # Navigate to the project
 cd kaburajadulu
 
-# Switch to development branch
-git checkout dev
+# Create a feature branch from current main
+git fetch origin
+git switch -c feature/my-change origin/main
 
 # Install dependencies
-bun install
+bun install --frozen-lockfile
 
 # Start the development server
 bun dev
@@ -90,6 +92,10 @@ bun dev
 # Type-check and build for production (test before contributing)
 bun run check
 bun run build
+bun run validate:interface-runtime
+bun run test:unit
+bun run test:worker
+git diff --check
 
 # Run Chromium end-to-end coverage against a production preview
 bunx playwright install chromium
@@ -133,31 +139,31 @@ bun dev
 We welcome contributions from everyone! Here's how you can help:
 
 ### Code Contributions
-1. Fork the repository
-2. **Switch to the dev branch** (important for contributors):
-    ```sh
-   git checkout dev
+
+1. Fork and clone the repository, or use your existing clone if you have write access.
+2. Fetch the latest upstream `main` and create a short-lived feature branch. For a fork, add the upstream remote once:
+
+   ```sh
+   git remote add upstream https://github.com/KaburAjaDul/kaburajadulu.git
+   git fetch upstream
+   git switch -c feature/amazing-feature upstream/main
    ```
-3. Create a feature branch from dev:
-    ```sh
-   git checkout -b feature/amazing-feature
-   ```
-4. Make your changes and test them:
-    ```sh
-   # Test your changes
-   bun run build
-   
-   # Ensure the build passes before committing
-   ```
-5. Commit your changes:
-    ```sh
+
+   For a direct clone, use `origin/main` instead of `upstream/main`.
+
+3. Make your changes and run the checks in the development instructions above.
+4. Commit the intended files and push your feature branch:
+
+   ```sh
    git commit -m 'Add some amazing feature'
+   git push -u origin feature/amazing-feature
    ```
-6. Push to the branch:
-    ```sh
-   git push origin feature/amazing-feature
-   ```
-7. Open a Pull Request **targeting the dev branch** (not main)
+
+5. Open a pull request targeting **`KaburAjaDul/kaburajadulu:main`**. Include what changed, how you tested it, and screenshots for visible UI changes.
+
+`main` is the integration and release branch. The historical `dev` branch is no
+longer a contribution or deployment target. Do not merge old branches wholesale
+to catch up; bring any still-needed changes onto a fresh branch from `main`.
 
 ### Guidelines
 - Follow the existing code style and conventions
@@ -168,21 +174,35 @@ We welcome contributions from everyone! Here's how you can help:
 
 ### CI and deployment
 
-Pull requests and pushes to `main` run the pinned Node 22.12.0/Bun 1.3.14
-toolchain, a frozen install, dependency audit, `bun run check`, a production
-build, and smoke assertions for the root and all 13 localized output routes.
-Main branch protection must require the `CI / Check and build` status check
-separately.
+Pull requests and pushes to `main` use Node 22.19.0 and Bun 1.3.14 with a
+frozen install, dependency audit, Astro checks, a production build, runtime
+validation, unit and Worker tests, and Playwright coverage. The `Check and build`
+job must pass before merging. CI is hosted on GitHub and does not require the
+external bot host to be online.
 
 Playwright end-to-end coverage runs against a production Astro preview and
 checks all 14 landing-page routes. Install Chromium once locally with
 `bunx playwright install chromium`, then run it with `bun run test:e2e`.
 
-Cloudflare deployment runs only after a successful `CI` workflow for a push to
-`main`. To opt in, set the repository variable `CLOUDFLARE_DEPLOY_ENABLED` to
-`true`, and configure the `Production` environment with the
-`CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` secrets. Deployment remains
-skipped until that variable is enabled.
+Cloudflare production deployment follows a successful `CI` push to `main` and
+uses that tested commit. `CLOUDFLARE_DEPLOY_ENABLED=true` enables production
+releases; credentials belong in the `Production` environment. Staging uses the
+`Preview` environment and `CLOUDFLARE_STAGING_ENABLED=true`. Both environments
+need `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` secrets.
+
+During the infrastructure migration, Cloudflare remains online while the
+external KAD-Agent/Discord infrastructure may be unavailable. Deployment health
+and source freshness are separate: a stale agenda can be expected during the
+window, but a missing D1 binding, broken schema, or failed Worker readiness is
+still a release failure. `KAD_INFRA_MIGRATION=true` enables this temporary
+exception and reports degraded source data explicitly; disable it after the
+publisher resumes. See the [release and migration runbook](docs/operations/release-and-migration.md)
+for the release gates and recovery procedure.
+
+Dependabot checks npm dependencies and GitHub Actions weekly against `main`.
+Minor and patch updates are grouped for review; major updates stay separate.
+Dependency PRs must keep `bun.lock` and `package-lock.json` consistent and pass
+the same checks as other changes. No dependency update is automatically merged.
 
 ## 🗺️ Roadmap
 

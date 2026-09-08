@@ -196,6 +196,36 @@ describe('agenda persistence and public API', () => {
     expect(ready.status).toBe(503);
   });
 
+  test('readiness requires a valid verifier but permits an empty migrated database', async () => {
+    const db = new FakeD1();
+    const request = new Request('https://example.test/readyz');
+    const env = { AGENDA_DB: db, ASSETS: { fetch: async () => new Response('asset') } };
+    type WorkerEnv = Parameters<typeof worker.fetch>[1];
+    expect((await worker.fetch(request, env as unknown as WorkerEnv)).status).toBe(503);
+    const keyPair = await keyPairPromise;
+    const publicKey = Buffer.from(await crypto.subtle.exportKey('spki', keyPair.publicKey)).toString('base64');
+    const configured = { ...env, KAD_PROJECTION_KEY_ID: 'test-key', KAD_PROJECTION_PUBLIC_KEY_SPKI_BASE64: publicKey };
+    expect((await worker.fetch(request, configured as unknown as WorkerEnv)).status).toBe(200);
+    expect(db.checkpoint).toBeNull();
+    expect((await worker.fetch(request, { ...configured, KAD_PROJECTION_PUBLIC_KEY_SPKI_BASE64: 'invalid' } as unknown as WorkerEnv)).status).toBe(503);
+  });
+
+  test('readiness rejects a database missing the nonce schema used by ingest', async () => {
+    const keyPair = await keyPairPromise;
+    const publicKey = Buffer.from(await crypto.subtle.exportKey('spki', keyPair.publicKey)).toString('base64');
+    const db = new FakeD1();
+    const prepare = db.prepare.bind(db);
+    db.prepare = (query: string) => {
+      if (query.includes('content_sha256')) throw new Error('no such column: content_sha256');
+      return prepare(query);
+    };
+    type WorkerEnv = Parameters<typeof worker.fetch>[1];
+    const env = { AGENDA_DB: db, KAD_PROJECTION_KEY_ID: 'test-key', KAD_PROJECTION_PUBLIC_KEY_SPKI_BASE64: publicKey } as unknown as WorkerEnv;
+    const response = await worker.fetch(new Request('https://example.test/readyz'), env);
+    expect(response.status).toBe(503);
+    expect(await response.json()).toEqual({ error: { code: 'not_ready', detail: 'D1 schema is not ready.' } });
+  });
+
   test('full snapshots withdraw absent rows and reject replay/downgrade', async () => {
     const db = new FakeD1();
     await applyProjection(db as any, projection(1, 2), 'nonce-first');
@@ -305,6 +335,12 @@ describe('agenda persistence and public API', () => {
     db.checkpoint = { revision: 1, observed_at: new Date(Date.now() + 60 * 60_000).toISOString(), received_at: now };
     const future = await worker.fetch(new Request('https://example.test/api/v1/agenda'), env);
     expect(future.status).toBe(503);
+    expect(await future.json()).toEqual({ error: { code: 'agenda_unavailable', detail: 'Agenda data is not currently available for public display.' } });
+
+    db.checkpoint = null;
+    const orphaned = await worker.fetch(new Request('https://example.test/api/v1/agenda'), env);
+    expect(orphaned.status).toBe(503);
+    expect(await orphaned.json()).toEqual({ error: { code: 'agenda_unavailable', detail: 'Agenda data is not currently available for public display.' } });
 
     db.checkpoint = { revision: 1, observed_at: now, received_at: now };
     db.entries.get(agendaId(1)).revision = 99;
@@ -341,6 +377,7 @@ describe('agenda persistence and public API', () => {
     const env = { AGENDA_DB: new FakeD1(), ASSETS: { fetch: async () => new Response('asset') } } as any;
     const response = await worker.fetch(new Request('https://example.test/api/v1/agenda'), env);
     expect(response.status).toBe(503);
+    expect(await response.json()).toEqual({ error: { code: 'agenda_unavailable', detail: 'Agenda has not received a signed projection yet.' } });
   });
 
   test('does not expose storage failures through the ingest response', async () => {
