@@ -125,7 +125,7 @@ jobs:
 
       - name: Smoke staging API and crawler boundary
         env:
-          STAGING_URL: https://kaburajadulu-staging.uibasev2-api.workers.dev
+          STAGING_URL: https://kaburajadulu-staging.hamardikan.workers.dev
         run: |
           set -euo pipefail
           curl --fail --silent --show-error "$STAGING_URL/healthz" | tee /tmp/healthz.json
